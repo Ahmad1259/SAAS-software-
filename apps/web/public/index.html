@@ -13,6 +13,7 @@
     .badge-cooking { background-color: #FED7AA; color: #9A3412; }
     .badge-ready { background-color: #E0E7FF; color: #3730A3; }
     .badge-shipped { background-color: #DBEAFE; color: #1E40AF; }
+    .badge-completed { background-color: #DCFCE7; color: #166534; }
   </style>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#0F172A">
@@ -26,35 +27,31 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
 
-  <!-- TOP BAR: ROLE & EXPERIENCE SWITCHER (Demonstrating Multi-Role Ecosystem) -->
+  <!-- TOP BAR: NAVIGATION & AUTHENTICATION STATUS -->
   <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-50 shadow-md">
     <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center space-x-3">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateTo('storefront')">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center font-black text-slate-950 text-xl shadow-inner">
           C
         </div>
         <div>
           <h1 class="font-extrabold tracking-tight text-base flex items-center gap-2">
-            Commerce Cloud <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Multi-Role SaaS</span>
+            Commerce Cloud <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Live Pilot</span>
           </h1>
-          <p class="text-xs text-slate-400">Current Store: <strong class="text-slate-200" id="currentStoreNameDisplay">Sultan Spice Biryani & Grill</strong></p>
+          <p class="text-xs text-slate-400">Store: <strong class="text-slate-200" id="currentStoreNameDisplay">Sultan Spice Biryani & Grill</strong></p>
         </div>
       </div>
 
-      <!-- Quick Role Switcher Buttons -->
-      <div class="flex items-center bg-slate-800/80 p-1 rounded-xl border border-slate-700 text-xs font-medium">
-        <button onclick="switchRole('customer')" id="btn-role-customer" class="role-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition text-slate-300 hover:text-white">
-          <i class="fa-solid fa-mobile-screen"></i> 1. Customer Storefront (WhatsApp Order)
+      <!-- Navigation & Auth Status Controls -->
+      <div class="flex items-center gap-2">
+        <button onclick="navigateTo('storefront')" id="nav-btn-storefront" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-mobile-screen"></i> Customer Storefront
         </button>
-        <button onclick="switchRole('owner')" id="btn-role-owner" class="role-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition text-white bg-indigo-600 shadow-sm font-semibold">
-          <i class="fa-solid fa-crown"></i> 2. Owner Admin Panel
-        </button>
-        <button onclick="switchRole('chef')" id="btn-role-chef" class="role-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition text-slate-300 hover:text-white">
-          <i class="fa-solid fa-fire-burner text-amber-400"></i> 3. Kitchen / Chef KDS View
-        </button>
-        <button onclick="switchRole('rider')" id="btn-role-rider" class="role-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition text-slate-300 hover:text-white">
-          <i class="fa-solid fa-motorcycle text-cyan-400"></i> 4. Rider / Delivery View
-        </button>
+
+        <!-- Dynamic Auth Button (Shows Login or Active User Badge) -->
+        <div id="authHeaderContainer" class="flex items-center gap-2">
+          <!-- Rendered dynamically by checkAuthStatus() -->
+        </div>
       </div>
     </div>
   </header>
@@ -63,9 +60,9 @@
   <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6">
 
     <!-- ============================================================== -->
-    <!-- VIEW 1: CUSTOMER STOREFRONT (Mobile-first, WhatsApp Ordering) -->
+    <!-- VIEW 1: CUSTOMER STOREFRONT (Public, No Login Required)        -->
     <!-- ============================================================== -->
-    <section id="view-customer" class="role-view hidden">
+    <section id="view-storefront" class="app-view">
       <div class="max-w-md mx-auto bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
         <!-- Store Banner & Header -->
         <div class="relative h-36 bg-gradient-to-r from-orange-500 to-amber-600 p-4 text-white flex flex-col justify-end">
@@ -74,7 +71,7 @@
           </div>
           <h2 class="text-xl font-bold tracking-tight text-white drop-shadow-sm" id="storefrontName">Sultan Spice Biryani</h2>
           <p class="text-xs text-orange-100 flex items-center gap-1 mt-0.5">
-            <i class="fa-solid fa-location-dot"></i> DHA Phase 5, Lahore • Delivery & Takeaway
+            <i class="fa-solid fa-location-dot"></i> Lahore, Pakistan • Delivery & Takeaway
           </p>
         </div>
 
@@ -84,15 +81,7 @@
             <i class="fa-brands fa-whatsapp text-emerald-600 text-lg"></i>
             <span>Direct WhatsApp Order with 1-Click</span>
           </div>
-          <span class="font-bold text-emerald-700">0300-1234567</span>
-        </div>
-
-        <!-- Category Pills -->
-        <div class="p-3 border-b border-slate-100 flex gap-2 overflow-x-auto text-xs font-semibold scrollbar-none">
-          <button class="px-3 py-1.5 rounded-full bg-slate-900 text-white">All Menu</button>
-          <button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200">Biryani & Rice</button>
-          <button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200">BBQ & Grills</button>
-          <button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200">Drinks & Sides</button>
+          <span class="font-bold text-emerald-700" id="storefrontWhatsappBadge">0300-1234567</span>
         </div>
 
         <!-- Product Listings -->
@@ -129,18 +118,62 @@
     </section>
 
     <!-- ============================================================== -->
-    <!-- VIEW 2: STORE OWNER ADMIN PANEL (Full Control: Products, Orders) -->
+    <!-- VIEW 2: SECURE LOGIN SCREEN (Admin, Kitchen, Rider)            -->
     <!-- ============================================================== -->
-    <section id="view-owner" class="role-view">
+    <section id="view-login" class="app-view hidden">
+      <div class="max-w-md mx-auto bg-white rounded-3xl shadow-xl border border-slate-200 p-6 md:p-8">
+        <div class="text-center mb-6">
+          <div class="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center text-xl font-black mx-auto mb-3">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+          <h2 class="text-xl font-extrabold text-slate-900">Portal Staff & Admin Login</h2>
+          <p class="text-xs text-slate-500 mt-1">Apna assigned Login ID aur Password enter karein.</p>
+        </div>
+
+        <form onsubmit="handlePortalLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Login ID / Username</label>
+            <input type="text" id="loginUsername" required placeholder="e.g. admin, chef, ya rider" class="w-full text-xs p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
+            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full text-xs p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          </div>
+
+          <button type="submit" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs shadow-md transition">
+            Secure Login
+          </button>
+        </form>
+
+        <!-- Quick Help for Default Credentials -->
+        <div class="mt-6 pt-5 border-t border-slate-100 text-xs bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+          <p class="font-bold text-slate-700 mb-1 flex items-center gap-1.5">
+            <i class="fa-solid fa-key text-indigo-600"></i> Default Staff Logins:
+          </p>
+          <div class="space-y-1 font-mono text-[11px] text-slate-600">
+            <p>• <strong>Admin:</strong> admin / 123456</p>
+            <p>• <strong>Kitchen/Chef:</strong> chef / 123456</p>
+            <p>• <strong>Rider:</strong> rider / 123456</p>
+          </div>
+          <p class="text-[10px] text-slate-400 mt-2 italic">Admin panel mein ja kar aap naye users bana sakte hain aur passwords change kar sakte hain.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- VIEW 3: STORE OWNER ADMIN PANEL (Authenticated 'ADMIN')        -->
+    <!-- ============================================================== -->
+    <section id="view-admin" class="app-view hidden">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <!-- Column 1 & 2: Orders Ledger & Product Management -->
+        <!-- Column 1 & 2: Stats, Order Queue, Products -->
         <div class="lg:col-span-2 space-y-6">
 
           <!-- Dashboard Stats -->
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-              <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Today's Orders</p>
+              <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Queue Orders</p>
               <h3 class="text-2xl font-extrabold text-slate-900 mt-1" id="statOrderCount">0</h3>
             </div>
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
@@ -148,7 +181,7 @@
               <h3 class="text-2xl font-extrabold text-emerald-600 mt-1" id="statSalesTotal">PKR 0</h3>
             </div>
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-              <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Cooking Now</p>
+              <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Cooking Queue</p>
               <h3 class="text-2xl font-extrabold text-amber-600 mt-1" id="statCookingCount">0</h3>
             </div>
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
@@ -157,30 +190,35 @@
             </div>
           </div>
 
-          <!-- Live Orders Management Table -->
+          <!-- Live Orders Management Queue -->
           <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="p-4 border-b border-slate-100 flex items-center justify-between">
               <div>
                 <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <i class="fa-solid fa-list-check text-indigo-600"></i> Store Orders Lifecycle
+                  <i class="fa-solid fa-list-check text-indigo-600"></i> Store Order Queue & Management
                 </h3>
-                <p class="text-xs text-slate-500">Live incoming customer orders (Syncs with Chef and Rider views)</p>
+                <p class="text-xs text-slate-500">Live incoming customer orders (Syncs with Kitchen and Rider views)</p>
               </div>
-              <button onclick="renderAll()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1">
-                <i class="fa-solid fa-arrows-rotate"></i> Refresh
-              </button>
+              <div class="flex items-center gap-2">
+                <button onclick="clearAllOrders()" class="text-xs bg-red-50 hover:bg-red-100 text-red-700 px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1 border border-red-200 transition">
+                  <i class="fa-solid fa-trash-can"></i> Clear All Orders
+                </button>
+                <button onclick="renderAll()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1">
+                  <i class="fa-solid fa-arrows-rotate"></i> Refresh
+                </button>
+              </div>
             </div>
 
             <div class="overflow-x-auto">
               <table class="w-full text-left border-collapse text-xs">
                 <thead>
                   <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider">
-                    <th class="p-3">Order #</th>
+                    <th class="p-3">Queue #</th>
                     <th class="p-3">Customer & Contact</th>
                     <th class="p-3">Items & Details</th>
                     <th class="p-3">Total Amount</th>
                     <th class="p-3">Payment</th>
-                    <th class="p-3">Status Action</th>
+                    <th class="p-3">Queue Action</th>
                   </tr>
                 </thead>
                 <tbody id="ownerOrdersTableBody" class="divide-y divide-slate-100">
@@ -197,9 +235,14 @@
                 <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
                   <i class="fa-solid fa-box-open text-emerald-600"></i> Store Products & Menu Items
                 </h3>
-                <p class="text-xs text-slate-500">Add or edit items. Changes reflect instantly on your customer storefront.</p>
+                <p class="text-xs text-slate-500">Add or remove items. Changes reflect instantly on customer storefront.</p>
               </div>
-              <span class="text-xs px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full font-bold" id="productCountBadge">0 Products</span>
+              <div class="flex items-center gap-2">
+                <button onclick="clearAllProducts()" class="text-xs bg-red-50 hover:bg-red-100 text-red-700 px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1 border border-red-200 transition">
+                  <i class="fa-solid fa-eraser"></i> Clear Menu
+                </button>
+                <span class="text-xs px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full font-bold" id="productCountBadge">0 Products</span>
+              </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="ownerProductsList">
@@ -208,43 +251,81 @@
           </div>
         </div>
 
-        <!-- Column 3: Store Management Tools -->
+        <!-- Column 3: Store Configuration & User/Role Access Control -->
         <div class="space-y-6">
 
-          <!-- Add New Product Form (Client Control) -->
+          <!-- USER & STAFF ACCESS CONTROL (ADMIN FEATURE) -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-users-gear text-indigo-600"></i> Staff User Management & Roles
+              </h3>
+              <span class="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded-full font-bold">Admin Only</span>
+            </div>
+
+            <form onsubmit="handleCreateUser(event)" class="space-y-3 p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+              <p class="text-xs font-bold text-slate-800">Add New Staff / User</p>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Username / Login ID</label>
+                <input type="text" id="newStaffUsername" required placeholder="e.g. chef_ali ya rider_usman" class="w-full text-xs p-2 rounded-lg border border-slate-300">
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Password</label>
+                  <input type="password" id="newStaffPassword" required placeholder="••••••••" class="w-full text-xs p-2 rounded-lg border border-slate-300">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Role / Access</label>
+                  <select id="newStaffRole" class="w-full text-xs p-2 rounded-lg border border-slate-300 bg-white font-semibold">
+                    <option value="CHEF">Kitchen / Chef</option>
+                    <option value="RIDER">Delivery / Rider</option>
+                    <option value="ADMIN">Administrator</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-xs transition">
+                Create User
+              </button>
+            </form>
+
+            <!-- Active Users List -->
+            <div>
+              <p class="text-xs font-bold text-slate-800 mb-2">Active Store Staff Accounts:</p>
+              <div class="space-y-2" id="adminUsersList">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Add New Product Form -->
           <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
             <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2 mb-3">
-              <i class="fa-solid fa-circle-plus text-indigo-600"></i> Add New Product / Dish
+              <i class="fa-solid fa-circle-plus text-emerald-600"></i> Add Product / Dish
             </h3>
             <form onsubmit="handleCreateProduct(event)" class="space-y-3">
               <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Product Title</label>
-                <input type="text" id="newProdName" required placeholder="e.g., Mutton Dum Biryani Special" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <input type="text" id="newProdName" required placeholder="e.g., Chicken Dum Biryani" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
               </div>
 
               <div class="grid grid-cols-2 gap-2">
                 <div>
                   <label class="block text-xs font-semibold text-slate-700 mb-1">Price (PKR)</label>
-                  <input type="number" id="newProdPrice" required placeholder="e.g., 950" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <input type="number" id="newProdPrice" required placeholder="e.g., 650" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                 </div>
                 <div>
                   <label class="block text-xs font-semibold text-slate-700 mb-1">Category</label>
-                  <select id="newProdCategory" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white">
-                    <option value="Biryani & Rice">Biryani & Rice</option>
-                    <option value="BBQ & Grills">BBQ & Grills</option>
-                    <option value="Sides & Drinks">Sides & Drinks</option>
-                    <option value="Retail Goods">Retail Goods</option>
-                  </select>
+                  <input type="text" id="newProdCategory" required placeholder="e.g. Biryani & Rice" class="w-full text-xs p-2.5 rounded-xl border border-slate-300">
                 </div>
               </div>
 
               <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">Description / Ingredients</label>
-                <textarea id="newProdDesc" rows="2" placeholder="Fragrant basmati rice cooked with tender mutton and saffron..." class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Description</label>
+                <textarea id="newProdDesc" rows="2" placeholder="Freshly cooked traditional biryani..." class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
               </div>
 
-              <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-sm transition">
-                <i class="fa-solid fa-plus"></i> Save Product to Store
+              <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-sm transition">
+                <i class="fa-solid fa-plus"></i> Save to Menu
               </button>
             </form>
           </div>
@@ -256,14 +337,13 @@
             </h3>
 
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">Business / Store Name</label>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Business Name</label>
               <input type="text" id="configStoreName" value="Sultan Spice Biryani & Grill" class="w-full text-xs p-2.5 rounded-xl border border-slate-300">
             </div>
 
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">WhatsApp Order Number</label>
-              <input type="text" id="configWhatsapp" value="923001234567" placeholder="e.g., 923001234567" class="w-full text-xs p-2.5 rounded-xl border border-slate-300">
-              <p class="text-[11px] text-slate-400 mt-1">Include 92 country code without + for direct WhatsApp link.</p>
+              <input type="text" id="configWhatsapp" value="923001234567" placeholder="e.g. 923001234567" class="w-full text-xs p-2.5 rounded-xl border border-slate-300">
             </div>
 
             <div>
@@ -275,40 +355,27 @@
               Update Store Settings
             </button>
           </div>
-
-          <!-- Odoo ERP Sync Status (First-Class Integration) -->
-          <div class="bg-slate-900 text-white p-5 rounded-2xl shadow-sm space-y-3">
-            <div class="flex items-center justify-between">
-              <h4 class="text-xs font-bold text-slate-200 flex items-center gap-2">
-                <i class="fa-solid fa-network-wired text-purple-400"></i> Odoo ERP Connector
-              </h4>
-              <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-semibold">Active Mode A</span>
-            </div>
-            <p class="text-xs text-slate-300">Orders automatically push to Odoo Sales Journal with zero double entry.</p>
-            <div class="text-[11px] bg-slate-800 p-2.5 rounded-xl border border-slate-700 space-y-1 font-mono text-slate-300">
-              <p>Host: erp.sultanspice.pk</p>
-              <p>Journal: POS/Sales PKR</p>
-              <p>Outbox Status: 0 Pending</p>
-            </div>
-          </div>
         </div>
       </div>
     </section>
 
     <!-- ============================================================== -->
-    <!-- VIEW 3: KITCHEN DISPLAY SYSTEM (KDS) FOR CHEF -->
+    <!-- VIEW 4: KITCHEN DISPLAY SYSTEM (Authenticated 'CHEF')          -->
     <!-- ============================================================== -->
-    <section id="view-chef" class="role-view hidden">
+    <section id="view-kitchen" class="app-view hidden">
       <div class="bg-slate-900 text-white p-5 rounded-3xl mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
           <span class="px-2.5 py-1 bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold rounded-full uppercase">Kitchen Display System (KDS)</span>
-          <h2 class="text-xl font-extrabold mt-1">Live Chef Order Queue</h2>
-          <p class="text-xs text-slate-400">Chef sirf khana pakane aur status update krne ke liye is panel ko use krta ha.</p>
+          <h2 class="text-xl font-extrabold mt-1">Live Kitchen Cooking Queue</h2>
+          <p class="text-xs text-slate-400">Order queue ke mutabiq khana pakayein aur ready mark karein.</p>
         </div>
         <div class="flex items-center gap-3">
           <span class="text-xs text-slate-300 bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">
             <i class="fa-solid fa-clock text-amber-400"></i> Auto-refresh: <strong>Instant</strong>
           </span>
+          <button onclick="renderAll()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs border border-slate-700">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </button>
         </div>
       </div>
 
@@ -319,15 +386,18 @@
     </section>
 
     <!-- ============================================================== -->
-    <!-- VIEW 4: RIDER / DELIVERY VIEW -->
+    <!-- VIEW 5: RIDER / DELIVERY PORTAL (Authenticated 'RIDER')        -->
     <!-- ============================================================== -->
-    <section id="view-rider" class="role-view hidden">
+    <section id="view-rider" class="app-view hidden">
       <div class="bg-slate-900 text-white p-5 rounded-3xl mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
           <span class="px-2.5 py-1 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-bold rounded-full uppercase">Delivery & Rider Portal</span>
           <h2 class="text-xl font-extrabold mt-1">Active Deliveries & Cash Collection (COD)</h2>
-          <p class="text-xs text-slate-400">Riders deliver orders and record exact cash collected at the doorstep.</p>
+          <p class="text-xs text-slate-400">Kitchen se order pick karein aur customer se cash collect karein.</p>
         </div>
+        <button onclick="renderAll()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs border border-slate-700">
+          <i class="fa-solid fa-arrows-rotate"></i> Refresh
+        </button>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="riderOrdersGrid">
@@ -337,48 +407,13 @@
 
   </main>
 
-  <!-- JAVASCRIPT STATE ENGINE & INTERACTIVE LOGIC -->
+  <!-- JAVASCRIPT STATE ENGINE & AUTHENTICATED ACCESS LOGIC -->
   <script>
-    // 1. Initial State Data (Persisted to localStorage for realistic multi-user demo)
-    const defaultProducts = [
-      { id: 'prod-1', name: 'Special Chicken Dum Biryani', price: 650, category: 'Biryani & Rice', desc: 'Aromatic basmati rice cooked with tender marinated chicken and traditional spices.', stock: 50 },
-      { id: 'prod-2', name: 'Mutton Shinwari Karahi (Half KG)', price: 1750, category: 'BBQ & Grills', desc: 'Fresh mutton prepared with tomatoes, ginger and green chillies in pure desi ghee.', stock: 25 },
-      { id: 'prod-3', name: 'Chicken Malai Boti Platter', price: 850, category: 'BBQ & Grills', desc: 'Melt-in-mouth chicken cubes marinated in fresh cream, cheese and mild spices.', stock: 30 },
-      { id: 'prod-4', name: 'Mint Raita & Fresh Salad', price: 120, category: 'Sides & Drinks', desc: 'Cooling yogurt dip with garden fresh cucumber and mint.', stock: 100 }
-    ];
-
-    const defaultOrders = [
-      {
-        id: 'ORD-9821',
-        customerName: 'Muhammad Usman',
-        phone: '0321-4567890',
-        address: 'House 42, Street 8, Phase 5 DHA, Lahore',
-        items: [
-          { name: 'Special Chicken Dum Biryani', qty: 2, price: 650 },
-          { name: 'Mint Raita & Fresh Salad', qty: 1, price: 120 }
-        ],
-        deliveryFee: 150,
-        total: 1570,
-        paymentMethod: 'COD',
-        paymentStatus: 'AWAITING_PAYMENT',
-        status: 'COOKING', // PLACED, COOKING, READY_FOR_PICKUP, SHIPPED, COMPLETED
-        time: '12:35 PM'
-      },
-      {
-        id: 'ORD-9822',
-        customerName: 'Ayesha Malik',
-        phone: '0300-8877665',
-        address: 'Flat 302, Gulberg Greens, Lahore',
-        items: [
-          { name: 'Mutton Shinwari Karahi (Half KG)', qty: 1, price: 1750 }
-        ],
-        deliveryFee: 150,
-        total: 1900,
-        paymentMethod: 'BANK_TRANSFER',
-        paymentStatus: 'PAID',
-        status: 'PLACED',
-        time: '12:48 PM'
-      }
+    // 1. Initial State Data: Clean Store (Users control products and orders)
+    const initialUsers = [
+      { username: 'admin', password: '123456', role: 'ADMIN', name: 'Store Owner' },
+      { username: 'chef', password: '123456', role: 'CHEF', name: 'Master Chef' },
+      { username: 'rider', password: '123456', role: 'RIDER', name: 'Delivery Rider' }
     ];
 
     let storeConfig = JSON.parse(localStorage.getItem('storeConfig')) || {
@@ -387,34 +422,116 @@
       deliveryFee: 150
     };
 
-    let products = JSON.parse(localStorage.getItem('storeProducts')) || defaultProducts;
-    let orders = JSON.parse(localStorage.getItem('storeOrders')) || defaultOrders;
+    let users = JSON.parse(localStorage.getItem('storeUsers')) || initialUsers;
+    let products = JSON.parse(localStorage.getItem('storeProducts')) || [];
+    let orders = JSON.parse(localStorage.getItem('storeOrders')) || [];
+    let currentAuthUser = JSON.parse(localStorage.getItem('currentAuthUser')) || null;
     let currentCart = {};
 
     function saveState() {
       localStorage.setItem('storeConfig', JSON.stringify(storeConfig));
+      localStorage.setItem('storeUsers', JSON.stringify(users));
       localStorage.setItem('storeProducts', JSON.stringify(products));
       localStorage.setItem('storeOrders', JSON.stringify(orders));
+      localStorage.setItem('currentAuthUser', JSON.stringify(currentAuthUser));
     }
 
-    // Role Switching
-    function switchRole(role) {
-      document.querySelectorAll('.role-view').forEach(v => v.classList.add('hidden'));
-      document.querySelectorAll('.role-btn').forEach(b => {
-        b.classList.remove('bg-indigo-600', 'text-white', 'shadow-sm', 'font-semibold');
-        b.classList.add('text-slate-300');
-      });
+    // Navigation and Access Control Gate
+    function navigateTo(viewId) {
+      if (viewId === 'admin' || viewId === 'kitchen' || viewId === 'rider') {
+        if (!currentAuthUser) {
+          showLoginView(viewId);
+          return;
+        }
 
-      const activeBtn = document.getElementById(`btn-role-${role}`);
-      if (activeBtn) {
-        activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-sm', 'font-semibold');
-        activeBtn.classList.remove('text-slate-300');
+        // Verify Role-based Permissions
+        if (viewId === 'admin' && currentAuthUser.role !== 'ADMIN') {
+          alert('Access Denied: Sirf Administrator is panel ko khol sakta hai!');
+          return;
+        }
+        if (viewId === 'kitchen' && currentAuthUser.role !== 'CHEF' && currentAuthUser.role !== 'ADMIN') {
+          alert('Access Denied: Sirf Kitchen/Chef is panel ko khol sakta hai!');
+          return;
+        }
+        if (viewId === 'rider' && currentAuthUser.role !== 'RIDER' && currentAuthUser.role !== 'ADMIN') {
+          alert('Access Denied: Sirf Rider is panel ko khol sakta hai!');
+          return;
+        }
       }
 
-      const activeView = document.getElementById(`view-${role}`);
-      if (activeView) activeView.classList.remove('hidden');
+      document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
+      const targetView = document.getElementById(`view-${viewId}`);
+      if (targetView) targetView.classList.remove('hidden');
 
       renderAll();
+    }
+
+    function showLoginView(intendedView) {
+      document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
+      document.getElementById('view-login').classList.remove('hidden');
+      document.getElementById('view-login').dataset.intendedView = intendedView;
+    }
+
+    function handlePortalLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById('loginUsername').value.trim().toLowerCase();
+      const p = document.getElementById('loginPassword').value.trim();
+
+      const user = users.find(acc => acc.username.toLowerCase() === u && acc.password === p);
+      if (!user) {
+        alert('Invalid Login ID ya Password! Meharbani kar ke theek credentials darj karein.');
+        return;
+      }
+
+      currentAuthUser = user;
+      saveState();
+
+      const intended = document.getElementById('view-login').dataset.intendedView || (user.role === 'ADMIN' ? 'admin' : (user.role === 'CHEF' ? 'kitchen' : 'rider'));
+      e.target.reset();
+      navigateTo(intended);
+    }
+
+    function handleLogout() {
+      currentAuthUser = null;
+      saveState();
+      navigateTo('storefront');
+    }
+
+    // Handle User Creation (Admin Only)
+    function handleCreateUser(e) {
+      e.preventDefault();
+      const username = document.getElementById('newStaffUsername').value.trim();
+      const password = document.getElementById('newStaffPassword').value.trim();
+      const role = document.getElementById('newStaffRole').value;
+
+      if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+        alert('Yeh username pehle se mojood ha! Dusra naam chunein.');
+        return;
+      }
+
+      users.push({
+        username,
+        password,
+        role,
+        name: username.toUpperCase()
+      });
+
+      saveState();
+      e.target.reset();
+      renderAdminUsers();
+      alert(`Naya user "${username}" (${role}) kamyabi se ban gaya!`);
+    }
+
+    function deleteUser(username) {
+      if (username === 'admin') {
+        alert('Main Administrator account delete nahi kiya ja sakta!');
+        return;
+      }
+      if (confirm(`Kya aap user "${username}" ko delete karna chahte hain?`)) {
+        users = users.filter(u => u.username !== username);
+        saveState();
+        renderAdminUsers();
+      }
     }
 
     // Cart Operations
@@ -431,7 +548,7 @@
       renderCustomerStorefront();
     }
 
-    // Place Order via WhatsApp
+    // Place Customer Order via WhatsApp
     function placeCustomerOrder() {
       const name = document.getElementById('custNameInput').value.trim();
       const address = document.getElementById('custAddressInput').value.trim();
@@ -439,7 +556,7 @@
 
       const itemIds = Object.keys(currentCart);
       if (itemIds.length === 0) {
-        alert('Apne cart mein kam se kam aik item shamil karein!');
+        alert('Apne cart mein kam se kam aik dish ya item shamil karein!');
         return;
       }
       if (!name || !address) {
@@ -475,10 +592,11 @@
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
-      orders.unshift(newOrder);
+      // Queue in real FIFO order
+      orders.push(newOrder);
       saveState();
 
-      // Construct Pre-filled WhatsApp message
+      // Formatted WhatsApp Receipt
       let message = `*NEW ORDER: ${orderId}*\n`;
       message += `*Customer:* ${name}\n`;
       message += `*Address:* ${address}\n`;
@@ -494,13 +612,10 @@
       const encodedMsg = encodeURIComponent(message);
       const whatsappUrl = `https://wa.me/${storeConfig.whatsapp}?text=${encodedMsg}`;
 
-      // Reset cart
       currentCart = {};
       renderAll();
-
-      // Open WhatsApp
       window.open(whatsappUrl, '_blank');
-      alert(`Order ${orderId} successfully placed! WhatsApp chat opened with prefilled receipt.`);
+      alert(`Order ${orderId} kamyabi se queue mein shamil ho gaya aur WhatsApp open ho gaya!`);
     }
 
     // Owner creates new product
@@ -508,7 +623,7 @@
       e.preventDefault();
       const name = document.getElementById('newProdName').value.trim();
       const price = parseInt(document.getElementById('newProdPrice').value, 10);
-      const category = document.getElementById('newProdCategory').value;
+      const category = document.getElementById('newProdCategory').value.trim() || 'General';
       const desc = document.getElementById('newProdDesc').value.trim();
 
       const newProd = {
@@ -516,7 +631,7 @@
         name,
         price,
         category,
-        desc: desc || 'Freshly prepared item',
+        desc: desc || 'Fresh item',
         stock: 50
       };
 
@@ -524,10 +639,10 @@
       saveState();
       e.target.reset();
       renderAll();
-      alert(`"${name}" has been added to your catalog and is live on customer storefront!`);
+      alert(`"${name}" menu mein shamil ho gaya ha!`);
     }
 
-    // Update order status across the lifecycle
+    // Reliable Order State Machine Transitions
     function updateOrderStatus(orderId, newStatus) {
       const order = orders.find(o => o.id === orderId);
       if (order) {
@@ -540,30 +655,106 @@
       }
     }
 
-    // Save Store Settings
+    function removeSingleOrder(orderId) {
+      if (confirm(`Order ${orderId} ko queue se clear karein?`)) {
+        orders = orders.filter(o => o.id !== orderId);
+        saveState();
+        renderAll();
+      }
+    }
+
+    function clearAllOrders() {
+      if (confirm('Kya aap tamam orders ko queue se clear karna chahte hain?')) {
+        orders = [];
+        saveState();
+        renderAll();
+      }
+    }
+
+    function clearAllProducts() {
+      if (confirm('Kya aap tamam menu items ko clear karna chahte hain?')) {
+        products = [];
+        saveState();
+        renderAll();
+      }
+    }
+
+    function deleteProduct(id) {
+      if (confirm('Kya aap is product ko menu se remove karna chahte hain?')) {
+        products = products.filter(p => p.id !== id);
+        saveState();
+        renderAll();
+      }
+    }
+
     function saveStoreConfig() {
       storeConfig.storeName = document.getElementById('configStoreName').value.trim();
       storeConfig.whatsapp = document.getElementById('configWhatsapp').value.trim();
       storeConfig.deliveryFee = parseInt(document.getElementById('configDeliveryFee').value, 10) || 0;
       saveState();
       renderAll();
-      alert('Store settings successfully updated!');
+      alert('Store settings update ho gayin!');
     }
 
-    // Render Everything
+    // Render Helpers
     function renderAll() {
       document.getElementById('currentStoreNameDisplay').innerText = storeConfig.storeName;
       document.getElementById('storefrontName').innerText = storeConfig.storeName;
+      document.getElementById('storefrontWhatsappBadge').innerText = storeConfig.whatsapp;
 
+      checkAuthStatus();
       renderCustomerStorefront();
       renderOwnerDashboard();
       renderChefKDS();
       renderRiderPortal();
+      renderAdminUsers();
+    }
+
+    function checkAuthStatus() {
+      const container = document.getElementById('authHeaderContainer');
+      if (currentAuthUser) {
+        container.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-slate-200 border border-slate-700 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span> ${currentAuthUser.name} (${currentAuthUser.role})
+            </span>
+            ${currentAuthUser.role === 'ADMIN' ? `
+              <button onclick="navigateTo('admin')" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-xs font-bold">Admin</button>
+            ` : ''}
+            ${currentAuthUser.role === 'CHEF' || currentAuthUser.role === 'ADMIN' ? `
+              <button onclick="navigateTo('kitchen')" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 rounded-lg text-xs font-bold">Kitchen</button>
+            ` : ''}
+            ${currentAuthUser.role === 'RIDER' || currentAuthUser.role === 'ADMIN' ? `
+              <button onclick="navigateTo('rider')" class="px-2.5 py-1 bg-cyan-600 hover:bg-cyan-700 rounded-lg text-xs font-bold">Rider</button>
+            ` : ''}
+            <button onclick="handleLogout()" class="px-2.5 py-1 bg-red-600/80 hover:bg-red-600 rounded-lg text-xs font-bold" title="Logout">
+              <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <button onclick="showLoginView('admin')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-lock text-amber-400"></i> Staff / Admin Login
+          </button>
+        `;
+      }
     }
 
     function renderCustomerStorefront() {
       const container = document.getElementById('customerProductsList');
       container.innerHTML = '';
+
+      if (products.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 px-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-slate-400">
+            <i class="fa-solid fa-utensils text-2xl mb-2 text-slate-300"></i>
+            <p class="text-xs font-bold text-slate-600">Menu abhi khali hai!</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">Admin panel se apni pehli dish shamil karein.</p>
+          </div>
+        `;
+        return;
+      }
 
       products.forEach(p => {
         const qty = currentCart[p.id] || 0;
@@ -586,7 +777,6 @@
         `;
       });
 
-      // Cart Summary
       let subtotal = 0;
       let count = 0;
       Object.keys(currentCart).forEach(id => {
@@ -602,7 +792,6 @@
     }
 
     function renderOwnerDashboard() {
-      // Stats
       document.getElementById('statOrderCount').innerText = orders.length;
       const totalSales = orders.reduce((sum, o) => sum + o.total, 0);
       document.getElementById('statSalesTotal').innerText = `PKR ${totalSales.toLocaleString()}`;
@@ -610,20 +799,19 @@
       document.getElementById('statProductCount').innerText = products.length;
       document.getElementById('productCountBadge').innerText = `${products.length} Products`;
 
-      // Orders Table
       const tableBody = document.getElementById('ownerOrdersTableBody');
       tableBody.innerHTML = '';
 
-      orders.forEach(o => {
-        let badgeColor = 'badge-placed';
-        if (o.status === 'COOKING') badgeColor = 'badge-cooking';
-        if (o.status === 'READY_FOR_PICKUP') badgeColor = 'badge-ready';
-        if (o.status === 'SHIPPED') badgeColor = 'badge-shipped';
-        if (o.status === 'COMPLETED') badgeColor = 'badge-completed';
+      if (orders.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-xs text-slate-400">Queue khali hai. Koi naya order nahi aya.</td></tr>`;
+      }
 
+      orders.forEach((o, index) => {
         tableBody.innerHTML += `
           <tr class="hover:bg-slate-50/80 transition">
-            <td class="p-3 font-mono font-bold text-indigo-600">${o.id}<br><span class="text-[10px] text-slate-400 font-normal">${o.time}</span></td>
+            <td class="p-3 font-mono font-bold text-indigo-600">
+              #${index + 1} - ${o.id}<br><span class="text-[10px] text-slate-400 font-normal">${o.time}</span>
+            </td>
             <td class="p-3 font-semibold text-slate-900">${o.customerName}<br><span class="text-[11px] text-slate-500 font-normal">${o.address}</span></td>
             <td class="p-3 text-slate-700">
               ${o.items.map(i => `${i.qty}x ${i.name}`).join(', ')}
@@ -634,22 +822,27 @@
                 ${o.paymentMethod} (${o.paymentStatus})
               </span>
             </td>
-            <td class="p-3">
+            <td class="p-3 flex items-center gap-1.5">
               <select onchange="updateOrderStatus('${o.id}', this.value)" class="text-xs font-bold p-1.5 rounded-lg border border-slate-300 bg-white">
-                <option value="PLACED" ${o.status === 'PLACED' ? 'selected' : ''}>Placed (New)</option>
-                <option value="COOKING" ${o.status === 'COOKING' ? 'selected' : ''}>Cooking (Kitchen)</option>
+                <option value="PLACED" ${o.status === 'PLACED' ? 'selected' : ''}>Queue: Placed</option>
+                <option value="COOKING" ${o.status === 'COOKING' ? 'selected' : ''}>Cooking</option>
                 <option value="READY_FOR_PICKUP" ${o.status === 'READY_FOR_PICKUP' ? 'selected' : ''}>Ready for Rider</option>
                 <option value="SHIPPED" ${o.status === 'SHIPPED' ? 'selected' : ''}>Out for Delivery</option>
                 <option value="COMPLETED" ${o.status === 'COMPLETED' ? 'selected' : ''}>Completed</option>
               </select>
+              <button onclick="removeSingleOrder('${o.id}')" class="p-1.5 text-slate-400 hover:text-red-600" title="Clear this order">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
             </td>
           </tr>
         `;
       });
 
-      // Products List in Owner Panel
       const prodContainer = document.getElementById('ownerProductsList');
       prodContainer.innerHTML = '';
+      if (products.length === 0) {
+        prodContainer.innerHTML = `<p class="col-span-2 text-xs text-slate-400 py-3 text-center">Menu khali hai. Upar se pehli dish shamil karein.</p>`;
+      }
       products.forEach(p => {
         prodContainer.innerHTML += `
           <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
@@ -666,34 +859,52 @@
       });
     }
 
-    function deleteProduct(id) {
-      if (confirm('Kya aap is product ko menu se remove krna chahte hain?')) {
-        products = products.filter(p => p.id !== id);
-        saveState();
-        renderAll();
-      }
+    function renderAdminUsers() {
+      const container = document.getElementById('adminUsersList');
+      if (!container) return;
+      container.innerHTML = '';
+      users.forEach(u => {
+        container.innerHTML += `
+          <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
+            <div>
+              <span class="font-bold text-slate-900">${u.name}</span>
+              <span class="text-[10px] text-slate-400 ml-1">(@${u.username})</span>
+              <span class="ml-2 px-2 py-0.5 rounded-full text-[10px] font-bold ${u.role === 'ADMIN' ? 'bg-purple-100 text-purple-800' : (u.role === 'CHEF' ? 'bg-amber-100 text-amber-800' : 'bg-cyan-100 text-cyan-800')}">${u.role}</span>
+            </div>
+            ${u.username !== 'admin' ? `
+              <button onclick="deleteUser('${u.username}')" class="text-slate-400 hover:text-red-600 p-1">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            ` : '<span class="text-[10px] text-slate-400 font-bold">Primary</span>'}
+          </div>
+        `;
+      });
     }
 
     function renderChefKDS() {
       const container = document.getElementById('chefOrdersGrid');
       container.innerHTML = '';
 
-      const kitchenOrders = orders.filter(o => o.status === 'PLACED' || o.status === 'COOKING' || o.status === 'READY_FOR_PICKUP');
+      // Strict Queue: Active orders in kitchen
+      const kitchenOrders = orders.filter(o => o.status === 'PLACED' || o.status === 'COOKING');
 
       if (kitchenOrders.length === 0) {
-        container.innerHTML = `<div class="col-span-3 text-center py-12 text-slate-400 text-xs">Abhi kitchen mein koi pending order nahi ha. All caught up!</div>`;
+        container.innerHTML = `<div class="col-span-3 text-center py-12 text-slate-400 text-xs">Kitchen queue khali hai. All caught up!</div>`;
         return;
       }
 
-      kitchenOrders.forEach(o => {
+      kitchenOrders.forEach((o, qIndex) => {
         const isCooking = o.status === 'COOKING';
         container.innerHTML += `
           <div class="bg-white rounded-2xl border-2 ${isCooking ? 'border-amber-400 shadow-md' : 'border-slate-200'} p-5 flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-3">
-                <span class="font-mono text-sm font-black text-slate-900">${o.id}</span>
+                <div>
+                  <span class="text-xs font-extrabold text-amber-600">Queue #${qIndex + 1}</span>
+                  <span class="font-mono text-sm font-black text-slate-900 ml-1.5">${o.id}</span>
+                </div>
                 <span class="text-xs font-bold px-2.5 py-1 rounded-full ${isCooking ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700'}">
-                  ${isCooking ? 'Cooking in Progress' : 'New Order'}
+                  ${isCooking ? 'Cooking in Progress' : 'New in Queue'}
                 </span>
               </div>
               <p class="text-xs text-slate-500 mb-2 font-medium">Time Placed: <strong>${o.time}</strong></p>
@@ -714,9 +925,12 @@
                 </button>
               ` : `
                 <button onclick="updateOrderStatus('${o.id}', 'READY_FOR_PICKUP')" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs">
-                  <i class="fa-solid fa-bell"></i> Mark Ready for Rider
+                  <i class="fa-solid fa-bell"></i> Clear & Mark Ready for Rider
                 </button>
               `}
+              <button onclick="removeSingleOrder('${o.id}')" class="px-3 py-2 bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 rounded-xl text-xs font-bold" title="Cancel/Remove">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
             </div>
           </div>
         `;
@@ -730,7 +944,7 @@
       const riderOrders = orders.filter(o => o.status === 'READY_FOR_PICKUP' || o.status === 'SHIPPED');
 
       if (riderOrders.length === 0) {
-        container.innerHTML = `<div class="col-span-3 text-center py-12 text-slate-400 text-xs">Koi delivery pickup ke liye pending nahi ha.</div>`;
+        container.innerHTML = `<div class="col-span-3 text-center py-12 text-slate-400 text-xs">Koi delivery pending nahi hai. All delivered!</div>`;
         return;
       }
 
@@ -748,7 +962,7 @@
             <div class="text-xs space-y-1">
               <p class="font-bold text-slate-900">${o.customerName}</p>
               <p class="text-slate-500">${o.address}</p>
-              <p class="text-slate-500">Call: <strong class="text-slate-800">${o.phone}</strong></p>
+              <p class="text-slate-500">Contact: <strong class="text-slate-800">${o.phone}</strong></p>
             </div>
 
             <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs flex justify-between items-center">
