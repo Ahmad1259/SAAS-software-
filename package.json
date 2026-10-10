@@ -10,6 +10,11 @@
     "apps/*"
   ],
   "scripts": {
+    "start": "node apps/web/server/index.js",
     "test": "node tests/runner.js"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.7",
+    "pg": "^8.23.1"
   }
 }
