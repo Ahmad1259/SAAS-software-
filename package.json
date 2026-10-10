@@ -1,0 +1,15 @@
+{
+  "name": "commerce-cloud",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Multi-Tenant Commerce SaaS + Store Builder + Odoo ERP Integration",
+  "author": "Ahmad",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "node tests/runner.js"
+  }
+}
