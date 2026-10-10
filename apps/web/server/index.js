@@ -93,7 +93,7 @@ function parseBody(req) {
   });
 }
 
-const server = http.createServer(async (req, res) => {
+async function handleRequest(req, res) {
   const parsedUrl = url.parse(req.url, true);
   const pathname = parsedUrl.pathname;
   const method = req.method;
@@ -398,10 +398,15 @@ const server = http.createServer(async (req, res) => {
     console.error('Server Error:', error);
     sendJSON(res, 500, { error: 'Internal Server Error' });
   }
-});
+}
 
-server.listen(PORT, () => {
-  console.log(`[COMMERCE CLOUD] Server running live at http://localhost:${PORT}`);
-});
+const server = http.createServer(handleRequest);
 
-module.exports = { server, db };
+if (require.main === module || !process.env.VERCEL) {
+  server.listen(PORT, () => {
+    console.log(`[COMMERCE CLOUD] Server running live at http://localhost:${PORT}`);
+  });
+}
+
+module.exports = { server, handleRequest, db };
+
