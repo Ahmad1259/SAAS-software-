@@ -1,5 +1,5 @@
 /**
- * Automated Verification Test Suite for Commerce Cloud Backend, Outbox, Payments & SaaS Billing
+ * Automated Verification Test Suite for Commerce Cloud
  * Author: Domain Master 15 (QA Master)
  * Supervised by: KING Agent
  * Audited by: Domain Master 16 (Red-Team Auditor)
@@ -10,6 +10,7 @@ const crypto = require('crypto');
 const { MultiTenantAuthEngine } = require('../packages/auth/index.js');
 const { ReliableOutboxWorker } = require('../packages/outbox-worker/index.js');
 const { SaasSubscriptionEngine } = require('../packages/saas-billing/index.js');
+const { RedTeamAuditSuite } = require('./red-team.test.js');
 
 console.log('====================================================');
 console.log('COMMERCE CLOUD — COMPREHENSIVE QA & AUDIT SUITE');
@@ -272,24 +273,42 @@ async function runAll() {
   runTest('BILL-01: Starter Plan blocks adding products beyond quota', () => {
     const starterSub = { planCode: 'STARTER', status: 'ACTIVE' };
     assert.strictEqual(SaasSubscriptionEngine.canAddProduct(starterSub, 24).allowed, true);
-    assert.strictEqual(SaasSubscriptionEngine.canAddProduct(starterSub, 25).allowed, false, '25th item must hit quota limit');
+    assert.strictEqual(SaasSubscriptionEngine.canAddProduct(starterSub, 25).allowed, false);
   });
 
   runTest('BILL-02: Odoo Sync entitlement is strictly enforced by Plan Tier', () => {
     const starterSub = { planCode: 'STARTER', status: 'ACTIVE' };
     const businessSub = { planCode: 'BUSINESS', status: 'ACTIVE' };
 
-    assert.strictEqual(SaasSubscriptionEngine.canUseOdoo(starterSub).allowed, false, 'Starter tier cannot use Odoo');
-    assert.strictEqual(SaasSubscriptionEngine.canUseOdoo(businessSub).allowed, true, 'Business tier can use Odoo');
+    assert.strictEqual(SaasSubscriptionEngine.canUseOdoo(starterSub).allowed, false);
+    assert.strictEqual(SaasSubscriptionEngine.canUseOdoo(businessSub).allowed, true);
   });
 
   runTest('BILL-03: Rental Invoice generation isolates SaaS revenue from tenant store sales', () => {
     const businessSub = { planCode: 'BUSINESS', status: 'ACTIVE' };
     const invoice = SaasSubscriptionEngine.generateRentalInvoice('tenant-sultan-1', businessSub);
 
-    assert.strictEqual(invoice.amountMinor, 750000n, 'Business plan rental must be PKR 7,500 (750000 paisas)');
+    assert.strictEqual(invoice.amountMinor, 750000n);
     assert.strictEqual(invoice.currency, 'PKR');
-    assert.ok(invoice.invoiceNumber.startsWith('INV-SAAS-'), 'Invoice must have SaaS prefix');
+    assert.ok(invoice.invoiceNumber.startsWith('INV-SAAS-'));
+  });
+
+  // ----------------------------------------------------
+  // TEST GROUP 8: INDEPENDENT RED-TEAM PENETRATION AUDIT
+  // ----------------------------------------------------
+  runTest('RED-01: Token tampering attack across tenant boundary is blocked', () => {
+    assert.strictEqual(
+      RedTeamAuditSuite.testTokenTamperingAttack('a_very_secret_key_at_least_32_characters_long_for_security'),
+      true
+    );
+  });
+
+  runTest('RED-02: Malicious SSRF cloud metadata and private IP vectors are rejected', () => {
+    assert.strictEqual(RedTeamAuditSuite.testSsrfPayloadVectors(), true);
+  });
+
+  runTest('RED-03: Forged webhook payment callbacks are rejected', () => {
+    assert.strictEqual(RedTeamAuditSuite.testWebhookSignatureForgery(), true);
   });
 
   console.log(`\n----------------------------------------------------`);

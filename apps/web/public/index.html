@@ -13,8 +13,16 @@
     .badge-cooking { background-color: #FED7AA; color: #9A3412; }
     .badge-ready { background-color: #E0E7FF; color: #3730A3; }
     .badge-shipped { background-color: #DBEAFE; color: #1E40AF; }
-    .badge-completed { background-color: #DCFCE7; color: #166534; }
   </style>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0F172A">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration error:', err));
+      });
+    }
+  </script>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
 
