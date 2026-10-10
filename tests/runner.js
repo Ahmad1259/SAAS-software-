@@ -1,5 +1,5 @@
 /**
- * Automated Verification Test Suite for Commerce Cloud
+ * Automated Verification Test Suite for Commerce Cloud Backend & APIs
  * Author: Domain Master 15 (QA Master)
  * Supervised by: KING Agent
  * Audited by: Domain Master 16 (Red-Team Auditor)
@@ -7,9 +7,10 @@
 
 const assert = require('assert');
 const crypto = require('crypto');
+const { MultiTenantAuthEngine } = require('../packages/auth/index.js');
 
 console.log('====================================================');
-console.log('COMMERCE CLOUD — AUTOMATED AUDIT & TEST SUITE');
+console.log('COMMERCE CLOUD — COMPREHENSIVE QA & AUDIT SUITE');
 console.log('Supervised by: KING Agent & Independent Auditors');
 console.log('====================================================\n');
 
@@ -49,7 +50,6 @@ runTest('PAY-01: JazzCash HMAC-SHA256 Signature Generation & Timing-Safe Verific
     pp_MerchantID: 'MC12345',
   };
 
-  // Sort keys alphabetically
   const sortedKeys = Object.keys(params).sort();
   let messageString = salt;
   for (const key of sortedKeys) {
@@ -64,7 +64,6 @@ runTest('PAY-01: JazzCash HMAC-SHA256 Signature Generation & Timing-Safe Verific
 
   assert.ok(generatedHash.length === 64, 'Hash must be 64-character uppercase hex');
 
-  // Verify callback
   const verified = crypto.timingSafeEqual(
     Buffer.from(generatedHash),
     Buffer.from(generatedHash)
@@ -77,7 +76,6 @@ runTest('PAY-02: Manual Bank Transfer Reference Format & Staff Approval Validati
   const ref = `PAY-${orderNumber.replace(/[^A-Za-z0-9]/g, '')}-W9KP`;
   assert.ok(ref.startsWith('PAY-ORD2026X1-'), 'Reference token must follow structured format');
 
-  // Staff verification rejects mismatch
   const expectedAmountMinor = 500000n;
   const confirmedAmountMinor = 450000n;
   const isMatch = expectedAmountMinor === confirmedAmountMinor;
@@ -145,6 +143,55 @@ runTest('ISO-01: Multi-tenant access controls enforce strict tenant & store boun
 
   assert.strictEqual(checkAccess(tenantA, 'store-aaa'), true);
   assert.throws(() => checkAccess(tenantA, 'store-bbb'), /Access Denied/);
+});
+
+// ----------------------------------------------------
+// TEST GROUP 5: AUTH & RBAC (CHEF, RIDER, OWNER)
+// ----------------------------------------------------
+runTest('AUTH-01: PBKDF2 Password Hashing & Verification behaves cryptographically sound', () => {
+  const { hash, salt } = MultiTenantAuthEngine.hashPassword('SecretPass123!');
+  assert.ok(hash.length === 128, 'SHA-512 hex hash must be 128 characters');
+  assert.strictEqual(MultiTenantAuthEngine.verifyPassword('SecretPass123!', hash, salt), true);
+  assert.strictEqual(MultiTenantAuthEngine.verifyPassword('WrongPass', hash, salt), false);
+});
+
+runTest('AUTH-02: Cryptographic Session Token Creation & Expiry Validation', () => {
+  const auth = new MultiTenantAuthEngine('a_very_secret_key_at_least_32_characters_long_for_security');
+  const session = {
+    userId: 'user-1',
+    email: 'owner@sultanspice.pk',
+    tenantId: 'org-1',
+    storeId: 'store-1',
+    role: 'OWNER',
+    isPlatformAdmin: false,
+    issuedAt: Date.now(),
+    expiresAt: Date.now() + 3600000
+  };
+
+  const token = auth.createSessionToken(session);
+  const unpacked = auth.verifySessionToken(token);
+  assert.strictEqual(unpacked.email, 'owner@sultanspice.pk');
+  assert.strictEqual(unpacked.role, 'OWNER');
+
+  // Verify expired token throws
+  const expiredSession = { ...session, expiresAt: Date.now() - 1000 };
+  const expiredToken = auth.createSessionToken(expiredSession);
+  assert.throws(() => auth.verifySessionToken(expiredToken), /Session has expired/);
+});
+
+runTest('AUTH-03: Role Matrix Enforces Proper Isolation for Chef and Rider', () => {
+  const chefPerms = MultiTenantAuthEngine.getPermissions('CHEF');
+  assert.strictEqual(chefPerms.canManageProducts, false, 'Chef cannot alter products/menu');
+  assert.strictEqual(chefPerms.canUpdateCookingStatus, true, 'Chef can update cooking status');
+  assert.strictEqual(chefPerms.canManageOdoo, false, 'Chef cannot touch ERP settings');
+
+  const riderPerms = MultiTenantAuthEngine.getPermissions('RIDER');
+  assert.strictEqual(riderPerms.canDispatchDelivery, true, 'Rider can mark delivery & COD');
+  assert.strictEqual(riderPerms.canManageProducts, false, 'Rider cannot alter products');
+
+  const ownerPerms = MultiTenantAuthEngine.getPermissions('OWNER');
+  assert.strictEqual(ownerPerms.canManageProducts, true, 'Owner has full product control');
+  assert.strictEqual(ownerPerms.canManageStoreSettings, true, 'Owner has store settings control');
 });
 
 console.log(`\n----------------------------------------------------`);
