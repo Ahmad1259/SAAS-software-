@@ -9,7 +9,7 @@ const url = require('url');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { PakistanPaymentsEngine } = require('../../../packages/payments-pk/index.ts');
+const { PakistanPaymentsEngine } = require('../../../packages/payments-pk/index.js');
 const { ReliableOutboxWorker } = require('../../../packages/outbox-worker/index.js');
 
 const PORT = process.env.PORT || 3000;
