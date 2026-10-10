@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Commerce Cloud — Multi-Tenant Commerce SaaS & Role-Based Control</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .badge-placed { background-color: #FEF3C7; color: #92400E; }
+    .badge-cooking { background-color: #FED7AA; color: #9A3412; }
+    .badge-ready { background-color: #E0E7FF; color: #3730A3; }
+    .badge-shipped { background-color: #DBEAFE; color: #1E40AF; }
+    .badge-completed { background-color: #DCFCE7; color: #166534; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- TOP BAR: ROLE & EXPERIENCE SWITCHER (Demonstrating Multi-Role Ecosystem) -->
+  <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-50 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center font-black text-slate-950 text-xl shadow-inner">
+          C
+        </div>
+        <div>
+          <h1 class="font-extrabold tracking-tight text-base flex items-center gap-2">
+            Commerce Cloud <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Multi-Role SaaS</span>
+          </h1>
+          <p class="text-xs text-slate-400">Current Store: <strong class="text-slate-200" id="currentStoreNameDisplay">Sultan Spice Biryani & Grill</strong></p>
+        </div>
+      </div>
+
+      <!-- Quick Role Switcher Buttons -->
+      <div class="flex items-center bg-slate-800/80 p-1 rounded-xl border border-slate-700 text-xs font-medium">
+        <button onclick="switchRole('customer')" id="btn-role-customer" class="role-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition text-slate-300 hover:text-white">
+          <i class="fa-solid fa-mobile-screen"></i> 1. Customer Storefront (WhatsApp Order)
+        </button>
+        <button onclick="switchRole('owner')" id="btn-role-owner" class="role-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition text-white bg-indigo-600 shadow-sm font-semibold">
+          <i class="fa-solid fa-crown"></i> 2. Owner Admin Panel
+        </button>
+        <button onclick="switchRole('chef')" id="btn-role-chef" class="role-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition text-slate-300 hover:text-white">
+          <i class="fa-solid fa-fire-burner text-amber-400"></i> 3. Kitchen / Chef KDS View
+        </button>
+        <button onclick="switchRole('rider')" id="btn-role-rider" class="role-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition text-slate-300 hover:text-white">
+          <i class="fa-solid fa-motorcycle text-cyan-400"></i> 4. Rider / Delivery View
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN VIEWPORT CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6">
+
+    <!-- ============================================================== -->
+    <!-- VIEW 1: CUSTOMER STOREFRONT (Mobile-first, WhatsApp Ordering) -->
+    <!-- ============================================================== -->
+    <section id="view-customer" class="role-view hidden">
+      <div class="max-w-md mx-auto bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+        <!-- Store Banner & Header -->
+        <div class="relative h-36 bg-gradient-to-r from-orange-500 to-amber-600 p-4 text-white flex flex-col justify-end">
+          <div class="absolute top-3 right-3 bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Open Now
+          </div>
+          <h2 class="text-xl font-bold tracking-tight text-white drop-shadow-sm" id="storefrontName">Sultan Spice Biryani</h2>
+          <p class="text-xs text-orange-100 flex items-center gap-1 mt-0.5">
+            <i class="fa-solid fa-location-dot"></i> DHA Phase 5, Lahore • Delivery & Takeaway
+          </p>
+        </div>
+
+        <!-- WhatsApp Quick Banner -->
+        <div class="bg-emerald-50 border-b border-emerald-100 p-3 flex items-center justify-between text-xs text-emerald-800">
+          <div class="flex items-center gap-2">
+            <i class="fa-brands fa-whatsapp text-emerald-600 text-lg"></i>
+            <span>Direct WhatsApp Order with 1-Click</span>
+          </div>
+          <span class="font-bold text-emerald-700">0300-1234567</span>
+        </div>
+
+        <!-- Category Pills -->
+        <div class="p-3 border-b border-slate-100 flex gap-2 overflow-x-auto text-xs font-semibold scrollbar-none">
+          <button class="px-3 py-1.5 rounded-full bg-slate-900 text-white">All Menu</button>
+          <button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200">Biryani & Rice</button>
+          <button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200">BBQ & Grills</button>
+          <button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200">Drinks & Sides</button>
+        </div>
+
+        <!-- Product Listings -->
+        <div class="p-4 space-y-3" id="customerProductsList">
+          <!-- Dynamically populated from storeProducts DB state -->
+        </div>
+
+        <!-- Customer Floating Cart Summary -->
+        <div class="p-4 bg-slate-50 border-t border-slate-200">
+          <div class="flex justify-between items-center mb-3">
+            <div>
+              <p class="text-xs text-slate-500 font-medium">Your Selected Cart</p>
+              <p class="text-base font-extrabold text-slate-900" id="cartTotalDisplay">PKR 0</p>
+            </div>
+            <span class="text-xs bg-slate-200 font-bold px-2 py-1 rounded-full text-slate-700" id="cartItemCount">0 items</span>
+          </div>
+
+          <div class="space-y-2">
+            <input type="text" id="custNameInput" placeholder="Aapka Naam (Customer Name)" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <input type="text" id="custAddressInput" placeholder="Delivery Address / Area" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <select id="custPaymentInput" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white">
+              <option value="COD">Cash on Delivery (COD)</option>
+              <option value="BANK_TRANSFER">Direct Bank Transfer / Raast</option>
+              <option value="JAZZCASH">JazzCash / Easypaisa</option>
+            </select>
+          </div>
+
+          <!-- 1-Click WhatsApp Order Button -->
+          <button onclick="placeCustomerOrder()" class="mt-3 w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition">
+            <i class="fa-brands fa-whatsapp text-lg"></i> Send Order on WhatsApp
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- VIEW 2: STORE OWNER ADMIN PANEL (Full Control: Products, Orders) -->
+    <!-- ============================================================== -->
+    <section id="view-owner" class="role-view">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Column 1 & 2: Orders Ledger & Product Management -->
+        <div class="lg:col-span-2 space-y-6">
+
+          <!-- Dashboard Stats -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+              <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Today's Orders</p>
+              <h3 class="text-2xl font-extrabold text-slate-900 mt-1" id="statOrderCount">0</h3>
+            </div>
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+              <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Total Sales</p>
+              <h3 class="text-2xl font-extrabold text-emerald-600 mt-1" id="statSalesTotal">PKR 0</h3>
+            </div>
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+              <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Cooking Now</p>
+              <h3 class="text-2xl font-extrabold text-amber-600 mt-1" id="statCookingCount">0</h3>
+            </div>
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+              <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Active Menu</p>
+              <h3 class="text-2xl font-extrabold text-indigo-600 mt-1" id="statProductCount">0</h3>
+            </div>
+          </div>
+
+          <!-- Live Orders Management Table -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+              <div>
+                <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <i class="fa-solid fa-list-check text-indigo-600"></i> Store Orders Lifecycle
+                </h3>
+                <p class="text-xs text-slate-500">Live incoming customer orders (Syncs with Chef and Rider views)</p>
+              </div>
+              <button onclick="renderAll()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1">
+                <i class="fa-solid fa-arrows-rotate"></i> Refresh
+              </button>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider">
+                    <th class="p-3">Order #</th>
+                    <th class="p-3">Customer & Contact</th>
+                    <th class="p-3">Items & Details</th>
+                    <th class="p-3">Total Amount</th>
+                    <th class="p-3">Payment</th>
+                    <th class="p-3">Status Action</th>
+                  </tr>
+                </thead>
+                <tbody id="ownerOrdersTableBody" class="divide-y divide-slate-100">
+                  <!-- Orders rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Product Catalog Management -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <i class="fa-solid fa-box-open text-emerald-600"></i> Store Products & Menu Items
+                </h3>
+                <p class="text-xs text-slate-500">Add or edit items. Changes reflect instantly on your customer storefront.</p>
+              </div>
+              <span class="text-xs px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full font-bold" id="productCountBadge">0 Products</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="ownerProductsList">
+              <!-- Products rendered dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 3: Store Management Tools -->
+        <div class="space-y-6">
+
+          <!-- Add New Product Form (Client Control) -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2 mb-3">
+              <i class="fa-solid fa-circle-plus text-indigo-600"></i> Add New Product / Dish
+            </h3>
+            <form onsubmit="handleCreateProduct(event)" class="space-y-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Product Title</label>
+                <input type="text" id="newProdName" required placeholder="e.g., Mutton Dum Biryani Special" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Price (PKR)</label>
+                  <input type="number" id="newProdPrice" required placeholder="e.g., 950" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Category</label>
+                  <select id="newProdCategory" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white">
+                    <option value="Biryani & Rice">Biryani & Rice</option>
+                    <option value="BBQ & Grills">BBQ & Grills</option>
+                    <option value="Sides & Drinks">Sides & Drinks</option>
+                    <option value="Retail Goods">Retail Goods</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Description / Ingredients</label>
+                <textarea id="newProdDesc" rows="2" placeholder="Fragrant basmati rice cooked with tender mutton and saffron..." class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+              </div>
+
+              <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-sm transition">
+                <i class="fa-solid fa-plus"></i> Save Product to Store
+              </button>
+            </form>
+          </div>
+
+          <!-- Store Branding & WhatsApp Settings -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <i class="fa-solid fa-gear text-slate-600"></i> Store & WhatsApp Configuration
+            </h3>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Business / Store Name</label>
+              <input type="text" id="configStoreName" value="Sultan Spice Biryani & Grill" class="w-full text-xs p-2.5 rounded-xl border border-slate-300">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">WhatsApp Order Number</label>
+              <input type="text" id="configWhatsapp" value="923001234567" placeholder="e.g., 923001234567" class="w-full text-xs p-2.5 rounded-xl border border-slate-300">
+              <p class="text-[11px] text-slate-400 mt-1">Include 92 country code without + for direct WhatsApp link.</p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Delivery Charge (PKR)</label>
+              <input type="number" id="configDeliveryFee" value="150" class="w-full text-xs p-2.5 rounded-xl border border-slate-300">
+            </div>
+
+            <button onclick="saveStoreConfig()" class="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-semibold text-xs transition">
+              Update Store Settings
+            </button>
+          </div>
+
+          <!-- Odoo ERP Sync Status (First-Class Integration) -->
+          <div class="bg-slate-900 text-white p-5 rounded-2xl shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-bold text-slate-200 flex items-center gap-2">
+                <i class="fa-solid fa-network-wired text-purple-400"></i> Odoo ERP Connector
+              </h4>
+              <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-semibold">Active Mode A</span>
+            </div>
+            <p class="text-xs text-slate-300">Orders automatically push to Odoo Sales Journal with zero double entry.</p>
+            <div class="text-[11px] bg-slate-800 p-2.5 rounded-xl border border-slate-700 space-y-1 font-mono text-slate-300">
+              <p>Host: erp.sultanspice.pk</p>
+              <p>Journal: POS/Sales PKR</p>
+              <p>Outbox Status: 0 Pending</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- VIEW 3: KITCHEN DISPLAY SYSTEM (KDS) FOR CHEF -->
+    <!-- ============================================================== -->
+    <section id="view-chef" class="role-view hidden">
+      <div class="bg-slate-900 text-white p-5 rounded-3xl mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <span class="px-2.5 py-1 bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold rounded-full uppercase">Kitchen Display System (KDS)</span>
+          <h2 class="text-xl font-extrabold mt-1">Live Chef Order Queue</h2>
+          <p class="text-xs text-slate-400">Chef sirf khana pakane aur status update krne ke liye is panel ko use krta ha.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-xs text-slate-300 bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">
+            <i class="fa-solid fa-clock text-amber-400"></i> Auto-refresh: <strong>Instant</strong>
+          </span>
+        </div>
+      </div>
+
+      <!-- KDS Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="chefOrdersGrid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- VIEW 4: RIDER / DELIVERY VIEW -->
+    <!-- ============================================================== -->
+    <section id="view-rider" class="role-view hidden">
+      <div class="bg-slate-900 text-white p-5 rounded-3xl mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <span class="px-2.5 py-1 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-bold rounded-full uppercase">Delivery & Rider Portal</span>
+          <h2 class="text-xl font-extrabold mt-1">Active Deliveries & Cash Collection (COD)</h2>
+          <p class="text-xs text-slate-400">Riders deliver orders and record exact cash collected at the doorstep.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="riderOrdersGrid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- JAVASCRIPT STATE ENGINE & INTERACTIVE LOGIC -->
+  <script>
+    // 1. Initial State Data (Persisted to localStorage for realistic multi-user demo)
+    const defaultProducts = [
+      { id: 'prod-1', name: 'Special Chicken Dum Biryani', price: 650, category: 'Biryani & Rice', desc: 'Aromatic basmati rice cooked with tender marinated chicken and traditional spices.', stock: 50 },
+      { id: 'prod-2', name: 'Mutton Shinwari Karahi (Half KG)', price: 1750, category: 'BBQ & Grills', desc: 'Fresh mutton prepared with tomatoes, ginger and green chillies in pure desi ghee.', stock: 25 },
+      { id: 'prod-3', name: 'Chicken Malai Boti Platter', price: 850, category: 'BBQ & Grills', desc: 'Melt-in-mouth chicken cubes marinated in fresh cream, cheese and mild spices.', stock: 30 },
+      { id: 'prod-4', name: 'Mint Raita & Fresh Salad', price: 120, category: 'Sides & Drinks', desc: 'Cooling yogurt dip with garden fresh cucumber and mint.', stock: 100 }
+    ];
+
+    const defaultOrders = [
+      {
+        id: 'ORD-9821',
+        customerName: 'Muhammad Usman',
+        phone: '0321-4567890',
+        address: 'House 42, Street 8, Phase 5 DHA, Lahore',
+        items: [
+          { name: 'Special Chicken Dum Biryani', qty: 2, price: 650 },
+          { name: 'Mint Raita & Fresh Salad', qty: 1, price: 120 }
+        ],
+        deliveryFee: 150,
+        total: 1570,
+        paymentMethod: 'COD',
+        paymentStatus: 'AWAITING_PAYMENT',
+        status: 'COOKING', // PLACED, COOKING, READY_FOR_PICKUP, SHIPPED, COMPLETED
+        time: '12:35 PM'
+      },
+      {
+        id: 'ORD-9822',
+        customerName: 'Ayesha Malik',
+        phone: '0300-8877665',
+        address: 'Flat 302, Gulberg Greens, Lahore',
+        items: [
+          { name: 'Mutton Shinwari Karahi (Half KG)', qty: 1, price: 1750 }
+        ],
+        deliveryFee: 150,
+        total: 1900,
+        paymentMethod: 'BANK_TRANSFER',
+        paymentStatus: 'PAID',
+        status: 'PLACED',
+        time: '12:48 PM'
+      }
+    ];
+
+    let storeConfig = JSON.parse(localStorage.getItem('storeConfig')) || {
+      storeName: 'Sultan Spice Biryani & Grill',
+      whatsapp: '923001234567',
+      deliveryFee: 150
+    };
+
+    let products = JSON.parse(localStorage.getItem('storeProducts')) || defaultProducts;
+    let orders = JSON.parse(localStorage.getItem('storeOrders')) || defaultOrders;
+    let currentCart = {};
+
+    function saveState() {
+      localStorage.setItem('storeConfig', JSON.stringify(storeConfig));
+      localStorage.setItem('storeProducts', JSON.stringify(products));
+      localStorage.setItem('storeOrders', JSON.stringify(orders));
+    }
+
+    // Role Switching
+    function switchRole(role) {
+      document.querySelectorAll('.role-view').forEach(v => v.classList.add('hidden'));
+      document.querySelectorAll('.role-btn').forEach(b => {
+        b.classList.remove('bg-indigo-600', 'text-white', 'shadow-sm', 'font-semibold');
+        b.classList.add('text-slate-300');
+      });
+
+      const activeBtn = document.getElementById(`btn-role-${role}`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-sm', 'font-semibold');
+        activeBtn.classList.remove('text-slate-300');
+      }
+
+      const activeView = document.getElementById(`view-${role}`);
+      if (activeView) activeView.classList.remove('hidden');
+
+      renderAll();
+    }
+
+    // Cart Operations
+    function addToCart(prodId) {
+      currentCart[prodId] = (currentCart[prodId] || 0) + 1;
+      renderCustomerStorefront();
+    }
+
+    function removeFromCart(prodId) {
+      if (currentCart[prodId]) {
+        currentCart[prodId]--;
+        if (currentCart[prodId] <= 0) delete currentCart[prodId];
+      }
+      renderCustomerStorefront();
+    }
+
+    // Place Order via WhatsApp
+    function placeCustomerOrder() {
+      const name = document.getElementById('custNameInput').value.trim();
+      const address = document.getElementById('custAddressInput').value.trim();
+      const paymentMethod = document.getElementById('custPaymentInput').value;
+
+      const itemIds = Object.keys(currentCart);
+      if (itemIds.length === 0) {
+        alert('Apne cart mein kam se kam aik item shamil karein!');
+        return;
+      }
+      if (!name || !address) {
+        alert('Meharbani farma kar apna Naam aur Delivery Address darj karein!');
+        return;
+      }
+
+      let orderItems = [];
+      let subtotal = 0;
+      itemIds.forEach(id => {
+        const prod = products.find(p => p.id === id);
+        if (prod) {
+          const qty = currentCart[id];
+          orderItems.push({ name: prod.name, qty, price: prod.price });
+          subtotal += prod.price * qty;
+        }
+      });
+
+      const total = subtotal + storeConfig.deliveryFee;
+      const orderId = 'ORD-' + Math.floor(1000 + Math.random() * 9000);
+
+      const newOrder = {
+        id: orderId,
+        customerName: name,
+        phone: '03xx-xxxxxxx',
+        address: address,
+        items: orderItems,
+        deliveryFee: storeConfig.deliveryFee,
+        total: total,
+        paymentMethod: paymentMethod,
+        paymentStatus: paymentMethod === 'COD' ? 'AWAITING_PAYMENT' : 'PAYMENT_SUBMITTED',
+        status: 'PLACED',
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+
+      orders.unshift(newOrder);
+      saveState();
+
+      // Construct Pre-filled WhatsApp message
+      let message = `*NEW ORDER: ${orderId}*\n`;
+      message += `*Customer:* ${name}\n`;
+      message += `*Address:* ${address}\n`;
+      message += `*Payment:* ${paymentMethod}\n\n`;
+      message += `*ITEMS:*\n`;
+      orderItems.forEach(item => {
+        message += `• ${item.qty}x ${item.name} = PKR ${item.qty * item.price}\n`;
+      });
+      message += `\n*Delivery Fee:* PKR ${storeConfig.deliveryFee}\n`;
+      message += `*TOTAL AMOUNT:* PKR ${total}\n\n`;
+      message += `_Sent via Commerce Cloud Storefront_`;
+
+      const encodedMsg = encodeURIComponent(message);
+      const whatsappUrl = `https://wa.me/${storeConfig.whatsapp}?text=${encodedMsg}`;
+
+      // Reset cart
+      currentCart = {};
+      renderAll();
+
+      // Open WhatsApp
+      window.open(whatsappUrl, '_blank');
+      alert(`Order ${orderId} successfully placed! WhatsApp chat opened with prefilled receipt.`);
+    }
+
+    // Owner creates new product
+    function handleCreateProduct(e) {
+      e.preventDefault();
+      const name = document.getElementById('newProdName').value.trim();
+      const price = parseInt(document.getElementById('newProdPrice').value, 10);
+      const category = document.getElementById('newProdCategory').value;
+      const desc = document.getElementById('newProdDesc').value.trim();
+
+      const newProd = {
+        id: 'prod-' + Date.now().toString(36),
+        name,
+        price,
+        category,
+        desc: desc || 'Freshly prepared item',
+        stock: 50
+      };
+
+      products.push(newProd);
+      saveState();
+      e.target.reset();
+      renderAll();
+      alert(`"${name}" has been added to your catalog and is live on customer storefront!`);
+    }
+
+    // Update order status across the lifecycle
+    function updateOrderStatus(orderId, newStatus) {
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = newStatus;
+        if (newStatus === 'COMPLETED' && order.paymentMethod === 'COD') {
+          order.paymentStatus = 'PAID';
+        }
+        saveState();
+        renderAll();
+      }
+    }
+
+    // Save Store Settings
+    function saveStoreConfig() {
+      storeConfig.storeName = document.getElementById('configStoreName').value.trim();
+      storeConfig.whatsapp = document.getElementById('configWhatsapp').value.trim();
+      storeConfig.deliveryFee = parseInt(document.getElementById('configDeliveryFee').value, 10) || 0;
+      saveState();
+      renderAll();
+      alert('Store settings successfully updated!');
+    }
+
+    // Render Everything
+    function renderAll() {
+      document.getElementById('currentStoreNameDisplay').innerText = storeConfig.storeName;
+      document.getElementById('storefrontName').innerText = storeConfig.storeName;
+
+      renderCustomerStorefront();
+      renderOwnerDashboard();
+      renderChefKDS();
+      renderRiderPortal();
+    }
+
+    function renderCustomerStorefront() {
+      const container = document.getElementById('customerProductsList');
+      container.innerHTML = '';
+
+      products.forEach(p => {
+        const qty = currentCart[p.id] || 0;
+        container.innerHTML += `
+          <div class="p-3 bg-white border border-slate-200 rounded-2xl flex items-center justify-between gap-3 shadow-xs hover:border-slate-300 transition">
+            <div class="flex-1">
+              <span class="text-[10px] font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">${p.category}</span>
+              <h4 class="text-xs font-bold text-slate-900 mt-1">${p.name}</h4>
+              <p class="text-[11px] text-slate-500 line-clamp-1">${p.desc}</p>
+              <p class="text-xs font-extrabold text-slate-900 mt-1">PKR ${p.price}</p>
+            </div>
+            <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+              ${qty > 0 ? `
+                <button onclick="removeFromCart('${p.id}')" class="w-6 h-6 rounded-lg bg-white shadow-xs flex items-center justify-center text-slate-700 font-bold hover:bg-slate-200 text-xs">-</button>
+                <span class="text-xs font-bold w-4 text-center">${qty}</span>
+              ` : ''}
+              <button onclick="addToCart('${p.id}')" class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold hover:bg-emerald-700 text-xs">+</button>
+            </div>
+          </div>
+        `;
+      });
+
+      // Cart Summary
+      let subtotal = 0;
+      let count = 0;
+      Object.keys(currentCart).forEach(id => {
+        const prod = products.find(p => p.id === id);
+        if (prod) {
+          subtotal += prod.price * currentCart[id];
+          count += currentCart[id];
+        }
+      });
+
+      document.getElementById('cartTotalDisplay').innerText = `PKR ${subtotal > 0 ? subtotal + storeConfig.deliveryFee : 0}`;
+      document.getElementById('cartItemCount').innerText = `${count} items`;
+    }
+
+    function renderOwnerDashboard() {
+      // Stats
+      document.getElementById('statOrderCount').innerText = orders.length;
+      const totalSales = orders.reduce((sum, o) => sum + o.total, 0);
+      document.getElementById('statSalesTotal').innerText = `PKR ${totalSales.toLocaleString()}`;
+      document.getElementById('statCookingCount').innerText = orders.filter(o => o.status === 'COOKING').length;
+      document.getElementById('statProductCount').innerText = products.length;
+      document.getElementById('productCountBadge').innerText = `${products.length} Products`;
+
+      // Orders Table
+      const tableBody = document.getElementById('ownerOrdersTableBody');
+      tableBody.innerHTML = '';
+
+      orders.forEach(o => {
+        let badgeColor = 'badge-placed';
+        if (o.status === 'COOKING') badgeColor = 'badge-cooking';
+        if (o.status === 'READY_FOR_PICKUP') badgeColor = 'badge-ready';
+        if (o.status === 'SHIPPED') badgeColor = 'badge-shipped';
+        if (o.status === 'COMPLETED') badgeColor = 'badge-completed';
+
+        tableBody.innerHTML += `
+          <tr class="hover:bg-slate-50/80 transition">
+            <td class="p-3 font-mono font-bold text-indigo-600">${o.id}<br><span class="text-[10px] text-slate-400 font-normal">${o.time}</span></td>
+            <td class="p-3 font-semibold text-slate-900">${o.customerName}<br><span class="text-[11px] text-slate-500 font-normal">${o.address}</span></td>
+            <td class="p-3 text-slate-700">
+              ${o.items.map(i => `${i.qty}x ${i.name}`).join(', ')}
+            </td>
+            <td class="p-3 font-extrabold text-slate-900">PKR ${o.total.toLocaleString()}</td>
+            <td class="p-3">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${o.paymentStatus === 'PAID' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                ${o.paymentMethod} (${o.paymentStatus})
+              </span>
+            </td>
+            <td class="p-3">
+              <select onchange="updateOrderStatus('${o.id}', this.value)" class="text-xs font-bold p-1.5 rounded-lg border border-slate-300 bg-white">
+                <option value="PLACED" ${o.status === 'PLACED' ? 'selected' : ''}>Placed (New)</option>
+                <option value="COOKING" ${o.status === 'COOKING' ? 'selected' : ''}>Cooking (Kitchen)</option>
+                <option value="READY_FOR_PICKUP" ${o.status === 'READY_FOR_PICKUP' ? 'selected' : ''}>Ready for Rider</option>
+                <option value="SHIPPED" ${o.status === 'SHIPPED' ? 'selected' : ''}>Out for Delivery</option>
+                <option value="COMPLETED" ${o.status === 'COMPLETED' ? 'selected' : ''}>Completed</option>
+              </select>
+            </td>
+          </tr>
+        `;
+      });
+
+      // Products List in Owner Panel
+      const prodContainer = document.getElementById('ownerProductsList');
+      prodContainer.innerHTML = '';
+      products.forEach(p => {
+        prodContainer.innerHTML += `
+          <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold text-slate-500 uppercase">${p.category}</span>
+              <h4 class="text-xs font-bold text-slate-900 mt-0.5">${p.name}</h4>
+              <p class="text-xs font-extrabold text-emerald-600 mt-1">PKR ${p.price}</p>
+            </div>
+            <button onclick="deleteProduct('${p.id}')" class="text-slate-400 hover:text-red-600 p-2 text-xs">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        `;
+      });
+    }
+
+    function deleteProduct(id) {
+      if (confirm('Kya aap is product ko menu se remove krna chahte hain?')) {
+        products = products.filter(p => p.id !== id);
+        saveState();
+        renderAll();
+      }
+    }
+
+    function renderChefKDS() {
+      const container = document.getElementById('chefOrdersGrid');
+      container.innerHTML = '';
+
+      const kitchenOrders = orders.filter(o => o.status === 'PLACED' || o.status === 'COOKING' || o.status === 'READY_FOR_PICKUP');
+
+      if (kitchenOrders.length === 0) {
+        container.innerHTML = `<div class="col-span-3 text-center py-12 text-slate-400 text-xs">Abhi kitchen mein koi pending order nahi ha. All caught up!</div>`;
+        return;
+      }
+
+      kitchenOrders.forEach(o => {
+        const isCooking = o.status === 'COOKING';
+        container.innerHTML += `
+          <div class="bg-white rounded-2xl border-2 ${isCooking ? 'border-amber-400 shadow-md' : 'border-slate-200'} p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-3">
+                <span class="font-mono text-sm font-black text-slate-900">${o.id}</span>
+                <span class="text-xs font-bold px-2.5 py-1 rounded-full ${isCooking ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700'}">
+                  ${isCooking ? 'Cooking in Progress' : 'New Order'}
+                </span>
+              </div>
+              <p class="text-xs text-slate-500 mb-2 font-medium">Time Placed: <strong>${o.time}</strong></p>
+              <div class="space-y-2 mb-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                ${o.items.map(item => `
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="font-bold text-slate-900">${item.qty}x ${item.name}</span>
+                    <i class="fa-solid fa-check text-slate-300"></i>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex gap-2">
+              ${!isCooking ? `
+                <button onclick="updateOrderStatus('${o.id}', 'COOKING')" class="flex-1 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow-xs">
+                  <i class="fa-solid fa-fire-burner"></i> Start Cooking
+                </button>
+              ` : `
+                <button onclick="updateOrderStatus('${o.id}', 'READY_FOR_PICKUP')" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs">
+                  <i class="fa-solid fa-bell"></i> Mark Ready for Rider
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function renderRiderPortal() {
+      const container = document.getElementById('riderOrdersGrid');
+      container.innerHTML = '';
+
+      const riderOrders = orders.filter(o => o.status === 'READY_FOR_PICKUP' || o.status === 'SHIPPED');
+
+      if (riderOrders.length === 0) {
+        container.innerHTML = `<div class="col-span-3 text-center py-12 text-slate-400 text-xs">Koi delivery pickup ke liye pending nahi ha.</div>`;
+        return;
+      }
+
+      riderOrders.forEach(o => {
+        const isShipped = o.status === 'SHIPPED';
+        container.innerHTML += `
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+              <span class="font-mono font-black text-slate-900">${o.id}</span>
+              <span class="text-xs font-bold px-2 py-0.5 rounded-full ${isShipped ? 'bg-cyan-100 text-cyan-800' : 'bg-indigo-100 text-indigo-800'}">
+                ${isShipped ? 'On The Way' : 'Ready at Kitchen'}
+              </span>
+            </div>
+
+            <div class="text-xs space-y-1">
+              <p class="font-bold text-slate-900">${o.customerName}</p>
+              <p class="text-slate-500">${o.address}</p>
+              <p class="text-slate-500">Call: <strong class="text-slate-800">${o.phone}</strong></p>
+            </div>
+
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs flex justify-between items-center">
+              <div>
+                <span class="text-slate-500">Collect Cash:</span>
+                <span class="font-extrabold text-emerald-700 block text-sm">PKR ${o.total.toLocaleString()}</span>
+              </div>
+              <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">${o.paymentMethod}</span>
+            </div>
+
+            <div class="pt-2">
+              ${!isShipped ? `
+                <button onclick="updateOrderStatus('${o.id}', 'SHIPPED')" class="w-full py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold">
+                  <i class="fa-solid fa-motorcycle"></i> Pick Up & Start Delivery
+                </button>
+              ` : `
+                <button onclick="updateOrderStatus('${o.id}', 'COMPLETED')" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold">
+                  <i class="fa-solid fa-hand-holding-dollar"></i> Delivered & Cash Collected
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // Initialize View
+    renderAll();
+  </script>
+</body>
+</html>
