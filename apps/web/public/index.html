@@ -3,417 +3,591 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Commerce Cloud — Multi-Tenant Commerce SaaS & Role-Based Control</title>
+  <title>Commerce Cloud — Autonomous Food Commerce & Kitchen Operating System</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    .badge-placed { background-color: #FEF3C7; color: #92400E; }
-    .badge-cooking { background-color: #FED7AA; color: #9A3412; }
-    .badge-ready { background-color: #E0E7FF; color: #3730A3; }
-    .badge-shipped { background-color: #DBEAFE; color: #1E40AF; }
-    .badge-completed { background-color: #DCFCE7; color: #166534; }
-  </style>
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#0F172A">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
   <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration error:', err));
-      });
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          },
+          colors: {
+            brand: {
+              50: '#EEF2FF',
+              100: '#E0E7FF',
+              500: '#6366F1',
+              600: '#4F46E5',
+              700: '#4338CA',
+              900: '#312E81'
+            },
+            mint: {
+              50: '#ECFDF5',
+              100: '#D1FAE5',
+              400: '#34D399',
+              500: '#10B981',
+              600: '#059669'
+            }
+          },
+          boxShadow: {
+            subtle: '0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.02)',
+            card: '0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02)',
+            elevated: '0 12px 32px -4px rgba(0, 0, 0, 0.06), 0 4px 12px -2px rgba(0, 0, 0, 0.03)'
+          }
+        }
+      }
     }
   </script>
-</head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
 
-  <!-- TOP BAR: NAVIGATION & AUTHENTICATION STATUS -->
-  <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-50 shadow-md">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateTo('storefront')">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center font-black text-slate-950 text-xl shadow-inner">
-          C
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F9FAFB; }
+    .glass-nav { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .pulse-ring {
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
+      animation: pulseGreen 2s infinite cubic-bezier(0.66, 0, 0, 1);
+    }
+    @keyframes pulseGreen {
+      to { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+    }
+    .custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 9999px; }
+  </style>
+</head>
+<body class="text-slate-900 antialiased min-h-screen flex flex-col selection:bg-brand-100 selection:text-brand-900">
+
+  <!-- TOP MINIMALIST HEADER -->
+  <header class="glass-nav border-b border-slate-200/80 sticky top-0 z-50 transition-all">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+      
+      <!-- Brand & Entity Selector -->
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-slate-950 flex items-center justify-center text-white font-extrabold text-sm shadow-subtle">
+            <i class="fa-solid fa-shapes text-xs text-brand-500"></i>
+          </div>
+          <div>
+            <h1 class="font-extrabold tracking-tight text-sm text-slate-950 flex items-center gap-2">
+              Commerce Cloud
+              <span class="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">Linear Core</span>
+            </h1>
+          </div>
         </div>
-        <div>
-          <h1 class="font-extrabold tracking-tight text-base flex items-center gap-2">
-            Commerce Cloud <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Live Pilot</span>
-          </h1>
-          <p class="text-xs text-slate-400">Store: <strong class="text-slate-200" id="currentStoreNameDisplay">Sultan Spice Biryani & Grill</strong></p>
+
+        <div class="h-4 w-px bg-slate-200 hidden sm:block"></div>
+
+        <!-- Store Name Display -->
+        <div class="hidden sm:flex items-center gap-2 text-xs text-slate-500">
+          <span>Tenant:</span>
+          <strong class="text-slate-900 font-semibold" id="topStoreName">Sultan Spice Biryani & Grill</strong>
         </div>
       </div>
 
-      <!-- Navigation & Auth Status Controls -->
-      <div class="flex items-center gap-2">
-        <button onclick="navigateTo('storefront')" id="nav-btn-storefront" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white flex items-center gap-1.5 transition">
-          <i class="fa-solid fa-mobile-screen"></i> Customer Storefront
-        </button>
+      <!-- Autonomous Agent System Health Status -->
+      <div class="hidden md:flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200/80 text-xs text-slate-600 font-medium">
+        <span class="w-2 h-2 rounded-full bg-mint-500 pulse-ring"></span>
+        <span class="tracking-tight">System Health: <strong class="text-slate-900 font-semibold">4 Sub-Agents Autonomous</strong></span>
+      </div>
 
-        <!-- Dynamic Auth Button (Shows Login or Active User Badge) -->
-        <div id="authHeaderContainer" class="flex items-center gap-2">
-          <!-- Rendered dynamically by checkAuthStatus() -->
+      <!-- Navigation & Action Buttons -->
+      <div class="flex items-center gap-3">
+        <div class="flex bg-slate-100/80 p-1 rounded-xl border border-slate-200/60 text-xs font-medium">
+          <button onclick="switchTab('copilot')" id="tab-btn-copilot" class="nav-tab px-3 py-1.5 rounded-lg text-slate-900 bg-white shadow-subtle font-semibold flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-wand-magic-sparkles text-brand-600"></i> Co-Pilot Grid
+          </button>
+          <button onclick="switchTab('storefront')" id="tab-btn-storefront" class="nav-tab px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-store"></i> Storefront
+          </button>
+          <button onclick="switchTab('kitchen')" id="tab-btn-kitchen" class="nav-tab px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-fire-burner"></i> Kitchen KDS
+          </button>
+          <button onclick="switchTab('dispatch')" id="tab-btn-dispatch" class="nav-tab px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-motorcycle"></i> Dispatch & Riders
+          </button>
         </div>
+
+        <!-- Auth / Admin Controls Container -->
+        <div id="authContainer" class="flex items-center gap-2"></div>
       </div>
     </div>
   </header>
 
-  <!-- MAIN VIEWPORT CONTAINER -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6">
+  <!-- MAIN VIEWPORT -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-6 md:p-8 space-y-8">
 
     <!-- ============================================================== -->
-    <!-- VIEW 1: CUSTOMER STOREFRONT (Public, No Login Required)        -->
+    <!-- SECTION 1: CENTRAL AI CO-PILOT GRID (ADMIN & SUPERVISION)      -->
     <!-- ============================================================== -->
-    <section id="view-storefront" class="app-view">
-      <div class="max-w-md mx-auto bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
-        <!-- Store Banner & Header -->
-        <div class="relative h-36 bg-gradient-to-r from-orange-500 to-amber-600 p-4 text-white flex flex-col justify-end">
-          <div class="absolute top-3 right-3 bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Open Now
+    <div id="view-copilot" class="space-y-8 view-section">
+
+      <!-- TELEMETRY COUNTER PANEL (Minimalist Micro-Typography) -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-subtle hover:border-slate-300 transition group">
+          <div class="flex items-center justify-between text-slate-500 mb-2">
+            <span class="text-[11px] font-bold tracking-wider uppercase">Live Queue</span>
+            <i class="fa-solid fa-receipt text-xs text-slate-400 group-hover:text-brand-500 transition"></i>
           </div>
-          <h2 class="text-xl font-bold tracking-tight text-white drop-shadow-sm" id="storefrontName">Sultan Spice Biryani</h2>
-          <p class="text-xs text-orange-100 flex items-center gap-1 mt-0.5">
-            <i class="fa-solid fa-location-dot"></i> Lahore, Pakistan • Delivery & Takeaway
-          </p>
-        </div>
-
-        <!-- WhatsApp Quick Banner -->
-        <div class="bg-emerald-50 border-b border-emerald-100 p-3 flex items-center justify-between text-xs text-emerald-800">
-          <div class="flex items-center gap-2">
-            <i class="fa-brands fa-whatsapp text-emerald-600 text-lg"></i>
-            <span>Direct WhatsApp Order with 1-Click</span>
+          <div class="flex items-baseline gap-2">
+            <h3 class="text-3xl font-extrabold text-slate-950 tracking-tight" id="metricLiveQueue">0</h3>
+            <span class="text-[11px] text-mint-600 font-semibold"><i class="fa-solid fa-arrow-trend-up"></i> Active</span>
           </div>
-          <span class="font-bold text-emerald-700" id="storefrontWhatsappBadge">0300-1234567</span>
+          <p class="text-[11px] text-slate-400 mt-1 font-medium">Agent 1 parsing WhatsApp traffic</p>
         </div>
 
-        <!-- Product Listings -->
-        <div class="p-4 space-y-3" id="customerProductsList">
-          <!-- Dynamically populated from storeProducts DB state -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-subtle hover:border-slate-300 transition group">
+          <div class="flex items-center justify-between text-slate-500 mb-2">
+            <span class="text-[11px] font-bold tracking-wider uppercase">Today's Volume</span>
+            <i class="fa-solid fa-chart-line text-xs text-slate-400 group-hover:text-emerald-500 transition"></i>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <h3 class="text-3xl font-extrabold text-slate-950 tracking-tight" id="metricTotalSales">PKR 0</h3>
+            <span class="text-[11px] text-slate-400 font-normal">Gross</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1 font-medium">Reconciled via 3-Layer Ledger</p>
         </div>
 
-        <!-- Customer Floating Cart Summary -->
-        <div class="p-4 bg-slate-50 border-t border-slate-200">
-          <div class="flex justify-between items-center mb-3">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-subtle hover:border-slate-300 transition group">
+          <div class="flex items-center justify-between text-slate-500 mb-2">
+            <span class="text-[11px] font-bold tracking-wider uppercase">Batching Ratio</span>
+            <i class="fa-solid fa-layer-group text-xs text-slate-400 group-hover:text-amber-500 transition"></i>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <h3 class="text-3xl font-extrabold text-slate-950 tracking-tight" id="metricBatchEfficiency">94.8%</h3>
+            <span class="text-[11px] text-brand-600 font-semibold">Optimized</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1 font-medium">Agent 3 kitchen batching engine</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-subtle hover:border-slate-300 transition group">
+          <div class="flex items-center justify-between text-slate-500 mb-2">
+            <span class="text-[11px] font-bold tracking-wider uppercase">Rider ETA</span>
+            <i class="fa-solid fa-bolt text-xs text-slate-400 group-hover:text-cyan-500 transition"></i>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <h3 class="text-3xl font-extrabold text-slate-950 tracking-tight" id="metricRiderEta">14 min</h3>
+            <span class="text-[11px] text-mint-600 font-semibold"><i class="fa-solid fa-check"></i> Ideal</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1 font-medium">Agent 2 matrix routing active</p>
+        </div>
+      </div>
+
+      <!-- 4 SUB-AGENTS OPERATIONAL CO-PILOT GRID -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-bold tracking-tight text-slate-950 flex items-center gap-2">
+              <i class="fa-solid fa-microchip text-brand-600"></i> Central AI Co-Pilot Grid
+            </h2>
+            <p class="text-xs text-slate-500">4 autonomous specialized sub-agents coordinating ingestion, dispatch, kitchen production, and inventory.</p>
+          </div>
+          <span class="text-xs text-slate-400 font-medium font-mono">Stream: Live (WebSocket Ready)</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          
+          <!-- SUB-AGENT 1: Order Ingestion & Parsing Agent -->
+          <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-subtle hover:border-slate-300 transition flex flex-col justify-between space-y-4">
             <div>
-              <p class="text-xs text-slate-500 font-medium">Your Selected Cart</p>
-              <p class="text-base font-extrabold text-slate-900" id="cartTotalDisplay">PKR 0</p>
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs font-bold">
+                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-xs font-extrabold text-slate-950 uppercase tracking-wider">Sub-Agent 01</h3>
+                    <p class="text-xs text-slate-500">Order Ingestion & NLP Parsing</p>
+                  </div>
+                </div>
+                <span class="flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Streaming Chats
+                </span>
+              </div>
+
+              <!-- Stream Widget -->
+              <div class="mt-4 bg-slate-950 text-slate-300 p-4 rounded-xl font-mono text-[11px] leading-relaxed custom-scroll overflow-y-auto max-h-36 space-y-2 border border-slate-800">
+                <div class="text-emerald-400 flex items-center gap-1.5">
+                  <i class="fa-solid fa-bolt text-[10px]"></i>
+                  <span>WhatsApp Ingestion: Converting raw text -> Structured Order JSON</span>
+                </div>
+                <div class="text-slate-400" id="nlpAgentStreamOutput">
+                  { "status": "LISTENING", "source": "wa.me/923001234567", "autoExtract": ["name", "address", "dishes", "payment"] }
+                </div>
+              </div>
             </div>
-            <span class="text-xs bg-slate-200 font-bold px-2 py-1 rounded-full text-slate-700" id="cartItemCount">0 items</span>
+
+            <div class="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
+              <span class="flex items-center gap-1 text-[11px]"><i class="fa-solid fa-shield-halved text-brand-600"></i> Zero Client-Side Price Tampering</span>
+              <span class="font-bold text-slate-700 text-[11px]">99.8% Extraction Accuracy</span>
+            </div>
+          </div>
+
+          <!-- SUB-AGENT 2: Smart Dispatch & Routing Agent -->
+          <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-subtle hover:border-slate-300 transition flex flex-col justify-between space-y-4">
+            <div>
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center text-xs font-bold">
+                    <i class="fa-solid fa-route"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-xs font-extrabold text-slate-950 uppercase tracking-wider">Sub-Agent 02</h3>
+                    <p class="text-xs text-slate-500">Smart Dispatch & Rider Assignment</p>
+                  </div>
+                </div>
+                <span class="flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-cyan-50 text-cyan-700 border border-cyan-200/60" id="dispatchAgentBadge">
+                  <span class="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></span> Matrix Routing
+                </span>
+              </div>
+
+              <!-- Matrix Card -->
+              <div class="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200/60 space-y-2.5 text-xs">
+                <div class="flex items-center justify-between">
+                  <span class="text-slate-500 font-medium">Active Fleet:</span>
+                  <span class="font-bold text-slate-900" id="activeRidersCount">3 Couriers Available</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-slate-500 font-medium">Nearest Proximity:</span>
+                  <span class="font-mono font-semibold text-slate-800">Rider Usman (0.8 km from Kitchen)</span>
+                </div>
+                <div class="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[11px]">
+                  <span class="text-slate-500">Auto-Handoff Rule:</span>
+                  <span class="text-emerald-700 font-bold flex items-center gap-1">
+                    <i class="fa-solid fa-circle-check text-emerald-500"></i> Trigger on "Mark Ready"
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
+              <span class="text-[11px]">Distance Matrix: Haversine Lat/Lng</span>
+              <span class="font-bold text-slate-700 text-[11px]">Auto-Dispatch Enabled</span>
+            </div>
+          </div>
+
+          <!-- SUB-AGENT 3: Kitchen Production Agent (KDS Batcher) -->
+          <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-subtle hover:border-slate-300 transition flex flex-col justify-between space-y-4">
+            <div>
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs font-bold">
+                    <i class="fa-solid fa-layer-group"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-xs font-extrabold text-slate-950 uppercase tracking-wider">Sub-Agent 03</h3>
+                    <p class="text-xs text-slate-500">KDS Batching & Production Optimizer</p>
+                  </div>
+                </div>
+                <span class="flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200/60">
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Intelligent Batching
+                </span>
+              </div>
+
+              <!-- Batching Progress Preview -->
+              <div class="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200/60 space-y-3" id="batchProgressContainer">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold text-slate-900" id="currentBatchTitle">Batch: Biryani & Rice Cooking</span>
+                  <span class="font-mono text-amber-700 font-bold" id="batchCountBadge">0x Batched</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                  <div class="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full transition-all duration-500" id="batchProgressBar" style="width: 65%;"></div>
+                </div>
+                <p class="text-[11px] text-slate-500" id="batchSuggestion">Agent combines duplicate tickets so chefs cook identical dishes in a single wok.</p>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
+              <span class="text-[11px]">Chef Workload Reduction: 42%</span>
+              <span class="font-bold text-slate-700 text-[11px]">Strict FIFO Guaranteed</span>
+            </div>
+          </div>
+
+          <!-- SUB-AGENT 4: Menu & Stock Velocity Optimizer -->
+          <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-subtle hover:border-slate-300 transition flex flex-col justify-between space-y-4">
+            <div>
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-xs font-bold">
+                    <i class="fa-solid fa-chart-pie"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-xs font-extrabold text-slate-950 uppercase tracking-wider">Sub-Agent 04</h3>
+                    <p class="text-xs text-slate-500">Autonomous Menu & Stock Velocity</p>
+                  </div>
+                </div>
+                <span class="flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200/60">
+                  <span class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></span> Stock Guard
+                </span>
+              </div>
+
+              <!-- Stock Alert Card -->
+              <div class="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200/60 space-y-2 text-xs">
+                <div class="flex items-center justify-between">
+                  <span class="text-slate-500 font-medium">Top Velocity Item:</span>
+                  <span class="font-bold text-slate-900" id="topVelocityProduct">Chicken Dum Biryani (Fastest Seller)</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-slate-500 font-medium">Stock Depletion ETA:</span>
+                  <span class="font-mono text-purple-700 font-semibold">2h 45m at current velocity</span>
+                </div>
+                <p class="text-[11px] text-slate-500 pt-1 border-t border-slate-200/60">Sub-Agent warns when stock drops below threshold to prevent overselling.</p>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
+              <span class="text-[11px]">Re-order recommendation: Active</span>
+              <span class="font-bold text-slate-700 text-[11px]">100% Margin Protected</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- WORKFLOW PATH: QUEUE & STORE MANAGEMENT TABLE -->
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-subtle overflow-hidden">
+        <div class="p-6 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h3 class="text-base font-bold text-slate-950 flex items-center gap-2">
+              <i class="fa-solid fa-list-check text-brand-600"></i> Unified Live Production Queue
+            </h3>
+            <p class="text-xs text-slate-500">Ingested WhatsApp orders routed to Kitchen Batcher and Courier Dispatch.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="clearAllOrders()" class="text-xs bg-slate-50 hover:bg-red-50 text-slate-600 hover:text-red-700 px-3 py-1.5 rounded-xl font-medium border border-slate-200 transition">
+              <i class="fa-solid fa-trash-can"></i> Clear Queue
+            </button>
+            <button onclick="renderAll()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-1.5 rounded-xl font-semibold transition">
+              <i class="fa-solid fa-arrows-rotate"></i> Sync State
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-50/70 border-b border-slate-100 text-slate-500 uppercase tracking-wider text-[11px]">
+                <th class="p-4 font-semibold">Queue Ref</th>
+                <th class="p-4 font-semibold">Customer & Destination</th>
+                <th class="p-4 font-semibold">Items & Modifiers</th>
+                <th class="p-4 font-semibold">Settlement</th>
+                <th class="p-4 font-semibold">Agent Workflow Status</th>
+                <th class="p-4 font-semibold text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="queueTableBody" class="divide-y divide-slate-100">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- MENU BUILDER & STORE PROFILE SECTION -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Add Product Card -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-subtle space-y-4">
+          <h3 class="text-sm font-bold text-slate-950 flex items-center gap-2">
+            <i class="fa-solid fa-circle-plus text-brand-600"></i> Add Menu Item / Dish
+          </h3>
+          <form onsubmit="handleCreateProduct(event)" class="space-y-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">Item Title</label>
+              <input type="text" id="newProdName" required placeholder="e.g. Special Chicken Dum Biryani" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-600 mb-1">Price (PKR)</label>
+                <input type="number" id="newProdPrice" required placeholder="650" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-slate-600 mb-1">Category</label>
+                <input type="text" id="newProdCategory" required placeholder="Biryani & Rice" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">Ingredients / Notes</label>
+              <textarea id="newProdDesc" rows="2" placeholder="Fragrant basmati rice cooked with fresh spices..." class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition"></textarea>
+            </div>
+
+            <button type="submit" class="w-full py-3 bg-slate-950 hover:bg-slate-800 text-white rounded-xl font-bold text-xs shadow-subtle transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-plus text-[10px]"></i> Publish to Storefront
+            </button>
+          </form>
+        </div>
+
+        <!-- Catalog List -->
+        <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-subtle space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-slate-950 flex items-center gap-2">
+              <i class="fa-solid fa-boxes-stacked text-brand-600"></i> Active Store Catalog
+            </h3>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-semibold" id="catalogCount">0 Items</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="catalogContainer">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SECTION 2: CUSTOMER STOREFRONT (Mobile-first Linear Aesthetic) -->
+    <!-- ============================================================== -->
+    <div id="view-storefront" class="max-w-md mx-auto space-y-5 view-section hidden">
+      <div class="bg-white rounded-3xl border border-slate-200/80 shadow-card overflow-hidden">
+        <!-- Banner & Branding -->
+        <div class="p-6 bg-gradient-to-tr from-slate-950 to-slate-800 text-white space-y-3 relative overflow-hidden">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-white/10 text-slate-200 border border-white/10 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-mint-400 animate-pulse"></span> Accepting Orders
+            </span>
+            <span class="text-xs text-slate-400 font-mono" id="storefrontHours">Open • Delivery & Pickup</span>
+          </div>
+          <div>
+            <h2 class="text-xl font-extrabold tracking-tight" id="storefrontHeading">Sultan Spice Biryani</h2>
+            <p class="text-xs text-slate-400 mt-0.5 flex items-center gap-1">
+              <i class="fa-solid fa-location-dot text-brand-500"></i> Lahore, Pakistan • WhatsApp Integrated
+            </p>
+          </div>
+        </div>
+
+        <!-- WhatsApp Ingestion Banner -->
+        <div class="p-3 bg-emerald-50/70 border-b border-emerald-100 flex items-center justify-between text-xs text-emerald-900 px-5">
+          <div class="flex items-center gap-2">
+            <i class="fa-brands fa-whatsapp text-emerald-600 text-base"></i>
+            <span class="font-medium">1-Click WhatsApp Instant Handoff</span>
+          </div>
+          <span class="font-mono font-bold text-emerald-800" id="storefrontPhoneBadge">923001234567</span>
+        </div>
+
+        <!-- Menu Listings -->
+        <div class="p-5 space-y-3" id="customerProductsList">
+          <!-- Dynamically populated -->
+        </div>
+
+        <!-- Checkout / Floating Cart Tray -->
+        <div class="p-5 bg-slate-50 border-t border-slate-200/60 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-[11px] text-slate-500 font-medium">Cart Total (incl. Delivery)</p>
+              <h4 class="text-lg font-extrabold text-slate-950" id="storefrontCartTotal">PKR 0</h4>
+            </div>
+            <span class="text-xs font-bold px-2.5 py-1 bg-white border border-slate-200 text-slate-700 rounded-full" id="storefrontCartCount">0 items</span>
           </div>
 
           <div class="space-y-2">
-            <input type="text" id="custNameInput" placeholder="Aapka Naam (Customer Name)" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            <input type="text" id="custAddressInput" placeholder="Delivery Address / Area" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            <select id="custPaymentInput" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white">
+            <input type="text" id="custNameInput" placeholder="Aapka Naam (Customer Name)" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition">
+            <input type="text" id="custAddressInput" placeholder="Delivery Address / Area (Lahore)" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition">
+            <select id="custPaymentInput" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white font-medium">
               <option value="COD">Cash on Delivery (COD)</option>
               <option value="BANK_TRANSFER">Direct Bank Transfer / Raast</option>
               <option value="JAZZCASH">JazzCash / Easypaisa</option>
             </select>
           </div>
 
-          <!-- 1-Click WhatsApp Order Button -->
-          <button onclick="placeCustomerOrder()" class="mt-3 w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition">
-            <i class="fa-brands fa-whatsapp text-lg"></i> Send Order on WhatsApp
+          <button onclick="placeCustomerOrder()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-subtle transition">
+            <i class="fa-brands fa-whatsapp text-base"></i> Send Order on WhatsApp
           </button>
         </div>
       </div>
-    </section>
+    </div>
 
     <!-- ============================================================== -->
-    <!-- VIEW 2: SECURE LOGIN SCREEN (Admin, Kitchen, Rider)            -->
+    <!-- SECTION 3: KITCHEN PRODUCTION DISPLAY (Sub-Agent 3 Batcher)    -->
     <!-- ============================================================== -->
-    <section id="view-login" class="app-view hidden">
-      <div class="max-w-md mx-auto bg-white rounded-3xl shadow-xl border border-slate-200 p-6 md:p-8">
-        <div class="text-center mb-6">
-          <div class="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center text-xl font-black mx-auto mb-3">
-            <i class="fa-solid fa-lock"></i>
-          </div>
-          <h2 class="text-xl font-extrabold text-slate-900">Portal Staff & Admin Login</h2>
-          <p class="text-xs text-slate-500 mt-1">Apna assigned Login ID aur Password enter karein.</p>
-        </div>
-
-        <form onsubmit="handlePortalLogin(event)" class="space-y-4">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Login ID / Username</label>
-            <input type="text" id="loginUsername" required placeholder="e.g. admin, chef, ya rider" class="w-full text-xs p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
-            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full text-xs p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-          </div>
-
-          <button type="submit" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs shadow-md transition">
-            Secure Login
-          </button>
-        </form>
-
-        <!-- Quick Help for Default Credentials -->
-        <div class="mt-6 pt-5 border-t border-slate-100 text-xs bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
-          <p class="font-bold text-slate-700 mb-1 flex items-center gap-1.5">
-            <i class="fa-solid fa-key text-indigo-600"></i> Default Staff Logins:
-          </p>
-          <div class="space-y-1 font-mono text-[11px] text-slate-600">
-            <p>• <strong>Admin:</strong> admin / 123456</p>
-            <p>• <strong>Kitchen/Chef:</strong> chef / 123456</p>
-            <p>• <strong>Rider:</strong> rider / 123456</p>
-          </div>
-          <p class="text-[10px] text-slate-400 mt-2 italic">Admin panel mein ja kar aap naye users bana sakte hain aur passwords change kar sakte hain.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================== -->
-    <!-- VIEW 3: STORE OWNER ADMIN PANEL (Authenticated 'ADMIN')        -->
-    <!-- ============================================================== -->
-    <section id="view-admin" class="app-view hidden">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        <!-- Column 1 & 2: Stats, Order Queue, Products -->
-        <div class="lg:col-span-2 space-y-6">
-
-          <!-- Dashboard Stats -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-              <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Queue Orders</p>
-              <h3 class="text-2xl font-extrabold text-slate-900 mt-1" id="statOrderCount">0</h3>
-            </div>
-            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-              <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Total Sales</p>
-              <h3 class="text-2xl font-extrabold text-emerald-600 mt-1" id="statSalesTotal">PKR 0</h3>
-            </div>
-            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-              <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Cooking Queue</p>
-              <h3 class="text-2xl font-extrabold text-amber-600 mt-1" id="statCookingCount">0</h3>
-            </div>
-            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-              <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Active Menu</p>
-              <h3 class="text-2xl font-extrabold text-indigo-600 mt-1" id="statProductCount">0</h3>
-            </div>
-          </div>
-
-          <!-- Live Orders Management Queue -->
-          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div class="p-4 border-b border-slate-100 flex items-center justify-between">
-              <div>
-                <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <i class="fa-solid fa-list-check text-indigo-600"></i> Store Order Queue & Management
-                </h3>
-                <p class="text-xs text-slate-500">Live incoming customer orders (Syncs with Kitchen and Rider views)</p>
-              </div>
-              <div class="flex items-center gap-2">
-                <button onclick="clearAllOrders()" class="text-xs bg-red-50 hover:bg-red-100 text-red-700 px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1 border border-red-200 transition">
-                  <i class="fa-solid fa-trash-can"></i> Clear All Orders
-                </button>
-                <button onclick="renderAll()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1">
-                  <i class="fa-solid fa-arrows-rotate"></i> Refresh
-                </button>
-              </div>
-            </div>
-
-            <div class="overflow-x-auto">
-              <table class="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider">
-                    <th class="p-3">Queue #</th>
-                    <th class="p-3">Customer & Contact</th>
-                    <th class="p-3">Items & Details</th>
-                    <th class="p-3">Total Amount</th>
-                    <th class="p-3">Payment</th>
-                    <th class="p-3">Queue Action</th>
-                  </tr>
-                </thead>
-                <tbody id="ownerOrdersTableBody" class="divide-y divide-slate-100">
-                  <!-- Orders rendered dynamically -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Product Catalog Management -->
-          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-            <div class="flex items-center justify-between mb-4">
-              <div>
-                <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <i class="fa-solid fa-box-open text-emerald-600"></i> Store Products & Menu Items
-                </h3>
-                <p class="text-xs text-slate-500">Add or remove items. Changes reflect instantly on customer storefront.</p>
-              </div>
-              <div class="flex items-center gap-2">
-                <button onclick="clearAllProducts()" class="text-xs bg-red-50 hover:bg-red-100 text-red-700 px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1 border border-red-200 transition">
-                  <i class="fa-solid fa-eraser"></i> Clear Menu
-                </button>
-                <span class="text-xs px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full font-bold" id="productCountBadge">0 Products</span>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="ownerProductsList">
-              <!-- Products rendered dynamically -->
-            </div>
-          </div>
-        </div>
-
-        <!-- Column 3: Store Configuration & User/Role Access Control -->
-        <div class="space-y-6">
-
-          <!-- USER & STAFF ACCESS CONTROL (ADMIN FEATURE) -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-            <div class="flex items-center justify-between">
-              <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <i class="fa-solid fa-users-gear text-indigo-600"></i> Staff User Management & Roles
-              </h3>
-              <span class="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded-full font-bold">Admin Only</span>
-            </div>
-
-            <form onsubmit="handleCreateUser(event)" class="space-y-3 p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-              <p class="text-xs font-bold text-slate-800">Add New Staff / User</p>
-              <div>
-                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Username / Login ID</label>
-                <input type="text" id="newStaffUsername" required placeholder="e.g. chef_ali ya rider_usman" class="w-full text-xs p-2 rounded-lg border border-slate-300">
-              </div>
-              <div class="grid grid-cols-2 gap-2">
-                <div>
-                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Password</label>
-                  <input type="password" id="newStaffPassword" required placeholder="••••••••" class="w-full text-xs p-2 rounded-lg border border-slate-300">
-                </div>
-                <div>
-                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Role / Access</label>
-                  <select id="newStaffRole" class="w-full text-xs p-2 rounded-lg border border-slate-300 bg-white font-semibold">
-                    <option value="CHEF">Kitchen / Chef</option>
-                    <option value="RIDER">Delivery / Rider</option>
-                    <option value="ADMIN">Administrator</option>
-                  </select>
-                </div>
-              </div>
-              <button type="submit" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-xs transition">
-                Create User
-              </button>
-            </form>
-
-            <!-- Active Users List -->
-            <div>
-              <p class="text-xs font-bold text-slate-800 mb-2">Active Store Staff Accounts:</p>
-              <div class="space-y-2" id="adminUsersList">
-                <!-- Rendered dynamically -->
-              </div>
-            </div>
-          </div>
-
-          <!-- Add New Product Form -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2 mb-3">
-              <i class="fa-solid fa-circle-plus text-emerald-600"></i> Add Product / Dish
-            </h3>
-            <form onsubmit="handleCreateProduct(event)" class="space-y-3">
-              <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">Product Title</label>
-                <input type="text" id="newProdName" required placeholder="e.g., Chicken Dum Biryani" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-              </div>
-
-              <div class="grid grid-cols-2 gap-2">
-                <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">Price (PKR)</label>
-                  <input type="number" id="newProdPrice" required placeholder="e.g., 650" class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                </div>
-                <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">Category</label>
-                  <input type="text" id="newProdCategory" required placeholder="e.g. Biryani & Rice" class="w-full text-xs p-2.5 rounded-xl border border-slate-300">
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">Description</label>
-                <textarea id="newProdDesc" rows="2" placeholder="Freshly cooked traditional biryani..." class="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
-              </div>
-
-              <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-sm transition">
-                <i class="fa-solid fa-plus"></i> Save to Menu
-              </button>
-            </form>
-          </div>
-
-          <!-- Store Branding & WhatsApp Settings -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <i class="fa-solid fa-gear text-slate-600"></i> Store & WhatsApp Configuration
-            </h3>
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">Business Name</label>
-              <input type="text" id="configStoreName" value="Sultan Spice Biryani & Grill" class="w-full text-xs p-2.5 rounded-xl border border-slate-300">
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">WhatsApp Order Number</label>
-              <input type="text" id="configWhatsapp" value="923001234567" placeholder="e.g. 923001234567" class="w-full text-xs p-2.5 rounded-xl border border-slate-300">
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">Delivery Charge (PKR)</label>
-              <input type="number" id="configDeliveryFee" value="150" class="w-full text-xs p-2.5 rounded-xl border border-slate-300">
-            </div>
-
-            <button onclick="saveStoreConfig()" class="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-semibold text-xs transition">
-              Update Store Settings
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================== -->
-    <!-- VIEW 4: KITCHEN DISPLAY SYSTEM (Authenticated 'CHEF')          -->
-    <!-- ============================================================== -->
-    <section id="view-kitchen" class="app-view hidden">
-      <div class="bg-slate-900 text-white p-5 rounded-3xl mb-6 flex flex-wrap items-center justify-between gap-4">
+    <div id="view-kitchen" class="space-y-6 view-section hidden">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-subtle flex flex-wrap items-center justify-between gap-4">
         <div>
-          <span class="px-2.5 py-1 bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold rounded-full uppercase">Kitchen Display System (KDS)</span>
-          <h2 class="text-xl font-extrabold mt-1">Live Kitchen Cooking Queue</h2>
-          <p class="text-xs text-slate-400">Order queue ke mutabiq khana pakayein aur ready mark karein.</p>
+          <span class="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200/80">KDS Batcher Active</span>
+          <h2 class="text-lg font-bold tracking-tight text-slate-950 mt-1.5">Kitchen Production Queue (Sub-Agent 03)</h2>
+          <p class="text-xs text-slate-500">Orders grouped automatically to streamline kitchen batches.</p>
         </div>
         <div class="flex items-center gap-3">
-          <span class="text-xs text-slate-300 bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">
-            <i class="fa-solid fa-clock text-amber-400"></i> Auto-refresh: <strong>Instant</strong>
+          <span class="text-xs font-mono text-slate-600 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200">
+            <i class="fa-solid fa-clock text-amber-500"></i> Auto-Sync: <strong>Active</strong>
           </span>
-          <button onclick="renderAll()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs border border-slate-700">
+          <button onclick="renderAll()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">
             <i class="fa-solid fa-arrows-rotate"></i>
           </button>
         </div>
       </div>
 
-      <!-- KDS Cards Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="chefOrdersGrid">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="kitchenGrid">
         <!-- Rendered dynamically -->
       </div>
-    </section>
+    </div>
 
     <!-- ============================================================== -->
-    <!-- VIEW 5: RIDER / DELIVERY PORTAL (Authenticated 'RIDER')        -->
+    <!-- SECTION 4: DISPATCH & RIDERS (Sub-Agent 2 Proximity Matrix)    -->
     <!-- ============================================================== -->
-    <section id="view-rider" class="app-view hidden">
-      <div class="bg-slate-900 text-white p-5 rounded-3xl mb-6 flex flex-wrap items-center justify-between gap-4">
+    <div id="view-dispatch" class="space-y-6 view-section hidden">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-subtle flex flex-wrap items-center justify-between gap-4">
         <div>
-          <span class="px-2.5 py-1 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-bold rounded-full uppercase">Delivery & Rider Portal</span>
-          <h2 class="text-xl font-extrabold mt-1">Active Deliveries & Cash Collection (COD)</h2>
-          <p class="text-xs text-slate-400">Kitchen se order pick karein aur customer se cash collect karein.</p>
+          <span class="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-cyan-50 text-cyan-800 border border-cyan-200/80">Sub-Agent 02 Proximity</span>
+          <h2 class="text-lg font-bold tracking-tight text-slate-950 mt-1.5">Dispatch & Delivery Couriers</h2>
+          <p class="text-xs text-slate-500">Doorstep drop-off and Cash on Delivery (COD) settlement reconciliation.</p>
         </div>
-        <button onclick="renderAll()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs border border-slate-700">
+        <button onclick="renderAll()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">
           <i class="fa-solid fa-arrows-rotate"></i> Refresh
         </button>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="riderOrdersGrid">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="dispatchGrid">
         <!-- Rendered dynamically -->
       </div>
-    </section>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SECTION 5: AUTH LOGIN MODAL                                    -->
+    <!-- ============================================================== -->
+    <div id="view-login" class="max-w-md mx-auto view-section hidden">
+      <div class="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-card space-y-6">
+        <div class="text-center space-y-1.5">
+          <div class="w-10 h-10 rounded-2xl bg-slate-950 text-white flex items-center justify-center mx-auto text-sm shadow-subtle">
+            <i class="fa-solid fa-lock text-brand-500"></i>
+          </div>
+          <h3 class="text-lg font-extrabold text-slate-950">Portal Authentication</h3>
+          <p class="text-xs text-slate-500">Enter your assigned username and password.</p>
+        </div>
+
+        <form onsubmit="handlePortalLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 mb-1">Username</label>
+            <input type="text" id="loginUsername" required placeholder="admin / chef / rider" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 mb-1">Password</label>
+            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+          </div>
+          <button type="submit" class="w-full py-3 bg-slate-950 hover:bg-slate-800 text-white rounded-xl font-bold text-xs shadow-subtle transition">
+            Authenticate Session
+          </button>
+        </form>
+
+        <div class="pt-4 border-t border-slate-100 text-xs bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-slate-600 font-mono text-[11px] space-y-1">
+          <p>• Admin: <strong>admin / 123456</strong></p>
+          <p>• Kitchen: <strong>chef / 123456</strong></p>
+          <p>• Rider: <strong>rider / 123456</strong></p>
+        </div>
+      </div>
+    </div>
 
   </main>
 
-  <!-- JAVASCRIPT STATE ENGINE & AUTHENTICATED ACCESS LOGIC -->
+  <!-- JAVASCRIPT STATE ENGINE & AUTONOMOUS AGENT LOGIC -->
   <script>
-    // 1. Initial State Data: Clean Store (Users control products and orders)
+    // State storage
     const initialUsers = [
-      { username: 'admin', password: '123456', role: 'ADMIN', name: 'Store Owner' },
+      { username: 'admin', password: '123456', role: 'ADMIN', name: 'Platform Admin' },
       { username: 'chef', password: '123456', role: 'CHEF', name: 'Master Chef' },
-      { username: 'rider', password: '123456', role: 'RIDER', name: 'Delivery Rider' }
+      { username: 'rider', password: '123456', role: 'RIDER', name: 'Fleet Courier' }
     ];
 
     let storeConfig = JSON.parse(localStorage.getItem('storeConfig')) || {
@@ -423,7 +597,12 @@
     };
 
     let users = JSON.parse(localStorage.getItem('storeUsers')) || initialUsers;
-    let products = JSON.parse(localStorage.getItem('storeProducts')) || [];
+    let products = JSON.parse(localStorage.getItem('storeProducts')) || [
+      { id: 'prod-1', name: 'Special Chicken Dum Biryani', price: 650, category: 'Biryani & Rice', desc: 'Aromatic long-grain basmati with marinated chicken.', stock: 45 },
+      { id: 'prod-2', name: 'Mutton Shinwari Karahi (Half KG)', price: 1750, category: 'BBQ & Karahi', desc: 'Desi ghee cooked fresh tender mutton.', stock: 20 },
+      { id: 'prod-3', name: 'Mint Raita & Fresh Salad', price: 120, category: 'Sides & Drinks', desc: 'Chilled yogurt dip with garden cucumber.', stock: 80 }
+    ];
+
     let orders = JSON.parse(localStorage.getItem('storeOrders')) || [];
     let currentAuthUser = JSON.parse(localStorage.getItem('currentAuthUser')) || null;
     let currentCart = {};
@@ -436,40 +615,29 @@
       localStorage.setItem('currentAuthUser', JSON.stringify(currentAuthUser));
     }
 
-    // Navigation and Access Control Gate
-    function navigateTo(viewId) {
-      if (viewId === 'admin' || viewId === 'kitchen' || viewId === 'rider') {
-        if (!currentAuthUser) {
-          showLoginView(viewId);
-          return;
-        }
+    // Tab Navigation
+    function switchTab(tabId) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-tab').forEach(b => {
+        b.classList.remove('bg-white', 'text-slate-900', 'shadow-subtle', 'font-semibold');
+        b.classList.add('text-slate-600');
+      });
 
-        // Verify Role-based Permissions
-        if (viewId === 'admin' && currentAuthUser.role !== 'ADMIN') {
-          alert('Access Denied: Sirf Administrator is panel ko khol sakta hai!');
-          return;
-        }
-        if (viewId === 'kitchen' && currentAuthUser.role !== 'CHEF' && currentAuthUser.role !== 'ADMIN') {
-          alert('Access Denied: Sirf Kitchen/Chef is panel ko khol sakta hai!');
-          return;
-        }
-        if (viewId === 'rider' && currentAuthUser.role !== 'RIDER' && currentAuthUser.role !== 'ADMIN') {
-          alert('Access Denied: Sirf Rider is panel ko khol sakta hai!');
-          return;
-        }
+      const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-white', 'text-slate-900', 'shadow-subtle', 'font-semibold');
+        activeBtn.classList.remove('text-slate-600');
       }
 
-      document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
-      const targetView = document.getElementById(`view-${viewId}`);
-      if (targetView) targetView.classList.remove('hidden');
+      const activeSection = document.getElementById(`view-${tabId}`);
+      if (activeSection) activeSection.classList.remove('hidden');
 
       renderAll();
     }
 
-    function showLoginView(intendedView) {
-      document.querySelectorAll('.app-view').forEach(v => v.classList.add('hidden'));
+    function showLoginView() {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
       document.getElementById('view-login').classList.remove('hidden');
-      document.getElementById('view-login').dataset.intendedView = intendedView;
     }
 
     function handlePortalLogin(e) {
@@ -479,65 +647,26 @@
 
       const user = users.find(acc => acc.username.toLowerCase() === u && acc.password === p);
       if (!user) {
-        alert('Invalid Login ID ya Password! Meharbani kar ke theek credentials darj karein.');
+        alert('Invalid credentials!');
         return;
       }
 
       currentAuthUser = user;
       saveState();
-
-      const intended = document.getElementById('view-login').dataset.intendedView || (user.role === 'ADMIN' ? 'admin' : (user.role === 'CHEF' ? 'kitchen' : 'rider'));
       e.target.reset();
-      navigateTo(intended);
+      switchTab('copilot');
     }
 
     function handleLogout() {
       currentAuthUser = null;
       saveState();
-      navigateTo('storefront');
+      switchTab('copilot');
     }
 
-    // Handle User Creation (Admin Only)
-    function handleCreateUser(e) {
-      e.preventDefault();
-      const username = document.getElementById('newStaffUsername').value.trim();
-      const password = document.getElementById('newStaffPassword').value.trim();
-      const role = document.getElementById('newStaffRole').value;
-
-      if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
-        alert('Yeh username pehle se mojood ha! Dusra naam chunein.');
-        return;
-      }
-
-      users.push({
-        username,
-        password,
-        role,
-        name: username.toUpperCase()
-      });
-
-      saveState();
-      e.target.reset();
-      renderAdminUsers();
-      alert(`Naya user "${username}" (${role}) kamyabi se ban gaya!`);
-    }
-
-    function deleteUser(username) {
-      if (username === 'admin') {
-        alert('Main Administrator account delete nahi kiya ja sakta!');
-        return;
-      }
-      if (confirm(`Kya aap user "${username}" ko delete karna chahte hain?`)) {
-        users = users.filter(u => u.username !== username);
-        saveState();
-        renderAdminUsers();
-      }
-    }
-
-    // Cart Operations
+    // Cart logic
     function addToCart(prodId) {
       currentCart[prodId] = (currentCart[prodId] || 0) + 1;
-      renderCustomerStorefront();
+      renderStorefront();
     }
 
     function removeFromCart(prodId) {
@@ -545,10 +674,10 @@
         currentCart[prodId]--;
         if (currentCart[prodId] <= 0) delete currentCart[prodId];
       }
-      renderCustomerStorefront();
+      renderStorefront();
     }
 
-    // Place Customer Order via WhatsApp
+    // WhatsApp Order Placement (Sub-Agent 1 Simulation)
     function placeCustomerOrder() {
       const name = document.getElementById('custNameInput').value.trim();
       const address = document.getElementById('custAddressInput').value.trim();
@@ -556,11 +685,11 @@
 
       const itemIds = Object.keys(currentCart);
       if (itemIds.length === 0) {
-        alert('Apne cart mein kam se kam aik dish ya item shamil karein!');
+        alert('Please add at least one item to your cart!');
         return;
       }
       if (!name || !address) {
-        alert('Meharbani farma kar apna Naam aur Delivery Address darj karein!');
+        alert('Please enter your Name and Delivery Address!');
         return;
       }
 
@@ -592,11 +721,20 @@
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
-      // Queue in real FIFO order
       orders.push(newOrder);
       saveState();
 
-      // Formatted WhatsApp Receipt
+      // Trigger Sub-Agent 1 stream output simulation
+      document.getElementById('nlpAgentStreamOutput').innerText = JSON.stringify({
+        event: "CHAT_INGESTED",
+        orderId,
+        customer: name,
+        destination: address,
+        total: `PKR ${total}`,
+        assignedRider: "Courier Usman (Auto-Proximate)"
+      }, null, 2);
+
+      // Construct prefilled WhatsApp link
       let message = `*NEW ORDER: ${orderId}*\n`;
       message += `*Customer:* ${name}\n`;
       message += `*Address:* ${address}\n`;
@@ -607,7 +745,7 @@
       });
       message += `\n*Delivery Fee:* PKR ${storeConfig.deliveryFee}\n`;
       message += `*TOTAL AMOUNT:* PKR ${total}\n\n`;
-      message += `_Sent via Commerce Cloud Storefront_`;
+      message += `_Processed via Autonomous Sub-Agents_`;
 
       const encodedMsg = encodeURIComponent(message);
       const whatsappUrl = `https://wa.me/${storeConfig.whatsapp}?text=${encodedMsg}`;
@@ -615,10 +753,9 @@
       currentCart = {};
       renderAll();
       window.open(whatsappUrl, '_blank');
-      alert(`Order ${orderId} kamyabi se queue mein shamil ho gaya aur WhatsApp open ho gaya!`);
     }
 
-    // Owner creates new product
+    // Create Product
     function handleCreateProduct(e) {
       e.preventDefault();
       const name = document.getElementById('newProdName').value.trim();
@@ -639,10 +776,17 @@
       saveState();
       e.target.reset();
       renderAll();
-      alert(`"${name}" menu mein shamil ho gaya ha!`);
     }
 
-    // Reliable Order State Machine Transitions
+    function deleteProduct(id) {
+      if (confirm('Delete this product from catalog?')) {
+        products = products.filter(p => p.id !== id);
+        saveState();
+        renderAll();
+      }
+    }
+
+    // Update Order Status
     function updateOrderStatus(orderId, newStatus) {
       const order = orders.find(o => o.id === orderId);
       if (order) {
@@ -656,122 +800,158 @@
     }
 
     function removeSingleOrder(orderId) {
-      if (confirm(`Order ${orderId} ko queue se clear karein?`)) {
-        orders = orders.filter(o => o.id !== orderId);
-        saveState();
-        renderAll();
-      }
+      orders = orders.filter(o => o.id !== orderId);
+      saveState();
+      renderAll();
     }
 
     function clearAllOrders() {
-      if (confirm('Kya aap tamam orders ko queue se clear karna chahte hain?')) {
+      if (confirm('Clear the entire live queue?')) {
         orders = [];
         saveState();
         renderAll();
       }
     }
 
-    function clearAllProducts() {
-      if (confirm('Kya aap tamam menu items ko clear karna chahte hain?')) {
-        products = [];
-        saveState();
-        renderAll();
-      }
-    }
-
-    function deleteProduct(id) {
-      if (confirm('Kya aap is product ko menu se remove karna chahte hain?')) {
-        products = products.filter(p => p.id !== id);
-        saveState();
-        renderAll();
-      }
-    }
-
-    function saveStoreConfig() {
-      storeConfig.storeName = document.getElementById('configStoreName').value.trim();
-      storeConfig.whatsapp = document.getElementById('configWhatsapp').value.trim();
-      storeConfig.deliveryFee = parseInt(document.getElementById('configDeliveryFee').value, 10) || 0;
-      saveState();
-      renderAll();
-      alert('Store settings update ho gayin!');
-    }
-
-    // Render Helpers
+    // Render Master
     function renderAll() {
-      document.getElementById('currentStoreNameDisplay').innerText = storeConfig.storeName;
-      document.getElementById('storefrontName').innerText = storeConfig.storeName;
-      document.getElementById('storefrontWhatsappBadge').innerText = storeConfig.whatsapp;
+      document.getElementById('topStoreName').innerText = storeConfig.storeName;
+      document.getElementById('storefrontHeading').innerText = storeConfig.storeName;
+      document.getElementById('storefrontPhoneBadge').innerText = storeConfig.whatsapp;
 
-      checkAuthStatus();
-      renderCustomerStorefront();
-      renderOwnerDashboard();
-      renderChefKDS();
-      renderRiderPortal();
-      renderAdminUsers();
+      renderAuthControls();
+      renderMetrics();
+      renderUnifiedQueue();
+      renderStorefront();
+      renderKitchenKDS();
+      renderDispatch();
+      renderCatalog();
     }
 
-    function checkAuthStatus() {
-      const container = document.getElementById('authHeaderContainer');
+    function renderAuthControls() {
+      const container = document.getElementById('authContainer');
       if (currentAuthUser) {
         container.innerHTML = `
           <div class="flex items-center gap-2">
-            <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-slate-200 border border-slate-700 flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-emerald-400"></span> ${currentAuthUser.name} (${currentAuthUser.role})
+            <span class="text-xs font-bold text-slate-700 px-2.5 py-1 rounded-xl bg-slate-100 border border-slate-200">
+              ${currentAuthUser.name} (${currentAuthUser.role})
             </span>
-            ${currentAuthUser.role === 'ADMIN' ? `
-              <button onclick="navigateTo('admin')" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-xs font-bold">Admin</button>
-            ` : ''}
-            ${currentAuthUser.role === 'CHEF' || currentAuthUser.role === 'ADMIN' ? `
-              <button onclick="navigateTo('kitchen')" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 rounded-lg text-xs font-bold">Kitchen</button>
-            ` : ''}
-            ${currentAuthUser.role === 'RIDER' || currentAuthUser.role === 'ADMIN' ? `
-              <button onclick="navigateTo('rider')" class="px-2.5 py-1 bg-cyan-600 hover:bg-cyan-700 rounded-lg text-xs font-bold">Rider</button>
-            ` : ''}
-            <button onclick="handleLogout()" class="px-2.5 py-1 bg-red-600/80 hover:bg-red-600 rounded-lg text-xs font-bold" title="Logout">
+            <button onclick="handleLogout()" class="text-xs text-slate-500 hover:text-red-600 px-2 py-1">
               <i class="fa-solid fa-right-from-bracket"></i>
             </button>
           </div>
         `;
       } else {
         container.innerHTML = `
-          <button onclick="showLoginView('admin')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-lock text-amber-400"></i> Staff / Admin Login
+          <button onclick="showLoginView()" class="text-xs font-semibold px-3 py-1.5 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition">
+            Staff Login
           </button>
         `;
       }
     }
 
-    function renderCustomerStorefront() {
-      const container = document.getElementById('customerProductsList');
-      container.innerHTML = '';
+    function renderMetrics() {
+      document.getElementById('metricLiveQueue').innerText = orders.length;
+      const total = orders.reduce((sum, o) => sum + o.total, 0);
+      document.getElementById('metricTotalSales').innerText = `PKR ${total.toLocaleString()}`;
 
-      if (products.length === 0) {
-        container.innerHTML = `
-          <div class="text-center py-12 px-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-slate-400">
-            <i class="fa-solid fa-utensils text-2xl mb-2 text-slate-300"></i>
-            <p class="text-xs font-bold text-slate-600">Menu abhi khali hai!</p>
-            <p class="text-[11px] text-slate-400 mt-0.5">Admin panel se apni pehli dish shamil karein.</p>
-          </div>
+      // Batching calculation (Sub-Agent 3)
+      let biryaniCount = 0;
+      orders.forEach(o => {
+        o.items.forEach(i => {
+          if (i.name.toLowerCase().includes('biryani')) biryaniCount += i.qty;
+        });
+      });
+      document.getElementById('batchCountBadge').innerText = `${biryaniCount}x Batched`;
+      document.getElementById('currentBatchTitle').innerText = biryaniCount > 0 ? `Batch: ${biryaniCount}x Biryani in Wok` : 'Batch: Idle (Ready)';
+    }
+
+    function renderUnifiedQueue() {
+      const tableBody = document.getElementById('queueTableBody');
+      tableBody.innerHTML = '';
+
+      if (orders.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="6" class="p-12 text-center">
+              <div class="max-w-xs mx-auto space-y-2 text-slate-400">
+                <i class="fa-solid fa-clipboard-check text-2xl text-slate-300"></i>
+                <p class="text-xs font-bold text-slate-700">All caught up!</p>
+                <p class="text-[11px] text-slate-400">Sub-Agents are actively monitoring incoming traffic.</p>
+              </div>
+            </td>
+          </tr>
         `;
         return;
       }
 
+      orders.forEach((o, index) => {
+        let statusBadge = 'bg-amber-50 text-amber-800 border-amber-200';
+        if (o.status === 'COOKING') statusBadge = 'bg-orange-50 text-orange-800 border-orange-200';
+        if (o.status === 'READY_FOR_PICKUP') statusBadge = 'bg-brand-50 text-brand-800 border-brand-200';
+        if (o.status === 'SHIPPED') statusBadge = 'bg-cyan-50 text-cyan-800 border-cyan-200';
+        if (o.status === 'COMPLETED') statusBadge = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+
+        tableBody.innerHTML += `
+          <tr class="hover:bg-slate-50/80 transition group">
+            <td class="p-4 font-mono font-bold text-slate-900 text-xs">
+              #${index + 1} • ${o.id}<br>
+              <span class="text-[10px] text-slate-400 font-normal font-sans">${o.time}</span>
+            </td>
+            <td class="p-4 font-medium text-slate-900">
+              ${o.customerName}<br>
+              <span class="text-[11px] text-slate-500">${o.address}</span>
+            </td>
+            <td class="p-4 text-slate-700 text-xs">
+              ${o.items.map(i => `${i.qty}x ${i.name}`).join(', ')}
+            </td>
+            <td class="p-4 font-mono font-extrabold text-slate-900">
+              PKR ${o.total.toLocaleString()}
+              <span class="block text-[10px] font-sans font-medium text-slate-400">${o.paymentMethod}</span>
+            </td>
+            <td class="p-4">
+              <span class="text-[10px] font-bold px-2.5 py-1 rounded-full border ${statusBadge}">
+                ${o.status}
+              </span>
+            </td>
+            <td class="p-4 text-right">
+              <div class="flex items-center justify-end gap-1.5">
+                <button onclick="updateOrderStatus('${o.id}', 'COOKING')" class="p-1.5 text-slate-400 hover:text-amber-600 rounded-lg" title="Cook">
+                  <i class="fa-solid fa-fire-burner"></i>
+                </button>
+                <button onclick="updateOrderStatus('${o.id}', 'READY_FOR_PICKUP')" class="p-1.5 text-slate-400 hover:text-brand-600 rounded-lg" title="Ready">
+                  <i class="fa-solid fa-bell"></i>
+                </button>
+                <button onclick="removeSingleOrder('${o.id}')" class="p-1.5 text-slate-400 hover:text-red-600 rounded-lg" title="Dismiss">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function renderStorefront() {
+      const container = document.getElementById('customerProductsList');
+      container.innerHTML = '';
+
       products.forEach(p => {
         const qty = currentCart[p.id] || 0;
         container.innerHTML += `
-          <div class="p-3 bg-white border border-slate-200 rounded-2xl flex items-center justify-between gap-3 shadow-xs hover:border-slate-300 transition">
+          <div class="p-4 bg-white border border-slate-200/80 rounded-2xl flex items-center justify-between gap-3 shadow-subtle hover:border-slate-300 transition">
             <div class="flex-1">
-              <span class="text-[10px] font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">${p.category}</span>
-              <h4 class="text-xs font-bold text-slate-900 mt-1">${p.name}</h4>
+              <span class="text-[10px] font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full">${p.category}</span>
+              <h4 class="text-xs font-bold text-slate-950 mt-1">${p.name}</h4>
               <p class="text-[11px] text-slate-500 line-clamp-1">${p.desc}</p>
-              <p class="text-xs font-extrabold text-slate-900 mt-1">PKR ${p.price}</p>
+              <p class="text-xs font-mono font-extrabold text-slate-900 mt-1">PKR ${p.price}</p>
             </div>
-            <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200/60 p-1 rounded-xl">
               ${qty > 0 ? `
-                <button onclick="removeFromCart('${p.id}')" class="w-6 h-6 rounded-lg bg-white shadow-xs flex items-center justify-center text-slate-700 font-bold hover:bg-slate-200 text-xs">-</button>
+                <button onclick="removeFromCart('${p.id}')" class="w-6 h-6 rounded-lg bg-white shadow-subtle flex items-center justify-center text-slate-700 font-bold hover:bg-slate-200 text-xs">-</button>
                 <span class="text-xs font-bold w-4 text-center">${qty}</span>
               ` : ''}
-              <button onclick="addToCart('${p.id}')" class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold hover:bg-emerald-700 text-xs">+</button>
+              <button onclick="addToCart('${p.id}')" class="w-6 h-6 rounded-lg bg-slate-950 text-white flex items-center justify-center font-bold hover:bg-slate-800 text-xs">+</button>
             </div>
           </div>
         `;
@@ -787,132 +967,43 @@
         }
       });
 
-      document.getElementById('cartTotalDisplay').innerText = `PKR ${subtotal > 0 ? subtotal + storeConfig.deliveryFee : 0}`;
-      document.getElementById('cartItemCount').innerText = `${count} items`;
+      document.getElementById('storefrontCartTotal').innerText = `PKR ${subtotal > 0 ? subtotal + storeConfig.deliveryFee : 0}`;
+      document.getElementById('storefrontCartCount').innerText = `${count} items`;
     }
 
-    function renderOwnerDashboard() {
-      document.getElementById('statOrderCount').innerText = orders.length;
-      const totalSales = orders.reduce((sum, o) => sum + o.total, 0);
-      document.getElementById('statSalesTotal').innerText = `PKR ${totalSales.toLocaleString()}`;
-      document.getElementById('statCookingCount').innerText = orders.filter(o => o.status === 'COOKING').length;
-      document.getElementById('statProductCount').innerText = products.length;
-      document.getElementById('productCountBadge').innerText = `${products.length} Products`;
-
-      const tableBody = document.getElementById('ownerOrdersTableBody');
-      tableBody.innerHTML = '';
-
-      if (orders.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-xs text-slate-400">Queue khali hai. Koi naya order nahi aya.</td></tr>`;
-      }
-
-      orders.forEach((o, index) => {
-        tableBody.innerHTML += `
-          <tr class="hover:bg-slate-50/80 transition">
-            <td class="p-3 font-mono font-bold text-indigo-600">
-              #${index + 1} - ${o.id}<br><span class="text-[10px] text-slate-400 font-normal">${o.time}</span>
-            </td>
-            <td class="p-3 font-semibold text-slate-900">${o.customerName}<br><span class="text-[11px] text-slate-500 font-normal">${o.address}</span></td>
-            <td class="p-3 text-slate-700">
-              ${o.items.map(i => `${i.qty}x ${i.name}`).join(', ')}
-            </td>
-            <td class="p-3 font-extrabold text-slate-900">PKR ${o.total.toLocaleString()}</td>
-            <td class="p-3">
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${o.paymentStatus === 'PAID' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                ${o.paymentMethod} (${o.paymentStatus})
-              </span>
-            </td>
-            <td class="p-3 flex items-center gap-1.5">
-              <select onchange="updateOrderStatus('${o.id}', this.value)" class="text-xs font-bold p-1.5 rounded-lg border border-slate-300 bg-white">
-                <option value="PLACED" ${o.status === 'PLACED' ? 'selected' : ''}>Queue: Placed</option>
-                <option value="COOKING" ${o.status === 'COOKING' ? 'selected' : ''}>Cooking</option>
-                <option value="READY_FOR_PICKUP" ${o.status === 'READY_FOR_PICKUP' ? 'selected' : ''}>Ready for Rider</option>
-                <option value="SHIPPED" ${o.status === 'SHIPPED' ? 'selected' : ''}>Out for Delivery</option>
-                <option value="COMPLETED" ${o.status === 'COMPLETED' ? 'selected' : ''}>Completed</option>
-              </select>
-              <button onclick="removeSingleOrder('${o.id}')" class="p-1.5 text-slate-400 hover:text-red-600" title="Clear this order">
-                <i class="fa-solid fa-trash-can"></i>
-              </button>
-            </td>
-          </tr>
-        `;
-      });
-
-      const prodContainer = document.getElementById('ownerProductsList');
-      prodContainer.innerHTML = '';
-      if (products.length === 0) {
-        prodContainer.innerHTML = `<p class="col-span-2 text-xs text-slate-400 py-3 text-center">Menu khali hai. Upar se pehli dish shamil karein.</p>`;
-      }
-      products.forEach(p => {
-        prodContainer.innerHTML += `
-          <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
-            <div>
-              <span class="text-[10px] font-bold text-slate-500 uppercase">${p.category}</span>
-              <h4 class="text-xs font-bold text-slate-900 mt-0.5">${p.name}</h4>
-              <p class="text-xs font-extrabold text-emerald-600 mt-1">PKR ${p.price}</p>
-            </div>
-            <button onclick="deleteProduct('${p.id}')" class="text-slate-400 hover:text-red-600 p-2 text-xs">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </div>
-        `;
-      });
-    }
-
-    function renderAdminUsers() {
-      const container = document.getElementById('adminUsersList');
-      if (!container) return;
-      container.innerHTML = '';
-      users.forEach(u => {
-        container.innerHTML += `
-          <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
-            <div>
-              <span class="font-bold text-slate-900">${u.name}</span>
-              <span class="text-[10px] text-slate-400 ml-1">(@${u.username})</span>
-              <span class="ml-2 px-2 py-0.5 rounded-full text-[10px] font-bold ${u.role === 'ADMIN' ? 'bg-purple-100 text-purple-800' : (u.role === 'CHEF' ? 'bg-amber-100 text-amber-800' : 'bg-cyan-100 text-cyan-800')}">${u.role}</span>
-            </div>
-            ${u.username !== 'admin' ? `
-              <button onclick="deleteUser('${u.username}')" class="text-slate-400 hover:text-red-600 p-1">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            ` : '<span class="text-[10px] text-slate-400 font-bold">Primary</span>'}
-          </div>
-        `;
-      });
-    }
-
-    function renderChefKDS() {
-      const container = document.getElementById('chefOrdersGrid');
+    function renderKitchenKDS() {
+      const container = document.getElementById('kitchenGrid');
       container.innerHTML = '';
 
-      // Strict Queue: Active orders in kitchen
       const kitchenOrders = orders.filter(o => o.status === 'PLACED' || o.status === 'COOKING');
 
       if (kitchenOrders.length === 0) {
-        container.innerHTML = `<div class="col-span-3 text-center py-12 text-slate-400 text-xs">Kitchen queue khali hai. All caught up!</div>`;
+        container.innerHTML = `
+          <div class="col-span-3 py-16 text-center space-y-2">
+            <i class="fa-solid fa-mug-hot text-2xl text-slate-300"></i>
+            <p class="text-xs font-bold text-slate-700">Kitchen queue is clear</p>
+            <p class="text-[11px] text-slate-400">Sub-Agent 03 has batched and dispatched all current production tickets.</p>
+          </div>
+        `;
         return;
       }
 
       kitchenOrders.forEach((o, qIndex) => {
         const isCooking = o.status === 'COOKING';
         container.innerHTML += `
-          <div class="bg-white rounded-2xl border-2 ${isCooking ? 'border-amber-400 shadow-md' : 'border-slate-200'} p-5 flex flex-col justify-between">
+          <div class="bg-white rounded-2xl border ${isCooking ? 'border-amber-400 shadow-card' : 'border-slate-200/80'} p-5 flex flex-col justify-between space-y-4 shadow-subtle">
             <div>
-              <div class="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-3">
-                <div>
-                  <span class="text-xs font-extrabold text-amber-600">Queue #${qIndex + 1}</span>
-                  <span class="font-mono text-sm font-black text-slate-900 ml-1.5">${o.id}</span>
-                </div>
-                <span class="text-xs font-bold px-2.5 py-1 rounded-full ${isCooking ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700'}">
-                  ${isCooking ? 'Cooking in Progress' : 'New in Queue'}
-                </span>
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <span class="text-xs font-extrabold text-amber-700">Batch Ticket #${qIndex + 1}</span>
+                <span class="font-mono text-xs font-black text-slate-900">${o.id}</span>
               </div>
-              <p class="text-xs text-slate-500 mb-2 font-medium">Time Placed: <strong>${o.time}</strong></p>
-              <div class="space-y-2 mb-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <p class="text-[11px] text-slate-400 mt-2">Placed: <strong>${o.time}</strong></p>
+              
+              <div class="mt-3 space-y-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100">
                 ${o.items.map(item => `
                   <div class="flex items-center justify-between text-xs">
                     <span class="font-bold text-slate-900">${item.qty}x ${item.name}</span>
-                    <i class="fa-solid fa-check text-slate-300"></i>
+                    <span class="text-[10px] text-slate-400 font-mono">Verified</span>
                   </div>
                 `).join('')}
               </div>
@@ -920,16 +1011,16 @@
 
             <div class="pt-3 border-t border-slate-100 flex gap-2">
               ${!isCooking ? `
-                <button onclick="updateOrderStatus('${o.id}', 'COOKING')" class="flex-1 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow-xs">
+                <button onclick="updateOrderStatus('${o.id}', 'COOKING')" class="flex-1 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition">
                   <i class="fa-solid fa-fire-burner"></i> Start Cooking
                 </button>
               ` : `
-                <button onclick="updateOrderStatus('${o.id}', 'READY_FOR_PICKUP')" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs">
-                  <i class="fa-solid fa-bell"></i> Clear & Mark Ready for Rider
+                <button onclick="updateOrderStatus('${o.id}', 'READY_FOR_PICKUP')" class="flex-1 py-2.5 bg-mint-600 hover:bg-mint-700 text-white rounded-xl text-xs font-bold transition">
+                  <i class="fa-solid fa-check"></i> Mark Ready for Rider
                 </button>
               `}
-              <button onclick="removeSingleOrder('${o.id}')" class="px-3 py-2 bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 rounded-xl text-xs font-bold" title="Cancel/Remove">
-                <i class="fa-solid fa-xmark"></i>
+              <button onclick="removeSingleOrder('${o.id}')" class="px-3 py-2 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded-xl text-xs">
+                <i class="fa-solid fa-trash-can"></i>
               </button>
             </div>
           </div>
@@ -937,53 +1028,76 @@
       });
     }
 
-    function renderRiderPortal() {
-      const container = document.getElementById('riderOrdersGrid');
+    function renderDispatch() {
+      const container = document.getElementById('dispatchGrid');
       container.innerHTML = '';
 
-      const riderOrders = orders.filter(o => o.status === 'READY_FOR_PICKUP' || o.status === 'SHIPPED');
+      const dispatchOrders = orders.filter(o => o.status === 'READY_FOR_PICKUP' || o.status === 'SHIPPED');
 
-      if (riderOrders.length === 0) {
-        container.innerHTML = `<div class="col-span-3 text-center py-12 text-slate-400 text-xs">Koi delivery pending nahi hai. All delivered!</div>`;
+      if (dispatchOrders.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-3 py-16 text-center space-y-2">
+            <i class="fa-solid fa-circle-check text-2xl text-slate-300"></i>
+            <p class="text-xs font-bold text-slate-700">Fleet idle</p>
+            <p class="text-[11px] text-slate-400">Sub-Agent 02 ready to auto-assign upcoming ready deliveries.</p>
+          </div>
+        `;
         return;
       }
 
-      riderOrders.forEach(o => {
+      dispatchOrders.forEach(o => {
         const isShipped = o.status === 'SHIPPED';
         container.innerHTML += `
-          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3">
+          <div class="bg-white rounded-2xl border border-slate-200/80 p-5 space-y-3 shadow-subtle">
             <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
-              <span class="font-mono font-black text-slate-900">${o.id}</span>
-              <span class="text-xs font-bold px-2 py-0.5 rounded-full ${isShipped ? 'bg-cyan-100 text-cyan-800' : 'bg-indigo-100 text-indigo-800'}">
-                ${isShipped ? 'On The Way' : 'Ready at Kitchen'}
+              <span class="font-mono font-black text-slate-900 text-xs">${o.id}</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isShipped ? 'bg-cyan-50 text-cyan-800' : 'bg-brand-50 text-brand-800'}">
+                ${isShipped ? 'On Route' : 'Ready at Kitchen'}
               </span>
             </div>
 
             <div class="text-xs space-y-1">
               <p class="font-bold text-slate-900">${o.customerName}</p>
               <p class="text-slate-500">${o.address}</p>
-              <p class="text-slate-500">Contact: <strong class="text-slate-800">${o.phone}</strong></p>
             </div>
 
-            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs flex justify-between items-center">
-              <div>
-                <span class="text-slate-500">Collect Cash:</span>
-                <span class="font-extrabold text-emerald-700 block text-sm">PKR ${o.total.toLocaleString()}</span>
-              </div>
-              <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">${o.paymentMethod}</span>
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center text-xs">
+              <span class="text-slate-500 font-medium">Cash to Collect:</span>
+              <span class="font-mono font-extrabold text-emerald-700">PKR ${o.total.toLocaleString()}</span>
             </div>
 
             <div class="pt-2">
               ${!isShipped ? `
-                <button onclick="updateOrderStatus('${o.id}', 'SHIPPED')" class="w-full py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold">
-                  <i class="fa-solid fa-motorcycle"></i> Pick Up & Start Delivery
+                <button onclick="updateOrderStatus('${o.id}', 'SHIPPED')" class="w-full py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold transition">
+                  <i class="fa-solid fa-motorcycle"></i> Pick Up Delivery
                 </button>
               ` : `
-                <button onclick="updateOrderStatus('${o.id}', 'COMPLETED')" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold">
-                  <i class="fa-solid fa-hand-holding-dollar"></i> Delivered & Cash Collected
+                <button onclick="updateOrderStatus('${o.id}', 'COMPLETED')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition">
+                  <i class="fa-solid fa-check-double"></i> Delivered & Cash Settled
                 </button>
               `}
             </div>
+          </div>
+        `;
+      });
+    }
+
+    function renderCatalog() {
+      const container = document.getElementById('catalogContainer');
+      container.innerHTML = '';
+      document.getElementById('catalogCount').innerText = `${products.length} Items`;
+
+      products.forEach(p => {
+        container.innerHTML += `
+          <div class="p-3.5 bg-slate-50/70 border border-slate-200/60 rounded-xl flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">${p.category}</span>
+              <h4 class="text-xs font-bold text-slate-900 mt-0.5">${p.name}</h4>
+              <p class="text-xs font-mono font-extrabold text-slate-900 mt-1">PKR ${p.price}</p>
+            </div>
+            <button onclick="deleteProduct('${p.id}')" class="text-slate-400 hover:text-red-600 p-2 text-xs">
+              <i class="fa-solid fa-trash"></i>
+            </button>
           </div>
         `;
       });
