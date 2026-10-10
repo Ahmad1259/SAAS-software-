@@ -1,5 +1,5 @@
 /**
- * Automated Verification Test Suite for Commerce Cloud Backend, Outbox, and Payments
+ * Automated Verification Test Suite for Commerce Cloud Backend, Outbox, Payments & SaaS Billing
  * Author: Domain Master 15 (QA Master)
  * Supervised by: KING Agent
  * Audited by: Domain Master 16 (Red-Team Auditor)
@@ -9,6 +9,7 @@ const assert = require('assert');
 const crypto = require('crypto');
 const { MultiTenantAuthEngine } = require('../packages/auth/index.js');
 const { ReliableOutboxWorker } = require('../packages/outbox-worker/index.js');
+const { SaasSubscriptionEngine } = require('../packages/saas-billing/index.js');
 
 console.log('====================================================');
 console.log('COMMERCE CLOUD — COMPREHENSIVE QA & AUDIT SUITE');
@@ -229,11 +230,10 @@ async function runAll() {
       maxAttempts: 5
     };
 
-    // Case A: First attempt creates new record in Odoo
     const mockOdooFirst = {
       async authenticate() { return { uid: 1, isConnected: true }; },
-      async searchExistingRecord() { return null; }, // Not found yet
-      async createRecord() { return 5001; } // Created ID
+      async searchExistingRecord() { return null; },
+      async createRecord() { return 5001; }
     };
 
     const resA = await ReliableOutboxWorker.processJob(job, mockOdooFirst);
@@ -241,11 +241,10 @@ async function runAll() {
     assert.strictEqual(resA.externalId, '5001');
     assert.strictEqual(job.status, 'SUCCEEDED');
 
-    // Case B: Retry on network glitch finds existing record without creating duplicate
     job.status = 'PENDING';
     const mockOdooRetry = {
       async authenticate() { return { uid: 1, isConnected: true }; },
-      async searchExistingRecord() { return 5001; }, // Found existing
+      async searchExistingRecord() { return 5001; },
       async createRecord() { throw new Error('Duplicate create called when not expected'); }
     };
 
@@ -265,6 +264,32 @@ async function runAll() {
 
     const delayMax = ReliableOutboxWorker.calculateBackoffDelay(10, 1000, 60000);
     assert.strictEqual(delayMax, 60000, 'Backoff delay must be capped at maxDelayMs');
+  });
+
+  // ----------------------------------------------------
+  // TEST GROUP 7: SAAS RENTAL BILLING & ENTITLEMENTS
+  // ----------------------------------------------------
+  runTest('BILL-01: Starter Plan blocks adding products beyond quota', () => {
+    const starterSub = { planCode: 'STARTER', status: 'ACTIVE' };
+    assert.strictEqual(SaasSubscriptionEngine.canAddProduct(starterSub, 24).allowed, true);
+    assert.strictEqual(SaasSubscriptionEngine.canAddProduct(starterSub, 25).allowed, false, '25th item must hit quota limit');
+  });
+
+  runTest('BILL-02: Odoo Sync entitlement is strictly enforced by Plan Tier', () => {
+    const starterSub = { planCode: 'STARTER', status: 'ACTIVE' };
+    const businessSub = { planCode: 'BUSINESS', status: 'ACTIVE' };
+
+    assert.strictEqual(SaasSubscriptionEngine.canUseOdoo(starterSub).allowed, false, 'Starter tier cannot use Odoo');
+    assert.strictEqual(SaasSubscriptionEngine.canUseOdoo(businessSub).allowed, true, 'Business tier can use Odoo');
+  });
+
+  runTest('BILL-03: Rental Invoice generation isolates SaaS revenue from tenant store sales', () => {
+    const businessSub = { planCode: 'BUSINESS', status: 'ACTIVE' };
+    const invoice = SaasSubscriptionEngine.generateRentalInvoice('tenant-sultan-1', businessSub);
+
+    assert.strictEqual(invoice.amountMinor, 750000n, 'Business plan rental must be PKR 7,500 (750000 paisas)');
+    assert.strictEqual(invoice.currency, 'PKR');
+    assert.ok(invoice.invoiceNumber.startsWith('INV-SAAS-'), 'Invoice must have SaaS prefix');
   });
 
   console.log(`\n----------------------------------------------------`);
