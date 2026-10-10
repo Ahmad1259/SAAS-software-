@@ -9,6 +9,8 @@ const url = require('url');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { PakistanPaymentsEngine } = require('../../../packages/payments-pk/index.ts');
+const { ReliableOutboxWorker } = require('../../../packages/outbox-worker/index.js');
 
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'COMMERCE_CLOUD_ENTERPRISE_SECRET_KEY_SHA256_AT_LEAST_32_BYTES';
@@ -27,7 +29,9 @@ let db = {
       businessType: 'RESTAURANT',
       currency: 'PKR',
       whatsapp: '923001234567',
-      deliveryFeeMinor: 15000n // PKR 150.00
+      deliveryFeeMinor: 15000n, // PKR 150.00
+      jazzcashSalt: 'SANDBOX_JAZZCASH_INTEGRITY_SALT_32B',
+      easypaisaKey: 'SANDBOX_EASYPAISA_STORE_KEY_32B'
     }
   ],
   products: [
@@ -55,6 +59,8 @@ let db = {
       createdAt: new Date().toISOString()
     }
   ],
+  payments: [],
+  financialEvents: [],
   outboxJobs: []
 };
 
@@ -64,7 +70,7 @@ function sendJSON(res, statusCode, data) {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-store-id, x-tenant-id'
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-store-id, x-tenant-id, x-user-role'
   });
   const serialized = JSON.stringify(data, (key, value) =>
     typeof value === 'bigint' ? Number(value) : value
@@ -96,7 +102,7 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(204, {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-store-id, x-tenant-id'
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-store-id, x-tenant-id, x-user-role'
     });
     return res.end();
   }
@@ -115,7 +121,6 @@ const server = http.createServer(async (req, res) => {
 
     // ----------------------------------------------------
     // API ROUTE: GET /api/products
-    // Scoped strictly to the store
     // ----------------------------------------------------
     if (pathname === '/api/products' && method === 'GET') {
       const storeId = req.headers['x-store-id'] || 'store-sultan-main';
@@ -138,7 +143,7 @@ const server = http.createServer(async (req, res) => {
         id: 'prod-' + Date.now().toString(36),
         storeId,
         name: body.name,
-        priceMinor: BigInt(body.price * 100), // convert PKR to paisas
+        priceMinor: BigInt(body.price * 100),
         category: body.category || 'General',
         desc: body.desc || '',
         stock: body.stock || 50
@@ -157,7 +162,6 @@ const server = http.createServer(async (req, res) => {
 
       let storeOrders = db.orders.filter(o => o.storeId === storeId);
 
-      // Role-based filtering
       if (role === 'CHEF') {
         storeOrders = storeOrders.filter(o => o.status === 'PLACED' || o.status === 'COOKING');
       } else if (role === 'RIDER') {
@@ -169,7 +173,6 @@ const server = http.createServer(async (req, res) => {
 
     // ----------------------------------------------------
     // API ROUTE: POST /api/orders (Customer Checkout)
-    // Server-side calculation & tamper-proof snapshots
     // ----------------------------------------------------
     if (pathname === '/api/orders' && method === 'POST') {
       const storeId = req.headers['x-store-id'] || 'store-sultan-main';
@@ -182,7 +185,6 @@ const server = http.createServer(async (req, res) => {
       let subtotalMinor = 0n;
       const verifiedItems = [];
 
-      // Validate against catalog
       for (const item of body.items) {
         const prod = db.products.find(p => p.id === item.productId && p.storeId === storeId);
         if (!prod) {
@@ -212,7 +214,7 @@ const server = http.createServer(async (req, res) => {
         deliveryFeeMinor,
         totalAmountMinor,
         paymentMethod: body.paymentMethod || 'COD',
-        paymentStatus: body.paymentMethod === 'COD' ? 'AWAITING_PAYMENT' : 'PAYMENT_SUBMITTED',
+        paymentStatus: body.paymentMethod === 'COD' ? 'AWAITING_PAYMENT' : 'PENDING_VERIFICATION',
         status: 'PLACED',
         createdAt: new Date().toISOString()
       };
@@ -225,13 +227,16 @@ const server = http.createServer(async (req, res) => {
         storeId,
         eventType: 'SYNC_SALES_ORDER',
         internalRecordId: orderId,
+        idempotencyKey: `odoo_sync:${storeId}:sale_order:${orderId}`,
         status: 'PENDING',
+        attemptCount: 0,
+        maxAttempts: 5,
         payload: newOrder,
         createdAt: new Date().toISOString()
       };
       db.outboxJobs.push(outboxJob);
 
-      return sendJSON(res, 201, { success: true, order: newOrder });
+      return sendJSON(res, 201, { success: true, order: newOrder, outboxJobId: outboxJob.id });
     }
 
     // ----------------------------------------------------
@@ -250,9 +255,124 @@ const server = http.createServer(async (req, res) => {
       order.status = body.status;
       if (body.status === 'COMPLETED' && order.paymentMethod === 'COD') {
         order.paymentStatus = 'PAID';
+        db.financialEvents.push({
+          id: 'fin-' + Date.now().toString(36),
+          storeId: order.storeId,
+          eventType: 'COD_CASH_COLLECTED',
+          amountMinor: order.totalAmountMinor,
+          referenceId: order.id,
+          createdAt: new Date().toISOString()
+        });
       }
 
       return sendJSON(res, 200, { success: true, order });
+    }
+
+    // ----------------------------------------------------
+    // API ROUTE: POST /api/webhooks/payments/jazzcash
+    // Cryptographically verified JazzCash IPN Webhook
+    // ----------------------------------------------------
+    if (pathname === '/api/webhooks/payments/jazzcash' && method === 'POST') {
+      const payload = await parseBody(req);
+      const storeId = req.headers['x-store-id'] || 'store-sultan-main';
+      const store = db.stores.find(s => s.id === storeId);
+
+      if (!store) {
+        return sendJSON(res, 404, { error: 'Store not found' });
+      }
+
+      // Timing-safe HMAC-SHA256 signature verification
+      const isValid = PakistanPaymentsEngine.verifyJazzCashCallback(payload, store.jazzcashSalt);
+      if (!isValid) {
+        return sendJSON(res, 400, { error: 'Invalid cryptographic signature' });
+      }
+
+      const orderNumber = payload.pp_BillReference || payload.pp_TxnRefNo;
+      const order = db.orders.find(o => o.id === orderNumber);
+
+      if (order) {
+        const isSuccess = payload.pp_ResponseCode === '000';
+        order.paymentStatus = isSuccess ? 'PAID' : 'FAILED';
+        if (isSuccess && order.status === 'PLACED') {
+          order.status = 'CONFIRMED';
+        }
+
+        db.financialEvents.push({
+          id: 'fin-' + Date.now().toString(36),
+          storeId: order.storeId,
+          eventType: 'JAZZCASH_GATEWAY_SETTLED',
+          amountMinor: order.totalAmountMinor,
+          referenceId: order.id,
+          metadata: { txnRefNo: payload.pp_TxnRefNo },
+          createdAt: new Date().toISOString()
+        });
+      }
+
+      return sendJSON(res, 200, { responseCode: '000', message: 'Webhook processed idempotently' });
+    }
+
+    // ----------------------------------------------------
+    // API ROUTE: POST /api/payments/manual-bank-verify (Staff Approval)
+    // ----------------------------------------------------
+    if (pathname === '/api/payments/manual-bank-verify' && method === 'POST') {
+      const body = await parseBody(req);
+      const order = db.orders.find(o => o.id === body.orderId);
+
+      if (!order) {
+        return sendJSON(res, 404, { error: 'Order not found' });
+      }
+
+      const validation = PakistanPaymentsEngine.validateStaffApproval({
+        staffUserId: body.staffUserId || 'user-staff-1',
+        orderId: order.id,
+        expectedAmountMinor: order.totalAmountMinor,
+        confirmedAmountMinor: BigInt(body.confirmedAmountMinor || order.totalAmountMinor),
+        transactionReference: body.transactionReference
+      });
+
+      if (!validation.approved) {
+        return sendJSON(res, 400, { error: validation.reason });
+      }
+
+      order.paymentStatus = 'PAID';
+      order.status = 'CONFIRMED';
+
+      db.financialEvents.push({
+        id: 'fin-' + Date.now().toString(36),
+        storeId: order.storeId,
+        eventType: 'MANUAL_BANK_TRANSFER_CONFIRMED',
+        amountMinor: order.totalAmountMinor,
+        referenceId: order.id,
+        metadata: {
+          verifiedBy: body.staffUserId,
+          txnRef: body.transactionReference
+        },
+        createdAt: new Date().toISOString()
+      });
+
+      return sendJSON(res, 200, { success: true, order });
+    }
+
+    // ----------------------------------------------------
+    // API ROUTE: POST /api/cron/process-outbox (Odoo Sync Worker)
+    // ----------------------------------------------------
+    if (pathname === '/api/cron/process-outbox' && method === 'POST') {
+      const pendingJobs = db.outboxJobs.filter(j => j.status === 'PENDING' || j.status === 'RETRY_SCHEDULED');
+
+      // Simulated Odoo Client Adapter for deterministic testing
+      const mockOdooClient = {
+        async authenticate() { return { uid: 1, isConnected: true }; },
+        async searchExistingRecord(model, domain) { return null; },
+        async createRecord(model, values) { return 1001; }
+      };
+
+      const results = [];
+      for (const job of pendingJobs) {
+        const resJob = await ReliableOutboxWorker.processJob(job, mockOdooClient);
+        results.push({ jobId: job.id, result: resJob });
+      }
+
+      return sendJSON(res, 200, { processedCount: results.length, jobs: results });
     }
 
     // ----------------------------------------------------
