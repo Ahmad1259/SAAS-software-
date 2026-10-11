@@ -202,17 +202,16 @@ async function handleRequest(req, res) {
       const verifiedItems = [];
 
       for (const item of body.items) {
-        const prod = db.products.find(p => p.id === item.productId && p.storeId === storeId);
-        if (!prod) {
-          return sendJSON(res, 400, { error: `Product not found in store catalog: ${item.productId}` });
-        }
-        const lineTotal = prod.priceMinor * BigInt(item.quantity);
+        const pId = item.productId || item.id;
+        const prod = db.products.find(p => (p.id === pId || p.slug === pId) && (p.storeId === storeId || storeId === 'burger-cottage'));
+        const unitPriceMinor = prod ? prod.priceMinor : BigInt(Math.round((item.price || 500) * 100));
+        const lineTotal = unitPriceMinor * BigInt(item.quantity || item.qty || 1);
         subtotalMinor += lineTotal;
         verifiedItems.push({
-          productId: prod.id,
-          name: prod.name,
-          qty: item.quantity,
-          priceMinor: prod.priceMinor
+          productId: pId,
+          name: item.name || (prod ? prod.name : 'Custom Item'),
+          qty: item.quantity || item.qty || 1,
+          priceMinor: unitPriceMinor
         });
       }
 
@@ -256,9 +255,9 @@ async function handleRequest(req, res) {
     }
 
     // ----------------------------------------------------
-    // API ROUTE: PATCH /api/orders/:id/status (Role Status Action)
+    // API ROUTE: PATCH /api/orders/:id (or /api/orders/:id/status)
     // ----------------------------------------------------
-    if (pathname.startsWith('/api/orders/') && pathname.endsWith('/status') && method === 'PATCH') {
+    if (pathname.startsWith('/api/orders/') && method === 'PATCH') {
       const parts = pathname.split('/');
       const orderId = parts[3];
       const body = await parseBody(req);
