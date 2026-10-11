@@ -699,104 +699,144 @@
     </div>
 
     <!-- ============================================================== -->
-    <!-- SECTION 3: CUSTOMER STOREFRONT (MOBILE-APP LUXURY FAST FOOD UI) -->
+    <!-- SECTION 3: INTERACTIVE STOREFRONT (KFC-INSPIRED DUAL-COLUMN WITH SUB-AGENTS) -->
     <!-- ============================================================== -->
-    <div id="view-storefront" class="max-w-md md:max-w-lg mx-auto view-section hidden pb-24">
+    <div id="view-storefront" class="max-w-5xl mx-auto view-section hidden pb-28 space-y-7">
       
-      <!-- Outer App Frame with Warm Cream Background -->
-      <div class="bg-[#FFF9F2] text-slate-900 rounded-[36px] border border-orange-100 shadow-xl overflow-hidden p-4 md:p-6 space-y-5 font-sans">
-        
-        <!-- TOP APP HEADER -->
-        <div class="flex items-center justify-between px-1 pt-1">
-          <div class="flex items-center gap-2.5">
-            <div class="w-10 h-10 rounded-2xl bg-orange-500 text-white flex items-center justify-center text-lg shadow-md shadow-orange-500/30">
-              <i class="fa-solid fa-burger"></i>
+      <!-- 1. TOP SUB-AGENTS MONITORING ROW (Autonomous Ecosystem Live) -->
+      <div class="bg-white rounded-3xl border border-slate-200/80 p-5 sm:p-6 shadow-subtle space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+              <span class="text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                Sub-Agent Network Synchronized
+              </span>
             </div>
-            <div>
-              <h3 class="text-sm font-black text-slate-950 leading-tight" id="storefrontHeading">Burger Cottage</h3>
-              <p class="text-[10px] text-slate-500 flex items-center gap-1">
-                <i class="fa-solid fa-location-dot text-orange-500"></i> Defence Cantt, Lahore · 40 Min Delivery
-              </p>
-            </div>
-          </div>
-          <button onclick="openCustomerCheckoutModal()" class="relative p-2.5 rounded-2xl bg-white border border-orange-100 shadow-sm text-slate-700 hover:text-orange-600 transition">
-            <i class="fa-solid fa-bag-shopping text-base"></i>
-            <span id="storefrontCartBadgeTop" class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-orange-500 text-white text-[10px] font-black flex items-center justify-center shadow hidden">0</span>
-          </button>
-        </div>
-
-        <!-- 1. HERO PROMO BANNER (HOT DEALS) -->
-        <div class="relative bg-gradient-to-r from-[#FFE8D6] via-[#FFF0E5] to-[#FFEFE0] rounded-3xl p-5 overflow-hidden border border-orange-200/50 shadow-sm">
-          <div class="max-w-[62%] space-y-2 z-10 relative">
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white text-orange-600 text-[10px] font-black shadow-sm tracking-wide">
-              🔥 Hot Deals
-            </span>
-            <h2 class="text-xl font-black text-slate-950 leading-tight tracking-tight">
-              Delicious Fast Food
+            <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mt-1 flex items-center gap-2">
+              <span id="storefrontHeading">Burger Cottage</span>
+              <span class="text-xs font-bold text-slate-400 font-mono bg-slate-100 px-2.5 py-1 rounded-xl">KFC-Tier Storefront</span>
             </h2>
-            <p class="text-[11px] text-slate-600 leading-snug">
-              Get your favorite fast food at your door in 40 mins.
-            </p>
-            <button onclick="filterCustomerCategory('Single Deals')" class="mt-1 px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-full font-black text-xs inline-flex items-center gap-1.5 shadow-md shadow-orange-500/30 transition">
-              Order Now <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            <p class="text-xs text-slate-500">Autonomous multi-agent architecture: real-time live monitoring paired with on-page instant deal customization.</p>
+          </div>
+
+          <!-- Quick Cart Trigger -->
+          <div class="flex items-center gap-2 self-start sm:self-center">
+            <button onclick="openCustomerCheckoutModal()" class="px-4 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-2.5 shadow-subtle transition">
+              <i class="fa-solid fa-basket-shopping text-orange-400"></i>
+              <span>Active Cart</span>
+              <span id="storefrontHeaderCartCount" class="w-5 h-5 rounded-full bg-orange-600 text-white font-black text-[10px] flex items-center justify-center">0</span>
             </button>
           </div>
-
-          <!-- Hero Food Image -->
-          <div class="absolute -right-4 -bottom-3 w-40 h-36 pointer-events-none">
-            <img src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=500&auto=format&fit=crop&q=80" alt="Fast Food Feast" class="w-full h-full object-contain drop-shadow-xl transform hover:scale-105 transition">
-          </div>
-
-          <!-- Carousel Dots -->
-          <div class="flex items-center justify-center gap-1.5 pt-3 mt-1">
-            <span class="w-5 h-1.5 rounded-full bg-orange-500"></span>
-            <span class="w-1.5 h-1.5 rounded-full bg-orange-200"></span>
-            <span class="w-1.5 h-1.5 rounded-full bg-orange-200"></span>
-          </div>
         </div>
 
-        <!-- 2. CIRCULAR CATEGORY PILLS BAR -->
-        <div class="bg-white rounded-3xl p-3.5 border border-orange-100 shadow-sm">
-          <div class="flex items-center justify-between gap-2 overflow-x-auto custom-scroll pb-1" id="storefrontCategoryPills">
-            <!-- Dynamically populated category round buttons -->
+        <!-- EXACTLY 4 SPECIALIZED SYSTEM SUB-AGENTS STATUS CARDS -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <!-- 1. Co-Pilot Grid (Active / Optimization State) -->
+          <div onclick="switchTab('copilot')" class="p-3.5 bg-slate-50/70 hover:bg-white rounded-2xl border border-slate-200/80 hover:border-slate-300 shadow-xs hover:shadow-subtle transition cursor-pointer group">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[9px] font-black uppercase tracking-widest text-slate-400">Agent 01</span>
+              <span class="flex items-center gap-1 text-[9px] font-bold text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded-full">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Active
+              </span>
+            </div>
+            <h4 class="text-xs font-black text-slate-900 group-hover:text-orange-600 transition flex items-center gap-1.5">
+              <i class="fa-solid fa-wand-magic-sparkles text-orange-500 text-[11px]"></i> Co-Pilot Grid
+            </h4>
+            <p class="text-[10px] text-slate-500 mt-0.5">Optimization State</p>
+            <div class="mt-2 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[10px] font-mono">
+              <span class="text-slate-400">Reliability:</span>
+              <span class="font-bold text-emerald-600">99.98% OK</span>
+            </div>
+          </div>
+
+          <!-- 2. Cashier POS (Ready / Processing State) -->
+          <div onclick="switchTab('pos')" class="p-3.5 bg-slate-50/70 hover:bg-white rounded-2xl border border-slate-200/80 hover:border-slate-300 shadow-xs hover:shadow-subtle transition cursor-pointer group">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[9px] font-black uppercase tracking-widest text-slate-400">Agent 02</span>
+              <span class="flex items-center gap-1 text-[9px] font-bold text-teal-700 bg-teal-100/70 px-2 py-0.5 rounded-full">
+                <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span> Ready
+              </span>
+            </div>
+            <h4 class="text-xs font-black text-slate-900 group-hover:text-teal-600 transition flex items-center gap-1.5">
+              <i class="fa-solid fa-cash-register text-teal-500 text-[11px]"></i> Cashier POS
+            </h4>
+            <p class="text-[10px] text-slate-500 mt-0.5">Processing State</p>
+            <div class="mt-2 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[10px] font-mono">
+              <span class="text-slate-400">Terminal:</span>
+              <span class="font-bold text-teal-600">Online 0ms</span>
+            </div>
+          </div>
+
+          <!-- 3. Kitchen KDS (Live Queue Monitoring State) -->
+          <div onclick="switchTab('kitchen')" class="p-3.5 bg-slate-50/70 hover:bg-white rounded-2xl border border-slate-200/80 hover:border-slate-300 shadow-xs hover:shadow-subtle transition cursor-pointer group">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[9px] font-black uppercase tracking-widest text-slate-400">Agent 03</span>
+              <span class="flex items-center gap-1 text-[9px] font-bold text-amber-700 bg-amber-100/70 px-2 py-0.5 rounded-full">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Live Queue
+              </span>
+            </div>
+            <h4 class="text-xs font-black text-slate-900 group-hover:text-amber-600 transition flex items-center gap-1.5">
+              <i class="fa-solid fa-fire-burner text-amber-500 text-[11px]"></i> Kitchen KDS
+            </h4>
+            <p class="text-[10px] text-slate-500 mt-0.5">Monitoring State</p>
+            <div class="mt-2 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[10px] font-mono">
+              <span class="text-slate-400">Queued:</span>
+              <span class="font-bold text-amber-600" id="subagentKdsMetric">0 Tickets</span>
+            </div>
+          </div>
+
+          <!-- 4. Dispatch & Riders (Route Optimization State) -->
+          <div onclick="switchTab('dispatch')" class="p-3.5 bg-slate-50/70 hover:bg-white rounded-2xl border border-slate-200/80 hover:border-slate-300 shadow-xs hover:shadow-subtle transition cursor-pointer group">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[9px] font-black uppercase tracking-widest text-slate-400">Agent 04</span>
+              <span class="flex items-center gap-1 text-[9px] font-bold text-cyan-700 bg-cyan-100/70 px-2 py-0.5 rounded-full">
+                <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span> Proximity
+              </span>
+            </div>
+            <h4 class="text-xs font-black text-slate-900 group-hover:text-cyan-600 transition flex items-center gap-1.5">
+              <i class="fa-solid fa-motorcycle text-cyan-500 text-[11px]"></i> Dispatch & Riders
+            </h4>
+            <p class="text-[10px] text-slate-500 mt-0.5">Route Optimization</p>
+            <div class="mt-2 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[10px] font-mono">
+              <span class="text-slate-400">Fleet ETA:</span>
+              <span class="font-bold text-cyan-600">40 Min Avg</span>
+            </div>
           </div>
         </div>
-
-        <!-- 3. POPULAR ITEMS SECTION -->
-        <div class="space-y-3">
-          <div class="flex items-center justify-between px-1">
-            <h3 class="text-base font-black text-slate-950 tracking-tight" id="storefrontSectionTitle">Popular Items</h3>
-            <button onclick="filterCustomerCategory('ALL')" class="text-xs font-bold text-orange-600 hover:text-orange-700 flex items-center gap-1">
-              View All <i class="fa-solid fa-arrow-right text-[10px]"></i>
-            </button>
-          </div>
-
-          <!-- Popular Items Cards Grid (2-columns on mobile, 3-cols on tablet) -->
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3.5" id="customerProductsList">
-            <!-- Rendered via renderStorefront() -->
-          </div>
-        </div>
-
-        <!-- 4. BOTTOM FLASH OFFER PROMO BANNER -->
-        <div class="bg-gradient-to-r from-amber-100/90 to-orange-100/80 rounded-3xl p-4 border border-orange-200/60 shadow-sm flex items-center justify-between gap-3">
-          <div class="space-y-0.5">
-            <span class="text-[10px] font-black text-orange-700 uppercase tracking-wider flex items-center gap-1">
-              <i class="fa-solid fa-bolt"></i> Flash Offer
-            </span>
-            <h4 class="text-sm font-black text-slate-950">Get 20% OFF on your first order</h4>
-            <p class="text-[10px] text-slate-500 font-medium">Use code <span class="font-bold text-orange-600">COTTAGE20</span> at checkout</p>
-          </div>
-          <button onclick="filterCustomerCategory('ALL')" class="w-9 h-9 rounded-full bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-orange-500/30 transition">
-            <i class="fa-solid fa-arrow-right text-xs"></i>
-          </button>
-        </div>
-
       </div>
 
-      <!-- FLOATING CHECKOUT BAR (WHEN CART HAS ITEMS) -->
-      <div id="storefrontFloatingCart" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md bg-slate-950 text-white rounded-3xl p-3.5 shadow-2xl border border-white/10 flex items-center justify-between z-40 transition-all transform duration-300 hidden">
+      <!-- 2. KFC-INSPIRED SEARCH & CATEGORY NAVIGATION BAR -->
+      <div class="bg-white rounded-3xl border border-slate-200/80 p-3 sm:p-4 shadow-subtle flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <!-- Search Input -->
+        <div class="relative flex-1 max-w-md">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <input type="text" id="kfcSearchInput" oninput="handleKfcSearch(event)" placeholder="Search Burger Cottage deals & menu..." class="w-full pl-9 pr-4 py-2.5 rounded-2xl bg-slate-50 text-slate-900 text-xs border border-slate-200 focus:bg-white focus:border-orange-500 focus:outline-none transition">
+        </div>
+
+        <!-- Horizontal Scrollable Category Pills -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 custom-scroll" id="kfcCategoryTabs">
+          <!-- Dynamically populated category buttons -->
+        </div>
+      </div>
+
+      <!-- 3. MAIN DUAL-COLUMN DEALS & PRODUCT LISTINGS GRID -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between px-1">
+          <h3 class="text-lg font-black text-slate-900 tracking-tight" id="kfcSectionHeading">Delicious Deals</h3>
+          <span class="text-xs font-semibold text-slate-400" id="kfcItemCountLabel">Showing Deals</span>
+        </div>
+
+        <!-- Dual-Column Responsive Grid (KFC Pakistan Layout) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="kfcDealsGrid">
+          <!-- Dynamically rendered KFC style deal cards -->
+        </div>
+      </div>
+
+      <!-- 4. FLOATING CHECKOUT BAR (WHEN CART HAS ITEMS) -->
+      <div id="storefrontFloatingCart" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-lg bg-slate-950 text-white rounded-3xl p-3.5 shadow-2xl border border-white/10 flex items-center justify-between z-40 transition-all transform duration-300 hidden">
         <div class="flex items-center gap-3 pl-2">
-          <div class="w-10 h-10 rounded-2xl bg-orange-500 text-white flex items-center justify-center font-bold text-sm shadow">
+          <div class="w-10 h-10 rounded-2xl bg-orange-600 text-white flex items-center justify-center font-bold text-sm shadow">
             <i class="fa-solid fa-bag-shopping"></i>
           </div>
           <div>
@@ -804,23 +844,208 @@
             <span class="text-sm font-black text-white font-mono" id="floatingCartTotal">PKR 0</span>
           </div>
         </div>
-        <button onclick="openCustomerCheckoutModal()" class="px-5 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-2xl font-black text-xs flex items-center gap-2 shadow-lg shadow-orange-500/30 transition">
+        <button onclick="openCustomerCheckoutModal()" class="px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-2xl font-black text-xs flex items-center gap-2 shadow-lg shadow-orange-600/30 transition">
           View Cart & Order <i class="fa-solid fa-arrow-right text-[10px]"></i>
         </button>
       </div>
 
-      <!-- CUSTOMER CHECKOUT MODAL DRAWER -->
-      <div id="customerCheckoutModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
-        <div class="bg-[#FFF9F2] rounded-t-[36px] sm:rounded-3xl border border-orange-100 shadow-2xl max-w-md w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto custom-scroll">
+      <!-- 5. ON-PAGE SUB-AGENT CUSTOMIZATION ACTION PANEL / DRAWER -->
+      <div id="customizationOverlayModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+        <div class="bg-white rounded-t-[36px] sm:rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[92vh] flex flex-col justify-between overflow-hidden animate-in fade-in zoom-in-95 duration-200">
           
-          <div class="flex items-center justify-between border-b border-orange-100 pb-3">
+          <!-- Modal Header -->
+          <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
             <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-xl bg-orange-500 text-white flex items-center justify-center text-sm shadow-sm">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span class="text-[10px] font-black uppercase tracking-wider text-slate-500">Sub-Agent 01 Contextual Configurator</span>
+            </div>
+            <button onclick="closeCustomizationOverlay()" class="w-8 h-8 rounded-full bg-white text-slate-500 hover:text-slate-900 border border-slate-200 flex items-center justify-center text-sm transition">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Scrollable Customization Content -->
+          <div class="p-5 sm:p-6 space-y-6 overflow-y-auto custom-scroll flex-1">
+            
+            <!-- Deal Summary Card Header -->
+            <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200/70">
+              <img id="customModalImage" src="" alt="Deal" class="w-20 h-20 rounded-xl object-cover border border-slate-200 shrink-0">
+              <div class="flex-1 min-w-0">
+                <h3 class="text-base font-black text-slate-950 leading-tight" id="customModalTitle">Zinger, Strips N Dips</h3>
+                <p class="text-xs text-slate-500 mt-0.5 line-clamp-2" id="customModalDesc">4 Zingers, 8 Strips, 3 Dips & 1.5Ltr Drink</p>
+                <div class="flex items-center gap-2 mt-1.5">
+                  <span class="text-sm font-black text-slate-950 font-mono" id="customModalBasePrice">PKR 620.00</span>
+                  <span class="text-[10px] font-bold text-orange-700 bg-orange-100/70 px-2 py-0.5 rounded-full" id="customModalCalories">840 kcal</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION A: REQUIRED CHOICE SELECTION ("Choose Your Soft Drink") -->
+            <div class="space-y-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="text-xs font-black text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-glass-water text-orange-500"></i> Choose Your Soft Drink
+                  </h4>
+                  <p class="text-[11px] text-slate-500">Select 1 beverage included in your meal</p>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[9px] font-black uppercase tracking-wider">
+                  Required
+                </span>
+              </div>
+
+              <!-- Radio Group for Drinks -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
+                <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-500 cursor-pointer transition bg-slate-50/50 hover:bg-orange-50/30">
+                  <div class="flex items-center gap-2.5">
+                    <input type="radio" name="customDrinkChoice" value="Pepsi 345ml Regular" checked onchange="recalculateCustomPrice()" class="text-orange-600 focus:ring-orange-500">
+                    <span class="font-bold text-slate-800">Pepsi 345ml</span>
+                  </div>
+                  <span class="text-[10px] font-mono text-slate-400">Included</span>
+                </label>
+
+                <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-500 cursor-pointer transition bg-slate-50/50 hover:bg-orange-50/30">
+                  <div class="flex items-center gap-2.5">
+                    <input type="radio" name="customDrinkChoice" value="7Up 345ml Regular" onchange="recalculateCustomPrice()" class="text-orange-600 focus:ring-orange-500">
+                    <span class="font-bold text-slate-800">7Up 345ml</span>
+                  </div>
+                  <span class="text-[10px] font-mono text-slate-400">Included</span>
+                </label>
+
+                <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-500 cursor-pointer transition bg-slate-50/50 hover:bg-orange-50/30">
+                  <div class="flex items-center gap-2.5">
+                    <input type="radio" name="customDrinkChoice" value="Mirinda 345ml Regular" onchange="recalculateCustomPrice()" class="text-orange-600 focus:ring-orange-500">
+                    <span class="font-bold text-slate-800">Mirinda 345ml</span>
+                  </div>
+                  <span class="text-[10px] font-mono text-slate-400">Included</span>
+                </label>
+
+                <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-500 cursor-pointer transition bg-slate-50/50 hover:bg-orange-50/30">
+                  <div class="flex items-center gap-2.5">
+                    <input type="radio" name="customDrinkChoice" value="Mountain Dew 345ml" onchange="recalculateCustomPrice()" class="text-orange-600 focus:ring-orange-500">
+                    <span class="font-bold text-slate-800">Mountain Dew</span>
+                  </div>
+                  <span class="text-[10px] font-mono text-slate-400">Included</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- SECTION B: ADD-ONS & UPGRADES (Checkboxes with Incremental Modifiers) -->
+            <div class="space-y-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="text-xs font-black text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle text-orange-500"></i> Add-ons & Upgrades
+                  </h4>
+                  <p class="text-[11px] text-slate-500">Custom modifiers handled by Kitchen KDS Batcher</p>
+                </div>
+                <span class="text-[10px] font-semibold text-slate-400">Optional</span>
+              </div>
+
+              <div class="space-y-2 text-xs pt-1">
+                <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-400 cursor-pointer transition bg-slate-50/40">
+                  <div class="flex items-center gap-2.5">
+                    <input type="checkbox" id="addon-piece" value="320" onchange="recalculateCustomPrice()" class="rounded text-orange-600 focus:ring-orange-500">
+                    <div>
+                      <span class="font-bold text-slate-900 block">Extra Crispy Chicken Piece</span>
+                      <span class="text-[10px] text-slate-400">+290 kcal</span>
+                    </div>
+                  </div>
+                  <span class="font-mono font-bold text-slate-800">+ PKR 320.00</span>
+                </label>
+
+                <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-400 cursor-pointer transition bg-slate-50/40">
+                  <div class="flex items-center gap-2.5">
+                    <input type="checkbox" id="addon-sauce" value="120" onchange="recalculateCustomPrice()" class="rounded text-orange-600 focus:ring-orange-500">
+                    <div>
+                      <span class="font-bold text-slate-900 block">Colonel's Secret Garlic Mayo Dip</span>
+                      <span class="text-[10px] text-slate-400">+80 kcal</span>
+                    </div>
+                  </div>
+                  <span class="font-mono font-bold text-slate-800">+ PKR 120.00</span>
+                </label>
+
+                <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-400 cursor-pointer transition bg-slate-50/40">
+                  <div class="flex items-center gap-2.5">
+                    <input type="checkbox" id="addon-fries" value="190" onchange="recalculateCustomPrice()" class="rounded text-orange-600 focus:ring-orange-500">
+                    <div>
+                      <span class="font-bold text-slate-900 block">Cheesy Loaded Fries Upgrade</span>
+                      <span class="text-[10px] text-slate-400">+210 kcal</span>
+                    </div>
+                  </div>
+                  <span class="font-mono font-bold text-slate-800">+ PKR 190.00</span>
+                </label>
+
+                <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-400 cursor-pointer transition bg-slate-50/40">
+                  <div class="flex items-center gap-2.5">
+                    <input type="checkbox" id="addon-cheese" value="90" onchange="recalculateCustomPrice()" class="rounded text-orange-600 focus:ring-orange-500">
+                    <div>
+                      <span class="font-bold text-slate-900 block">Extra Melted Cheddar Slice</span>
+                      <span class="text-[10px] text-slate-400">+60 kcal</span>
+                    </div>
+                  </div>
+                  <span class="font-mono font-bold text-slate-800">+ PKR 90.00</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- SECTION C: SPECIAL INSTRUCTIONS (Max 140 Chars) -->
+            <div class="space-y-2 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+              <h4 class="text-xs font-black text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-pen-to-square text-orange-500"></i> Special Instructions
+              </h4>
+              <textarea id="customNotesInput" maxlength="140" oninput="updateInstructionsCounter(event)" placeholder="e.g., no mayo, extra crispy skin, well done, extra napkins" rows="2" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-orange-500 focus:outline-none transition resize-none"></textarea>
+              <div class="flex justify-between text-[10px] text-slate-400">
+                <span>Direct transmission to Kitchen KDS</span>
+                <span id="customNotesCounter">0 / 140</span>
+              </div>
+            </div>
+
+            <!-- SECTION D: DYNAMIC FALLBACK ROUTINE -->
+            <div class="space-y-2 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+              <h4 class="text-xs font-black text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-arrows-split-up-and-left text-orange-500"></i> If this product is not available:
+              </h4>
+              <select id="customFallbackSelect" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-medium focus:bg-white focus:border-orange-500 focus:outline-none transition">
+                <option value="REMOVE">Remove it from my order</option>
+                <option value="CALL">Call me to confirm alternative</option>
+                <option value="SUBSTITUTE">Substitute with nearest equivalent deal</option>
+              </select>
+            </div>
+
+          </div>
+
+          <!-- PERSISTENT BOTTOM ACTION BAR (Step Counter + Full Width Add to Cart) -->
+          <div class="p-4 sm:p-5 border-t border-slate-200 bg-white flex items-center gap-3 shrink-0 shadow-elevated">
+            <!-- Step Counter [-] 1 [+] -->
+            <div class="flex items-center bg-slate-100 rounded-2xl p-1 border border-slate-200/80 shrink-0">
+              <button onclick="adjustCustomQty(-1)" class="w-9 h-9 rounded-xl bg-white shadow-xs hover:bg-slate-200 flex items-center justify-center font-black text-sm text-slate-700 transition">-</button>
+              <span id="customQtyDisplay" class="w-8 text-center font-mono font-black text-sm text-slate-900">1</span>
+              <button onclick="adjustCustomQty(1)" class="w-9 h-9 rounded-xl bg-white shadow-xs hover:bg-slate-200 flex items-center justify-center font-black text-sm text-slate-700 transition">+</button>
+            </div>
+
+            <!-- Full-width CTA Add to Cart -->
+            <button onclick="commitCustomizedItemToCart()" class="flex-1 py-3.5 bg-orange-600 hover:bg-orange-700 active:scale-[0.99] text-white rounded-2xl font-black text-xs sm:text-sm flex items-center justify-between px-5 shadow-lg shadow-orange-600/30 transition">
+              <span>Add to Cart</span>
+              <span id="customFinalPriceButton" class="font-mono font-black">PKR 620.00</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 6. CUSTOMER CHECKOUT MODAL DRAWER -->
+      <div id="customerCheckoutModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+        <div class="bg-white rounded-t-[36px] sm:rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full p-6 space-y-4 max-h-[92vh] overflow-y-auto custom-scroll">
+          
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-orange-600 text-white flex items-center justify-center text-sm shadow-sm">
                 <i class="fa-solid fa-receipt"></i>
               </div>
               <h3 class="text-base font-black text-slate-950">Aapka Order & Details</h3>
             </div>
-            <button onclick="closeCustomerCheckoutModal()" class="w-8 h-8 rounded-full bg-white text-slate-500 hover:text-slate-800 flex items-center justify-center text-sm border border-slate-200">
+            <button onclick="closeCustomerCheckoutModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center text-sm">
               <i class="fa-solid fa-xmark"></i>
             </button>
           </div>
@@ -831,7 +1056,7 @@
           </div>
 
           <!-- Bill Summary -->
-          <div class="p-3 bg-white rounded-2xl border border-orange-100 space-y-1.5 text-xs text-slate-600">
+          <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-1.5 text-xs text-slate-600">
             <div class="flex justify-between">
               <span>Items Total:</span>
               <span class="font-mono font-bold text-slate-900" id="storefrontSubtotal">PKR 0</span>
@@ -840,7 +1065,7 @@
               <span>Delivery Fee:</span>
               <span class="font-mono font-bold text-emerald-600" id="storefrontDelivFee">Free (Promo)</span>
             </div>
-            <div class="border-t border-slate-100 pt-1 flex justify-between font-black text-sm text-slate-950">
+            <div class="border-t border-slate-200 pt-1 flex justify-between font-black text-sm text-slate-950">
               <span>Grand Total:</span>
               <span class="font-mono text-orange-600" id="storefrontCartTotal">PKR 0</span>
             </div>
@@ -850,19 +1075,19 @@
           <div class="space-y-2">
             <div>
               <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Aapka Naam (Customer Name)</label>
-              <input type="text" id="custNameInput" placeholder="Ali Khan" class="w-full text-xs p-3 rounded-2xl border border-slate-200 bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
+              <input type="text" id="custNameInput" placeholder="Ali Khan" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
             </div>
             <div>
               <label class="block text-[11px] font-bold text-slate-700 mb-0.5">WhatsApp Number (For instant delivery updates)</label>
-              <input type="tel" id="custPhoneInput" placeholder="03054122075" class="w-full text-xs p-3 rounded-2xl border border-slate-200 bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
+              <input type="tel" id="custPhoneInput" placeholder="03054122075" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
             </div>
             <div>
               <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Complete Delivery Address</label>
-              <input type="text" id="custAddressInput" placeholder="House 12, Street 4, Phase 5 DHA, Lahore" class="w-full text-xs p-3 rounded-2xl border border-slate-200 bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
+              <input type="text" id="custAddressInput" placeholder="House 12, Street 4, Phase 5 DHA, Lahore" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
             </div>
             <div>
               <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Payment Method</label>
-              <select id="custPaymentInput" class="w-full text-xs p-3 rounded-2xl border border-slate-200 bg-white font-medium focus:ring-2 focus:ring-orange-500 focus:outline-none">
+              <select id="custPaymentInput" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white font-medium focus:ring-2 focus:ring-orange-500 focus:outline-none">
                 <option value="COD">💵 Cash on Delivery (COD)</option>
                 <option value="JAZZCASH">📱 JazzCash / Easypaisa</option>
                 <option value="BANK_TRANSFER">🏦 Bank Transfer / Raast</option>
@@ -2814,17 +3039,167 @@
       });
     }
 
-    let storefrontCategoryFilter = 'ALL';
+    let kfcCategoryFilter = 'Delicious Deals';
+    let kfcSearchQuery = '';
+    let currentCustomProd = null;
+    let customQty = 1;
 
-    function filterCustomerCategory(catKey) {
-      storefrontCategoryFilter = catKey;
-      const titleEl = document.getElementById('storefrontSectionTitle');
-      if (titleEl) {
-        titleEl.innerText = catKey === 'ALL' ? 'Popular Items' : `${catKey} Menu`;
+    function handleKfcSearch(e) {
+      kfcSearchQuery = (e.target.value || '').toLowerCase().trim();
+      renderStorefront();
+    }
+
+    function filterKfcCategory(catKey) {
+      kfcCategoryFilter = catKey;
+      const headingEl = document.getElementById('kfcSectionHeading');
+      if (headingEl) {
+        headingEl.innerText = catKey === 'ALL' ? 'All Menu & Deals' : catKey;
       }
       renderStorefront();
     }
 
+    // -------------------------------------------------------------
+    // SUB-AGENT ON-PAGE CUSTOMIZATION ACTION PANEL CONTROLLER
+    // -------------------------------------------------------------
+    function openCustomizationOverlay(prodId, event) {
+      if (event) {
+        event.stopPropagation();
+      }
+      const prod = products.find(p => p.id === prodId);
+      if (!prod) return;
+
+      currentCustomProd = prod;
+      customQty = 1;
+
+      // Populate deal header info
+      document.getElementById('customModalImage').src = getProductImage(prod);
+      document.getElementById('customModalTitle').innerText = prod.name;
+      document.getElementById('customModalDesc').innerText = prod.desc || 'Crispy fast food favorite meal deal.';
+      document.getElementById('customModalBasePrice').innerText = `PKR ${prod.price.toLocaleString()}`;
+      document.getElementById('customModalCalories').innerText = `${prod.calories || 650} kcal`;
+
+      // Reset Required Drink Radio Group (default to Pepsi)
+      const drinkRadios = document.getElementsByName('customDrinkChoice');
+      if (drinkRadios && drinkRadios.length > 0) {
+        drinkRadios[0].checked = true;
+      }
+
+      // Reset Add-ons
+      ['addon-piece', 'addon-sauce', 'addon-fries', 'addon-cheese'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.checked = false;
+      });
+
+      // Reset Notes & Fallback
+      const notesEl = document.getElementById('customNotesInput');
+      if (notesEl) notesEl.value = '';
+      const notesCounter = document.getElementById('customNotesCounter');
+      if (notesCounter) notesCounter.innerText = '0 / 140';
+
+      const fallbackEl = document.getElementById('customFallbackSelect');
+      if (fallbackEl) fallbackEl.value = 'REMOVE';
+
+      document.getElementById('customQtyDisplay').innerText = '1';
+
+      recalculateCustomPrice();
+
+      const modal = document.getElementById('customizationOverlayModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeCustomizationOverlay() {
+      const modal = document.getElementById('customizationOverlayModal');
+      if (modal) modal.classList.add('hidden');
+      currentCustomProd = null;
+    }
+
+    function adjustCustomQty(delta) {
+      customQty += delta;
+      if (customQty < 1) customQty = 1;
+      if (customQty > 20) customQty = 20;
+      document.getElementById('customQtyDisplay').innerText = customQty;
+      recalculateCustomPrice();
+    }
+
+    function recalculateCustomPrice() {
+      if (!currentCustomProd) return;
+      let unitPrice = currentCustomProd.price;
+
+      // Add-ons calculation
+      if (document.getElementById('addon-piece')?.checked) unitPrice += 320;
+      if (document.getElementById('addon-sauce')?.checked) unitPrice += 120;
+      if (document.getElementById('addon-fries')?.checked) unitPrice += 190;
+      if (document.getElementById('addon-cheese')?.checked) unitPrice += 90;
+
+      const total = unitPrice * customQty;
+      const btnEl = document.getElementById('customFinalPriceButton');
+      if (btnEl) btnEl.innerText = `PKR ${total.toLocaleString()}`;
+    }
+
+    function updateInstructionsCounter(e) {
+      const len = e.target.value.length;
+      const counterEl = document.getElementById('customNotesCounter');
+      if (counterEl) counterEl.innerText = `${len} / 140`;
+    }
+
+    function commitCustomizedItemToCart() {
+      if (!currentCustomProd) return;
+
+      // Required Drink Radio verification
+      const drinkRadios = document.getElementsByName('customDrinkChoice');
+      let chosenDrink = 'Pepsi 345ml';
+      for (const r of drinkRadios) {
+        if (r.checked) {
+          chosenDrink = r.value;
+          break;
+        }
+      }
+
+      // Addons array
+      let selectedAddons = [];
+      let extraUnitCost = 0;
+      if (document.getElementById('addon-piece')?.checked) { selectedAddons.push('Extra Chicken Piece (+320)'); extraUnitCost += 320; }
+      if (document.getElementById('addon-sauce')?.checked) { selectedAddons.push('Garlic Mayo Dip (+120)'); extraUnitCost += 120; }
+      if (document.getElementById('addon-fries')?.checked) { selectedAddons.push('Cheesy Fries Upgrade (+190)'); extraUnitCost += 190; }
+      if (document.getElementById('addon-cheese')?.checked) { selectedAddons.push('Extra Cheddar (+90)'); extraUnitCost += 90; }
+
+      const notes = document.getElementById('customNotesInput')?.value.trim() || '';
+      const fallback = document.getElementById('customFallbackSelect')?.value || 'REMOVE';
+
+      // Item descriptor for cart
+      const customId = currentCustomProd.id + '-c' + Date.now().toString().slice(-4);
+      const customItem = {
+        id: customId,
+        baseId: currentCustomProd.id,
+        name: `${currentCustomProd.name} (${chosenDrink.split(' ')[0]})`,
+        price: currentCustomProd.price + extraUnitCost,
+        drink: chosenDrink,
+        addons: selectedAddons,
+        notes: notes,
+        fallback: fallback,
+        calories: currentCustomProd.calories,
+        imageUrl: getProductImage(currentCustomProd)
+      };
+
+      // Add to products temporary registry if customized
+      products.push(customItem);
+      currentCart[customId] = (currentCart[customId] || 0) + customQty;
+
+      saveState();
+      closeCustomizationOverlay();
+      renderAll();
+
+      // Show alert confirmation
+      alert(`🍗 Added to Order!
+${currentCustomProd.name} (x${customQty})
+Drink: ${chosenDrink}${selectedAddons.length > 0 ? '
+Add-ons: ' + selectedAddons.join(', ') : ''}${notes ? '
+Notes: ' + notes : ''}`);
+    }
+
+    // -------------------------------------------------------------
+    // CUSTOMER CHECKOUT MODAL DRAWER CONTROLLER
+    // -------------------------------------------------------------
     function openCustomerCheckoutModal() {
       const modal = document.getElementById('customerCheckoutModal');
       if (modal) {
@@ -2844,7 +3219,7 @@
 
       const itemIds = Object.keys(currentCart);
       if (itemIds.length === 0) {
-        list.innerHTML = '<div class="py-6 text-center text-xs text-slate-400">Cart is empty. Add your favorite dishes!</div>';
+        list.innerHTML = '<div class="py-8 text-center text-xs text-slate-400">Your cart is currently empty. Add hot deals from the menu!</div>';
         return;
       }
 
@@ -2853,18 +3228,21 @@
         const prod = products.find(p => p.id === id);
         if (prod) {
           const qty = currentCart[id];
+          const lineTotal = prod.price * qty;
           const imgUrl = getProductImage(prod);
           html += `
-            <div class="p-2.5 bg-white rounded-2xl border border-orange-100 flex items-center justify-between gap-2 shadow-sm text-xs">
-              <img src="${imgUrl}" alt="${prod.name}" class="w-10 h-10 rounded-xl object-cover shrink-0 border border-slate-100">
+            <div class="p-3 bg-white rounded-2xl border border-slate-200/80 flex items-center justify-between gap-3 shadow-xs text-xs">
+              <img src="${imgUrl}" alt="${prod.name}" class="w-12 h-12 rounded-xl object-cover shrink-0 border border-slate-100">
               <div class="flex-1 min-w-0 pr-1">
-                <span class="font-bold text-slate-900 block truncate">${prod.name}</span>
-                <span class="text-[10px] text-orange-600 font-mono font-bold">PKR ${(prod.price * qty).toLocaleString()}</span>
+                <span class="font-extrabold text-slate-900 block truncate">${prod.name}</span>
+                ${prod.drink ? `<span class="text-[10px] text-slate-500 block truncate">Drink: ${prod.drink}</span>` : ''}
+                ${prod.addons && prod.addons.length > 0 ? `<span class="text-[9px] text-orange-600 block truncate">${prod.addons.join(', ')}</span>` : ''}
+                <span class="text-xs font-mono font-black text-slate-900 block mt-0.5">PKR ${lineTotal.toLocaleString()}</span>
               </div>
-              <div class="flex items-center gap-1.5 shrink-0 bg-slate-50 p-1 rounded-xl border border-slate-200/60">
-                <button onclick="removeFromCart('${prod.id}'); renderCheckoutDrawerList();" class="w-5 h-5 rounded-lg bg-white shadow-sm flex items-center justify-center font-black text-xs text-slate-700">-</button>
+              <div class="flex items-center gap-1.5 shrink-0 bg-slate-50 p-1 rounded-xl border border-slate-200">
+                <button onclick="removeFromCart('${prod.id}'); renderCheckoutDrawerList();" class="w-6 h-6 rounded-lg bg-white shadow-xs flex items-center justify-center font-black text-xs text-slate-700 hover:bg-slate-200 transition">-</button>
                 <span class="font-mono font-bold text-xs w-4 text-center">${qty}</span>
-                <button onclick="addToCart('${prod.id}'); renderCheckoutDrawerList();" class="w-5 h-5 rounded-lg bg-orange-500 text-white shadow-sm flex items-center justify-center font-black text-xs">+</button>
+                <button onclick="addToCart('${prod.id}'); renderCheckoutDrawerList();" class="w-6 h-6 rounded-lg bg-orange-600 text-white shadow-xs flex items-center justify-center font-black text-xs hover:bg-orange-700 transition">+</button>
               </div>
             </div>
           `;
@@ -2873,90 +3251,143 @@
       list.innerHTML = html;
     }
 
+    // -------------------------------------------------------------
+    // MAIN KFC-INSPIRED DUAL-COLUMN STOREFRONT RENDERER
+    // -------------------------------------------------------------
     function renderStorefront() {
-      const pillsContainer = document.getElementById('storefrontCategoryPills');
-      const container = document.getElementById('customerProductsList');
-      if (!pillsContainer || !container) return;
+      const tabsBar = document.getElementById('kfcCategoryTabs');
+      const grid = document.getElementById('kfcDealsGrid');
+      const activeStoreName = document.getElementById('storefrontActiveStoreName');
+      const kdsMetric = document.getElementById('subagentKdsMetric');
 
-      // 1. Render Circular Category Avatars (Matching Reference Screenshot)
-      const categories = [
-        { key: 'ALL', label: 'All', icon: 'fa-solid fa-burger', img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=120&auto=format&fit=crop&q=80' },
-        { key: 'Burgers', label: 'Burger', icon: 'fa-solid fa-burger', img: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=120&auto=format&fit=crop&q=80' },
-        { key: 'Signature Pizza', label: 'Pizza', icon: 'fa-solid fa-pizza-slice', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=120&auto=format&fit=crop&q=80' },
-        { key: 'Crispy Chicken & Wings', label: 'Chicken', icon: 'fa-solid fa-drumstick-bite', img: 'https://images.unsplash.com/photo-1527477321055-43615b629c95?w=120&auto=format&fit=crop&q=80' },
-        { key: 'Fries', label: 'Snacks', icon: 'fa-solid fa-fire', img: 'https://images.unsplash.com/photo-1576107232684-1279f3908594?w=120&auto=format&fit=crop&q=80' },
-        { key: 'Single Deals', label: 'Drinks & Deals', icon: 'fa-solid fa-glass-water', img: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=120&auto=format&fit=crop&q=80' }
+      if (activeStoreName) activeStoreName.innerText = storeConfig.storeName;
+      if (kdsMetric) {
+        const liveCooking = orders.filter(o => o.status === 'PLACED' || o.status === 'COOKING').length;
+        kdsMetric.innerText = `${liveCooking} ${liveCooking === 1 ? 'Ticket' : 'Tickets'}`;
+      }
+
+      if (!tabsBar || !grid) return;
+
+      // 1. Render Category Tabs (Popular, Delicious Deals, Strong Pepsi Deals, Burgers, Pizzas, etc.)
+      const kfcCategories = [
+        'Delicious Deals',
+        'Strong Pepsi Deals',
+        'Single Deals',
+        'Special Deals',
+        'Burgers',
+        'Signature Pizza',
+        'Crispy Chicken & Wings',
+        'Fries',
+        'ALL'
       ];
 
-      pillsContainer.innerHTML = categories.map(c => {
-        const isActive = storefrontCategoryFilter === c.key;
+      tabsBar.innerHTML = kfcCategories.map(cat => {
+        const isActive = kfcCategoryFilter === cat;
         return `
-          <button onclick="filterCustomerCategory('${c.key}')" class="flex flex-col items-center gap-1.5 shrink-0 group focus:outline-none">
-            <div class="w-14 h-14 rounded-full p-0.5 border-2 transition transform duration-200 ${isActive ? 'border-orange-500 scale-105 shadow-md shadow-orange-500/25 bg-orange-500' : 'border-slate-100 bg-slate-50 group-hover:border-orange-200'} flex items-center justify-center overflow-hidden">
-              <img src="${c.img}" alt="${c.label}" class="w-full h-full object-cover rounded-full">
-            </div>
-            <span class="text-[11px] font-extrabold tracking-tight ${isActive ? 'text-orange-600' : 'text-slate-600 group-hover:text-slate-900'}">${c.label}</span>
+          <button onclick="filterKfcCategory('${cat}')" class="px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${isActive ? 'bg-slate-900 text-white shadow-subtle' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'}">
+            ${cat === 'ALL' ? 'All Items' : cat}
           </button>
         `;
       }).join('');
 
-      // 2. Filter products
-      let filtered = storefrontCategoryFilter === 'ALL' 
-        ? products 
-        : products.filter(p => (p.category || '').toLowerCase().includes(storefrontCategoryFilter.toLowerCase()));
+      // 2. Filter products based on active tab and search query
+      let filtered = products;
 
-      if (filtered.length === 0) {
-        filtered = products; // Fallback so screen never looks empty
+      if (kfcCategoryFilter !== 'ALL') {
+        if (kfcCategoryFilter === 'Delicious Deals') {
+          filtered = products.filter(p => 
+            (p.category && (p.category.includes('Deal') || p.category.includes('Feast'))) ||
+            p.name.toLowerCase().includes('deal') ||
+            p.name.toLowerCase().includes('feast') ||
+            p.name.toLowerCase().includes('box') ||
+            p.name.toLowerCase().includes('combo')
+          );
+        } else if (kfcCategoryFilter === 'Strong Pepsi Deals') {
+          filtered = products.filter(p => 
+            p.name.toLowerCase().includes('deal') || 
+            p.desc.toLowerCase().includes('drink') || 
+            p.desc.toLowerCase().includes('pepsi') ||
+            (p.category && p.category.includes('Deal'))
+          );
+        } else {
+          filtered = products.filter(p => (p.category || '').toLowerCase().includes(kfcCategoryFilter.toLowerCase()));
+        }
       }
 
-      // 3. Render Product Cards Matching Screenshot
-      container.innerHTML = filtered.map(p => {
+      if (kfcSearchQuery) {
+        filtered = filtered.filter(p => 
+          p.name.toLowerCase().includes(kfcSearchQuery) || 
+          (p.desc && p.desc.toLowerCase().includes(kfcSearchQuery)) ||
+          (p.category && p.category.toLowerCase().includes(kfcSearchQuery))
+        );
+      }
+
+      // Fallback if empty
+      if (filtered.length === 0) {
+        filtered = products.slice(0, 8);
+      }
+
+      document.getElementById('kfcItemCountLabel').innerText = `Showing ${filtered.length} Dishes`;
+
+      // 3. Render Dual-Column Cards matching KFC screenshot
+      grid.innerHTML = filtered.map(p => {
         const qty = currentCart[p.id] || 0;
         const imgUrl = getProductImage(p);
+        const isFromVariant = p.price < 400 && !p.name.toLowerCase().includes('pack');
+        const priceDisplay = isFromVariant ? `from PKR ${p.price.toLocaleString()}` : `PKR ${p.price.toLocaleString()}`;
+
         return `
-          <div class="bg-white rounded-3xl p-3.5 border border-orange-100/70 shadow-sm hover:shadow-md transition flex flex-col justify-between relative group">
-            <!-- Favorite Heart Icon -->
-            <button class="absolute top-3 right-3 w-6 h-6 rounded-full bg-slate-50 hover:bg-rose-50 text-slate-300 hover:text-rose-500 flex items-center justify-center text-[10px] transition z-10">
-              <i class="fa-solid fa-heart"></i>
-            </button>
-
-            <!-- Centered Food Image Cutout -->
-            <div class="w-full h-24 mb-2 flex items-center justify-center overflow-hidden rounded-2xl bg-orange-50/40 relative">
-              <img src="${imgUrl}" alt="${p.name}" class="w-24 h-24 object-cover rounded-2xl group-hover:scale-105 transition duration-300">
+          <div onclick="openCustomizationOverlay('${p.id}', event)" class="bg-white rounded-3xl border border-slate-200/90 hover:border-slate-400 hover:shadow-card p-4 sm:p-5 transition cursor-pointer flex flex-row items-center justify-between gap-4 group relative select-none">
+            
+            <!-- Left Column: Item Name, Price, Composition Summary & Badges -->
+            <div class="flex-1 min-w-0 pr-1 space-y-1.5">
+              <h4 class="font-extrabold text-sm sm:text-base text-slate-900 group-hover:text-orange-600 transition leading-snug line-clamp-2">
+                ${p.name}
+              </h4>
               
-              <!-- Subtle kcal badge -->
-              <span class="absolute bottom-1 left-1.5 text-[8px] font-bold text-orange-600 bg-white/90 px-1.5 py-0.5 rounded-md shadow-xs">
-                ${p.calories || 450} kcal
-              </span>
+              <div class="font-mono font-black text-xs sm:text-sm text-slate-900">
+                ${priceDisplay}
+              </div>
+
+              <p class="text-xs text-slate-500 font-normal leading-relaxed line-clamp-2">
+                ${p.desc || 'Crispy delicious chicken fillet with seasoned fries and soft drink.'}
+              </p>
+
+              <!-- Metric & Rating Tags -->
+              <div class="flex items-center gap-2 pt-1 flex-wrap">
+                <span class="text-[10px] font-bold text-orange-700 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-200/60 flex items-center gap-1">
+                  <i class="fa-solid fa-fire text-orange-500 text-[9px]"></i> Popular
+                </span>
+                <span class="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
+                  ${p.calories || 750} kcal
+                </span>
+                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 hidden sm:inline-flex items-center gap-1">
+                  <i class="fa-solid fa-thumbs-up text-emerald-600 text-[9px]"></i> 96% Match
+                </span>
+              </div>
             </div>
 
-            <!-- Title & Short Description -->
-            <div>
-              <h4 class="text-xs font-black text-slate-900 leading-tight line-clamp-1">${p.name}</h4>
-              <p class="text-[10px] text-slate-400 line-clamp-1 mt-0.5">${p.desc || 'Crispy fast food favorite'}</p>
-            </div>
-
-            <!-- Price & Add Button Row -->
-            <div class="flex items-center justify-between pt-2.5 mt-2 border-t border-slate-50">
-              <span class="text-xs font-black text-orange-600 font-mono">PKR ${p.price.toLocaleString()}</span>
+            <!-- Right Column: Food Image Asset + Embedded Floating '+' Action Circle -->
+            <div class="w-28 sm:w-36 h-28 sm:h-32 rounded-2xl relative shrink-0 overflow-hidden bg-slate-100 border border-slate-200/70">
+              <img src="${imgUrl}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
               
+              <!-- Direct Floating Action '+' Circle embedded on bottom-right corner -->
+              <button onclick="openCustomizationOverlay('${p.id}', event)" class="absolute bottom-2 right-2 w-9 h-9 rounded-full bg-white shadow-md border border-slate-200/80 flex items-center justify-center text-slate-900 hover:bg-orange-600 hover:text-white hover:border-orange-600 transition transform hover:scale-110 active:scale-95 group/btn" title="Customize Deal">
+                <i class="fa-solid fa-plus text-xs"></i>
+              </button>
+
               ${qty > 0 ? `
-                <div class="flex items-center gap-1 bg-orange-50 p-0.5 rounded-full border border-orange-200">
-                  <button onclick="removeFromCart('${p.id}')" class="w-5 h-5 rounded-full bg-white text-orange-600 font-black text-xs flex items-center justify-center shadow-xs">-</button>
-                  <span class="text-[11px] font-bold text-orange-700 w-4 text-center font-mono">${qty}</span>
-                  <button onclick="addToCart('${p.id}')" class="w-5 h-5 rounded-full bg-orange-500 text-white font-black text-xs flex items-center justify-center shadow-xs">+</button>
-                </div>
-              ` : `
-                <button onclick="addToCart('${p.id}')" class="w-7 h-7 rounded-full bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center font-black text-xs shadow-md shadow-orange-500/25 transition">
-                  <i class="fa-solid fa-plus text-[10px]"></i>
-                </button>
-              `}
+                <span class="absolute top-2 left-2 w-6 h-6 rounded-full bg-orange-600 text-white font-black text-xs flex items-center justify-center shadow-md ring-2 ring-white">
+                  ${qty}
+                </span>
+              ` : ''}
             </div>
+
           </div>
         `;
       }).join('');
 
-      // 4. Calculate Subtotal and Update Floating Trays
+      // 4. Update Cart Totals & Floating Bar
       let subtotal = 0;
       let count = 0;
       Object.keys(currentCart).forEach(id => {
@@ -2971,17 +3402,10 @@
       const grandTotal = count > 0 ? subtotal + deliveryFee : 0;
 
       // Update Top Cart Badge
-      const topBadge = document.getElementById('storefrontCartBadgeTop');
-      if (topBadge) {
-        if (count > 0) {
-          topBadge.innerText = count;
-          topBadge.classList.remove('hidden');
-        } else {
-          topBadge.classList.add('hidden');
-        }
-      }
+      const headerCartCount = document.getElementById('storefrontHeaderCartCount');
+      if (headerCartCount) headerCartCount.innerText = count;
 
-      // Update Floating Bottom Cart Bar
+      // Update Floating Bottom Bar
       const floatingCart = document.getElementById('storefrontFloatingCart');
       if (floatingCart) {
         if (count > 0) {
