@@ -1,0 +1,33 @@
+{
+  "clientId": "sultan-spice-01",
+  "clientName": "Sultan Spice Biryani & Grill",
+  "slug": "sultan-spice",
+  "status": "PILOT_ACTIVE",
+  "owner": {
+    "name": "Sultan Muhammad",
+    "phone": "0300-1234567",
+    "whatsapp": "923001234567",
+    "email": "owner@sultan.pk"
+  },
+  "location": {
+    "city": "Lahore",
+    "branch": "DHA Phase 5",
+    "address": "Shop 12, Commercial Area, Phase 5 DHA, Lahore"
+  },
+  "database": {
+    "provider": "Supabase PostgreSQL",
+    "region": "ap-southeast-2",
+    "projectId": "utdpjnaorqpjsdyxiixs",
+    "poolerUrl": "postgresql://postgres.utdpjnaorqpjsdyxiixs:ilyIyB7dux9eM9wc@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres"
+  },
+  "paymentMethods": {
+    "cod": true,
+    "jazzcash": true,
+    "easypaisa": true,
+    "bankTransfer": true
+  },
+  "links": {
+    "local": "http://192.168.1.12:3000",
+    "live": "https://tricky-candies-carry.loca.lt"
+  }
+}

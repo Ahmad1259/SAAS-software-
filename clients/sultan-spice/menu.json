@@ -1,0 +1,44 @@
+{
+  "currency": "PKR",
+  "categories": [
+    {
+      "name": "Biryani & Rice",
+      "items": [
+        {
+          "name": "Special Chicken Dum Biryani",
+          "price": 650,
+          "description": "Aromatic long-grain basmati with marinated chicken and potato.",
+          "stock": 50
+        }
+      ]
+    },
+    {
+      "name": "BBQ & Grills",
+      "items": [
+        {
+          "name": "Mutton Shinwari Karahi (Half KG)",
+          "price": 1750,
+          "description": "Desi ghee cooked fresh tender mutton with tomatoes and green chilies.",
+          "stock": 25
+        },
+        {
+          "name": "Chicken Malai Boti Platter",
+          "price": 850,
+          "description": "Melt-in-mouth chicken cubes marinated in heavy cream and spices.",
+          "stock": 30
+        }
+      ]
+    },
+    {
+      "name": "Sides & Drinks",
+      "items": [
+        {
+          "name": "Mint Raita & Fresh Salad",
+          "price": 120,
+          "description": "Chilled yogurt dip with cucumber and fresh garden salad.",
+          "stock": 100
+        }
+      ]
+    }
+  ]
+}

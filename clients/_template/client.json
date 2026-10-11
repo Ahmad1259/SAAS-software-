@@ -1,0 +1,29 @@
+{
+  "clientId": "client-id-here",
+  "clientName": "Restaurant Name Here",
+  "slug": "restaurant-slug",
+  "status": "ONBOARDING",
+  "owner": {
+    "name": "Owner Name",
+    "phone": "03xx-xxxxxxx",
+    "whatsapp": "923xxxxxxxxx",
+    "email": "owner@domain.pk"
+  },
+  "location": {
+    "city": "Lahore",
+    "branch": "Main Branch",
+    "address": ""
+  },
+  "database": {
+    "provider": "Supabase PostgreSQL",
+    "region": "ap-southeast-2",
+    "projectId": "",
+    "poolerUrl": ""
+  },
+  "paymentMethods": {
+    "cod": true,
+    "jazzcash": false,
+    "easypaisa": false,
+    "bankTransfer": false
+  }
+}
