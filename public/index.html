@@ -101,14 +101,17 @@
           <button onclick="switchTab('copilot')" id="tab-btn-copilot" class="nav-tab px-3 py-1.5 rounded-lg text-slate-900 bg-white shadow-subtle font-semibold flex items-center gap-1.5 transition">
             <i class="fa-solid fa-wand-magic-sparkles text-brand-600"></i> Co-Pilot Grid
           </button>
+          <button onclick="switchTab('pos')" id="tab-btn-pos" class="nav-tab px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-cash-register text-emerald-600"></i> Cashier POS
+          </button>
           <button onclick="switchTab('storefront')" id="tab-btn-storefront" class="nav-tab px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition">
             <i class="fa-solid fa-store"></i> Storefront
           </button>
           <button onclick="switchTab('kitchen')" id="tab-btn-kitchen" class="nav-tab px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-fire-burner"></i> Kitchen KDS
+            <i class="fa-solid fa-fire-burner text-amber-500"></i> Kitchen KDS
           </button>
           <button onclick="switchTab('dispatch')" id="tab-btn-dispatch" class="nav-tab px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-motorcycle"></i> Dispatch & Riders
+            <i class="fa-solid fa-motorcycle text-cyan-500"></i> Dispatch & Riders
           </button>
         </div>
 
@@ -443,7 +446,199 @@
     </div>
 
     <!-- ============================================================== -->
-    <!-- SECTION 2: CUSTOMER STOREFRONT (Mobile-first Linear Aesthetic) -->
+    <!-- SECTION 2: CASHIER POS MODULE (Dine-In, Takeaway & Split Pay) -->
+    <!-- ============================================================== -->
+    <div id="view-pos" class="space-y-6 view-section hidden">
+      <!-- POS Top Controls Bar -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-subtle flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">Point of Sale Active</span>
+            <span class="text-xs font-mono text-slate-500" id="posActiveStoreLabel">Store: Burger Cottage</span>
+          </div>
+          <h2 class="text-lg font-extrabold tracking-tight text-slate-950 mt-1">Cashier Counter & Order Punching Register</h2>
+          <p class="text-xs text-slate-500">Handle walk-in Dine-In, Counter Takeaways, and direct Deliveries with instant Split Payment support.</p>
+        </div>
+
+        <!-- Order Mode Selector -->
+        <div class="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200/70">
+          <button onclick="setPosOrderType('DINE_IN')" id="pos-btn-dinein" class="pos-type-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-white text-slate-900 shadow-subtle">
+            <i class="fa-solid fa-utensils text-brand-600"></i> 🍽️ Dine-In
+          </button>
+          <button onclick="setPosOrderType('TAKEAWAY')" id="pos-btn-takeaway" class="pos-type-btn px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 transition flex items-center gap-2">
+            <i class="fa-solid fa-bag-shopping text-emerald-600"></i> 🛍️ Takeaway
+          </button>
+          <button onclick="setPosOrderType('DELIVERY')" id="pos-btn-delivery" class="pos-type-btn px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 transition flex items-center gap-2">
+            <i class="fa-solid fa-motorcycle text-cyan-600"></i> 🛵 Delivery
+          </button>
+        </div>
+      </div>
+
+      <!-- POS Main Grid (Catalog + Running Ticket) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left: Product Grid & Category Filters (8 Cols) -->
+        <div class="lg:col-span-8 space-y-4">
+          <!-- Category Filter Bar -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-1" id="posCategoryFilters">
+            <!-- Dynamically populated -->
+          </div>
+
+          <!-- Product Cards Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5" id="posProductsGrid">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Right: Active Order Ticket & Checkout (4 Cols) -->
+        <div class="lg:col-span-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-subtle space-y-4 flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h3 class="text-sm font-extrabold text-slate-950 flex items-center gap-2">
+                  <i class="fa-solid fa-receipt text-slate-400"></i> Current POS Ticket
+                </h3>
+                <span class="text-[11px] font-bold text-brand-600" id="posTicketTypeBadge">🍽️ Dine-In Order</span>
+              </div>
+              <button onclick="clearPosCart()" class="text-xs text-red-500 hover:text-red-700 font-semibold flex items-center gap-1">
+                <i class="fa-solid fa-trash-can text-[10px]"></i> Clear
+              </button>
+            </div>
+
+            <!-- Context Inputs (Table No for Dine-In / Customer for Takeaway / Phone for Delivery) -->
+            <div id="posContextInputs" class="space-y-2">
+              <div id="posTableNoContainer">
+                <label class="block text-[11px] font-bold text-slate-600 mb-1">Table Number</label>
+                <input type="text" id="posTableNoInput" placeholder="e.g. Table 1, Table 4, Counter 2" value="Table 1" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+              </div>
+              <div id="posCustomerNameContainer" class="hidden">
+                <label class="block text-[11px] font-bold text-slate-600 mb-1">Customer / Token Name</label>
+                <input type="text" id="posCustomerNameInput" placeholder="Walk-in Customer Name" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+              </div>
+              <div id="posDeliveryDetailsContainer" class="hidden space-y-2">
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-600 mb-1">WhatsApp / Phone</label>
+                  <input type="tel" id="posDeliveryPhoneInput" placeholder="03xxxxxxxxx" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-600 mb-1">Delivery Address</label>
+                  <input type="text" id="posDeliveryAddressInput" placeholder="House / Street / Area" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+                </div>
+              </div>
+            </div>
+
+            <!-- Items List -->
+            <div class="space-y-2 max-h-64 overflow-y-auto pr-1 custom-scroll" id="posTicketItemsList">
+              <div class="py-8 text-center text-slate-400 text-xs">
+                <i class="fa-solid fa-basket-shopping text-2xl text-slate-200 mb-1 block"></i>
+                No items added yet. Tap products on the left.
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Totals & Payment Actions -->
+          <div class="pt-4 border-t border-slate-100 space-y-3">
+            <div class="space-y-1.5 text-xs text-slate-600">
+              <div class="flex justify-between">
+                <span>Subtotal</span>
+                <span class="font-mono font-bold text-slate-900" id="posSubtotal">PKR 0</span>
+              </div>
+              <div class="flex justify-between" id="posDeliveryRow">
+                <span>Delivery Fee</span>
+                <span class="font-mono font-bold text-slate-900" id="posDeliveryFee">PKR 0</span>
+              </div>
+              <div class="flex justify-between text-base font-extrabold text-slate-950 pt-2 border-t border-slate-100">
+                <span>Net Payable:</span>
+                <span class="font-mono text-emerald-700" id="posGrandTotal">PKR 0</span>
+              </div>
+            </div>
+
+            <!-- Fast Payment Buttons -->
+            <div class="grid grid-cols-2 gap-2 pt-2">
+              <button onclick="punchPosOrder('CASH')" class="py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-subtle">
+                <i class="fa-solid fa-money-bill-wave text-emerald-400"></i> Cash
+              </button>
+              <button onclick="punchPosOrder('DIGITAL')" class="py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-mobile-screen-button text-brand-600"></i> JazzCash/Bank
+              </button>
+            </div>
+            <!-- Split Payment Button (Tor Kar Payment) -->
+            <button onclick="openSplitPaymentModal()" class="w-full py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-subtle">
+              <i class="fa-solid fa-arrows-split-up-and-left text-sm"></i> Split Payment (Tor Kar Payment)
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SPLIT PAYMENT MODAL -->
+    <div id="splitPaymentModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+      <div class="bg-white rounded-3xl border border-slate-200/80 shadow-elevated max-w-md w-full p-6 space-y-5">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-sm shadow-subtle">
+              <i class="fa-solid fa-arrows-split-up-and-left"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-extrabold text-slate-950">Split Multi-Tender Payment</h3>
+              <p class="text-[11px] text-slate-500">Divide bill between Cash and Digital Wallet</p>
+            </div>
+          </div>
+          <button onclick="closeSplitPaymentModal()" class="text-slate-400 hover:text-slate-600 text-xs p-1">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+
+        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/60 flex items-center justify-between">
+          <span class="text-xs font-semibold text-slate-600">Total Bill Amount:</span>
+          <span class="text-lg font-black font-mono text-slate-950" id="splitModalTotalBill">PKR 0</span>
+        </div>
+
+        <div class="space-y-3 text-xs">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">1. Cash Tender (Counter Cash)</label>
+            <div class="relative">
+              <span class="absolute left-3 top-2.5 font-bold text-slate-400 text-xs">PKR</span>
+              <input type="number" id="splitCashInput" oninput="calculateSplitRemaining()" placeholder="0" class="w-full text-xs pl-12 pr-3 py-2.5 rounded-xl border border-slate-200 bg-white font-mono font-bold focus:ring-2 focus:ring-emerald-500 focus:outline-none transition">
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">2. Digital Tender (JazzCash / EasyPaisa / Bank)</label>
+            <div class="grid grid-cols-2 gap-2 mb-1.5">
+              <select id="splitDigitalMethod" class="text-xs p-2.5 rounded-xl border border-slate-200 bg-white font-medium">
+                <option value="JAZZCASH">JazzCash</option>
+                <option value="EASYPAISA">EasyPaisa</option>
+                <option value="BANK_TRANSFER">Bank / Raast</option>
+              </select>
+              <div class="relative">
+                <span class="absolute left-3 top-2.5 font-bold text-slate-400 text-xs">PKR</span>
+                <input type="number" id="splitDigitalInput" oninput="calculateSplitRemaining()" placeholder="0" class="w-full text-xs pl-12 pr-3 py-2.5 rounded-xl border border-slate-200 bg-white font-mono font-bold focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+              </div>
+            </div>
+            <input type="text" id="splitDigitalTid" placeholder="Transaction Ref / TID (e.g. TID-98213)" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none">
+          </div>
+
+          <div class="p-3 rounded-xl border flex items-center justify-between font-semibold bg-slate-50 border-slate-200 text-slate-700" id="splitBalanceBox">
+            <span id="splitBalanceLabel">Remaining Balance:</span>
+            <span class="font-mono font-black" id="splitBalanceAmount">PKR 0</span>
+          </div>
+        </div>
+
+        <div class="pt-2 flex items-center gap-2">
+          <button onclick="confirmSplitPayment()" id="splitConfirmBtn" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-subtle transition flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-check-circle"></i> Settle Bill & Send to Kitchen
+          </button>
+          <button onclick="closeSplitPaymentModal()" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- SECTION 3: CUSTOMER STOREFRONT (Mobile-first Linear Aesthetic) -->
     <!-- ============================================================== -->
     <div id="view-storefront" class="max-w-md mx-auto space-y-5 view-section hidden">
       <div class="bg-white rounded-3xl border border-slate-200/80 shadow-card overflow-hidden">
@@ -579,6 +774,7 @@
 
         <div class="pt-4 border-t border-slate-100 text-xs bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-slate-600 font-mono text-[11px] space-y-1">
           <p>• Admin: <strong>admin / 123456</strong></p>
+          <p>• Cashier: <strong>cashier / 123456</strong></p>
           <p>• Kitchen: <strong>chef / 123456</strong></p>
           <p>• Rider: <strong>rider / 123456</strong></p>
         </div>
@@ -616,6 +812,7 @@
     // State storage
     const initialUsers = [
       { username: 'admin', password: '123456', role: 'ADMIN', name: 'Platform Admin' },
+      { username: 'cashier', password: '123456', role: 'CASHIER', name: 'Front Counter Cashier' },
       { username: 'chef', password: '123456', role: 'CHEF', name: 'Master Chef' },
       { username: 'rider', password: '123456', role: 'RIDER', name: 'Fleet Courier' }
     ];
@@ -915,6 +1112,390 @@
       }
     }
 
+    // ==============================================================
+    // CASHIER POS LOGIC (Dine-In, Takeaway, Delivery & Split Payment)
+    // ==============================================================
+    let posCart = {}; // { [productId]: qty }
+    let posOrderType = 'DINE_IN'; // 'DINE_IN', 'TAKEAWAY', 'DELIVERY'
+    let posCategoryFilter = 'ALL';
+
+    function setPosOrderType(type) {
+      posOrderType = type;
+      document.querySelectorAll('.pos-type-btn').forEach(b => {
+        b.classList.remove('bg-white', 'text-slate-900', 'shadow-subtle', 'font-bold');
+        b.classList.add('text-slate-600', 'font-medium');
+      });
+
+      const typeKey = type.toLowerCase().replace('_', '');
+      const btn = document.getElementById(`pos-btn-${typeKey}`);
+      if (btn) {
+        btn.classList.add('bg-white', 'text-slate-900', 'shadow-subtle', 'font-bold');
+        btn.classList.remove('text-slate-600', 'font-medium');
+      }
+
+      const tableCont = document.getElementById('posTableNoContainer');
+      const custCont = document.getElementById('posCustomerNameContainer');
+      const delivCont = document.getElementById('posDeliveryDetailsContainer');
+      const badge = document.getElementById('posTicketTypeBadge');
+
+      if (tableCont && custCont && delivCont && badge) {
+        if (type === 'DINE_IN') {
+          tableCont.classList.remove('hidden');
+          custCont.classList.add('hidden');
+          delivCont.classList.add('hidden');
+          badge.innerText = '🍽️ Dine-In Order';
+          badge.className = 'text-[11px] font-bold text-purple-700';
+        } else if (type === 'TAKEAWAY') {
+          tableCont.classList.add('hidden');
+          custCont.classList.remove('hidden');
+          delivCont.classList.add('hidden');
+          badge.innerText = '🛍️ Counter Takeaway';
+          badge.className = 'text-[11px] font-bold text-emerald-700';
+        } else if (type === 'DELIVERY') {
+          tableCont.classList.add('hidden');
+          custCont.classList.add('hidden');
+          delivCont.classList.remove('hidden');
+          badge.innerText = '🛵 Home Delivery';
+          badge.className = 'text-[11px] font-bold text-cyan-700';
+        }
+      }
+
+      renderPosTicket();
+    }
+
+    function addToPosCart(prodId) {
+      posCart[prodId] = (posCart[prodId] || 0) + 1;
+      renderPosTicket();
+      renderPosGrid();
+    }
+
+    function removeFromPosCart(prodId) {
+      if (posCart[prodId]) {
+        posCart[prodId]--;
+        if (posCart[prodId] <= 0) delete posCart[prodId];
+      }
+      renderPosTicket();
+      renderPosGrid();
+    }
+
+    function clearPosCart() {
+      posCart = {};
+      renderPosTicket();
+      renderPosGrid();
+    }
+
+    function filterPosCategory(cat) {
+      posCategoryFilter = cat;
+      renderPosGrid();
+    }
+
+    function renderPos() {
+      const activeStoreLabel = document.getElementById('posActiveStoreLabel');
+      if (activeStoreLabel) activeStoreLabel.innerText = `Store: ${storeConfig.storeName}`;
+      renderPosGrid();
+      renderPosTicket();
+    }
+
+    function renderPosGrid() {
+      const filterBar = document.getElementById('posCategoryFilters');
+      const grid = document.getElementById('posProductsGrid');
+      if (!filterBar || !grid) return;
+
+      const categories = ['ALL', ...new Set(products.map(p => p.category || 'General'))];
+      filterBar.innerHTML = categories.map(cat => `
+        <button onclick="filterPosCategory('${cat}')" class="px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition ${posCategoryFilter === cat ? 'bg-slate-950 text-white font-bold shadow-subtle' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium'}">
+          ${cat}
+        </button>
+      `).join('');
+
+      const filteredProducts = posCategoryFilter === 'ALL' ? products : products.filter(p => (p.category || 'General') === posCategoryFilter);
+
+      if (filteredProducts.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-4 py-12 text-center bg-white rounded-2xl border border-slate-200 p-6 space-y-3">
+            <i class="fa-solid fa-burger text-3xl text-slate-300"></i>
+            <p class="text-xs font-bold text-slate-700">Catalog is currently empty</p>
+            <p class="text-[11px] text-slate-400">Load sample Burger Cottage or Sultan Spice menu below:</p>
+            <div class="flex items-center justify-center gap-2 pt-2">
+              <button onclick="loadPresetClientMenu('burger-cottage')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-subtle transition">
+                🍔 Load Burger Cottage Menu
+              </button>
+              <button onclick="loadPresetClientMenu('sultan-spice')" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-subtle transition">
+                🍛 Load Sultan Spice Menu
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filteredProducts.map(p => {
+        const qty = posCart[p.id] || 0;
+        return `
+          <div onclick="addToPosCart('${p.id}')" class="bg-white p-3.5 rounded-2xl border ${qty > 0 ? 'border-emerald-500 shadow-card bg-emerald-50/20' : 'border-slate-200/80 shadow-subtle'} hover:border-emerald-400 cursor-pointer transition select-none flex flex-col justify-between h-36">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-[9px] uppercase tracking-wider font-extrabold text-slate-400 truncate max-w-[80px]">${p.category || 'Food'}</span>
+                ${qty > 0 ? `<span class="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-black flex items-center justify-center">${qty}</span>` : ''}
+              </div>
+              <h4 class="text-xs font-bold text-slate-900 mt-1 line-clamp-2 leading-tight">${p.name}</h4>
+            </div>
+            <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+              <span class="text-xs font-mono font-black text-slate-950">PKR ${p.price}</span>
+              <button class="w-6 h-6 rounded-lg bg-slate-100 hover:bg-emerald-600 hover:text-white text-slate-700 flex items-center justify-center text-xs font-bold transition">+</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderPosTicket() {
+      const list = document.getElementById('posTicketItemsList');
+      const subtotalEl = document.getElementById('posSubtotal');
+      const delivEl = document.getElementById('posDeliveryFee');
+      const delivRow = document.getElementById('posDeliveryRow');
+      const totalEl = document.getElementById('posGrandTotal');
+      if (!list || !subtotalEl || !delivEl || !totalEl) return;
+
+      const itemIds = Object.keys(posCart);
+      if (itemIds.length === 0) {
+        list.innerHTML = `
+          <div class="py-8 text-center text-slate-400 text-xs">
+            <i class="fa-solid fa-basket-shopping text-2xl text-slate-200 mb-1 block"></i>
+            No items in ticket yet. Tap items to add.
+          </div>
+        `;
+        subtotalEl.innerText = 'PKR 0';
+        delivEl.innerText = 'PKR 0';
+        totalEl.innerText = 'PKR 0';
+        return;
+      }
+
+      let subtotal = 0;
+      let html = '';
+
+      itemIds.forEach(id => {
+        const prod = products.find(p => p.id === id);
+        if (prod) {
+          const qty = posCart[id];
+          const lineTotal = prod.price * qty;
+          subtotal += lineTotal;
+          html += `
+            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs">
+              <div class="flex-1 pr-2 truncate">
+                <span class="font-bold text-slate-900 block truncate">${prod.name}</span>
+                <span class="text-[10px] text-slate-500 font-mono">PKR ${prod.price} each</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button onclick="removeFromPosCart('${prod.id}')" class="w-5 h-5 rounded bg-white border border-slate-200 text-slate-700 hover:bg-slate-200 text-xs font-bold flex items-center justify-center">-</button>
+                <span class="font-bold text-xs w-4 text-center">${qty}</span>
+                <button onclick="addToPosCart('${prod.id}')" class="w-5 h-5 rounded bg-white border border-slate-200 text-slate-700 hover:bg-slate-200 text-xs font-bold flex items-center justify-center">+</button>
+                <span class="font-mono font-bold text-slate-900 ml-1.5 w-14 text-right">PKR ${lineTotal}</span>
+              </div>
+            </div>
+          `;
+        }
+      });
+
+      list.innerHTML = html;
+
+      const deliveryFee = posOrderType === 'DELIVERY' ? (storeConfig.deliveryFee || 150) : 0;
+      const grandTotal = subtotal + deliveryFee;
+
+      subtotalEl.innerText = `PKR ${subtotal.toLocaleString()}`;
+      delivEl.innerText = `PKR ${deliveryFee.toLocaleString()}`;
+      if (posOrderType === 'DELIVERY') {
+        if (delivRow) delivRow.classList.remove('hidden');
+      } else {
+        if (delivRow) delivRow.classList.add('hidden');
+      }
+      totalEl.innerText = `PKR ${grandTotal.toLocaleString()}`;
+    }
+
+    function getPosOrderDetails() {
+      const itemIds = Object.keys(posCart);
+      if (itemIds.length === 0) {
+        alert('Ticket is empty! Please add at least one product.');
+        return null;
+      }
+
+      let orderItems = [];
+      let subtotal = 0;
+      itemIds.forEach(id => {
+        const prod = products.find(p => p.id === id);
+        if (prod) {
+          const qty = posCart[id];
+          orderItems.push({ name: prod.name, qty, price: prod.price });
+          subtotal += prod.price * qty;
+        }
+      });
+
+      const deliveryFee = posOrderType === 'DELIVERY' ? (storeConfig.deliveryFee || 150) : 0;
+      const total = subtotal + deliveryFee;
+      const orderId = 'ORD-' + Math.floor(1000 + Math.random() * 9000);
+
+      let customerName = 'Walk-in Customer';
+      let phone = '';
+      let address = 'Dine-In / Store Counter';
+      let tableNo = '';
+
+      if (posOrderType === 'DINE_IN') {
+        tableNo = document.getElementById('posTableNoInput')?.value.trim() || 'Table 1';
+        customerName = `Dine-In (${tableNo})`;
+        address = `Dine-In (${tableNo})`;
+      } else if (posOrderType === 'TAKEAWAY') {
+        customerName = document.getElementById('posCustomerNameInput')?.value.trim() || 'Counter Takeaway';
+        address = 'Takeaway Parcel';
+      } else if (posOrderType === 'DELIVERY') {
+        phone = document.getElementById('posDeliveryPhoneInput')?.value.trim() || '';
+        address = document.getElementById('posDeliveryAddressInput')?.value.trim() || '';
+        customerName = 'Delivery Customer';
+        if (!phone || !address) {
+          alert('Delivery orders require Phone Number and Delivery Address!');
+          return null;
+        }
+      }
+
+      return {
+        id: orderId,
+        orderType: posOrderType,
+        tableNo,
+        customerName,
+        customerPhone: phone,
+        phone,
+        address,
+        items: orderItems,
+        deliveryFee,
+        total,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+    }
+
+    function punchPosOrder(paymentMethod) {
+      const orderData = getPosOrderDetails();
+      if (!orderData) return;
+
+      const newOrder = {
+        ...orderData,
+        paymentMethod: paymentMethod,
+        paymentStatus: 'PAID',
+        status: 'COOKING'
+      };
+
+      orders.unshift(newOrder);
+      saveState();
+      clearPosCart();
+      renderAll();
+      alert(`✅ Order ${newOrder.id} (${newOrder.orderType}) Punched Successfully!\nPayment: ${paymentMethod} (PAID)\nSent straight to Kitchen KDS.`);
+    }
+
+    function openSplitPaymentModal() {
+      const orderData = getPosOrderDetails();
+      if (!orderData) return;
+
+      document.getElementById('splitModalTotalBill').innerText = `PKR ${orderData.total.toLocaleString()}`;
+      document.getElementById('splitCashInput').value = Math.floor(orderData.total / 2);
+      document.getElementById('splitDigitalInput').value = orderData.total - Math.floor(orderData.total / 2);
+      document.getElementById('splitPaymentModal').classList.remove('hidden');
+      calculateSplitRemaining();
+    }
+
+    function closeSplitPaymentModal() {
+      document.getElementById('splitPaymentModal').classList.add('hidden');
+    }
+
+    function calculateSplitRemaining() {
+      const orderData = getPosOrderDetails();
+      if (!orderData) return;
+
+      const total = orderData.total;
+      const cash = parseFloat(document.getElementById('splitCashInput').value) || 0;
+      const digital = parseFloat(document.getElementById('splitDigitalInput').value) || 0;
+      const diff = total - (cash + digital);
+
+      const balanceBox = document.getElementById('splitBalanceBox');
+      const balanceLabel = document.getElementById('splitBalanceLabel');
+      const balanceAmount = document.getElementById('splitBalanceAmount');
+      const confirmBtn = document.getElementById('splitConfirmBtn');
+
+      if (diff === 0) {
+        balanceBox.className = 'p-3 rounded-xl border flex items-center justify-between font-semibold bg-emerald-50 border-emerald-300 text-emerald-800';
+        balanceLabel.innerText = 'Balance Settled (Exact):';
+        balanceAmount.innerText = 'PKR 0';
+        confirmBtn.disabled = false;
+        confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      } else if (diff > 0) {
+        balanceBox.className = 'p-3 rounded-xl border flex items-center justify-between font-semibold bg-amber-50 border-amber-300 text-amber-800';
+        balanceLabel.innerText = 'Amount Remaining (Short):';
+        balanceAmount.innerText = `PKR ${diff.toLocaleString()}`;
+        confirmBtn.disabled = true;
+        confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        balanceBox.className = 'p-3 rounded-xl border flex items-center justify-between font-semibold bg-blue-50 border-blue-300 text-blue-800';
+        balanceLabel.innerText = 'Change to Return:';
+        balanceAmount.innerText = `PKR ${Math.abs(diff).toLocaleString()}`;
+        confirmBtn.disabled = false;
+        confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    }
+
+    function confirmSplitPayment() {
+      const orderData = getPosOrderDetails();
+      if (!orderData) return;
+
+      const cash = parseFloat(document.getElementById('splitCashInput').value) || 0;
+      const digital = parseFloat(document.getElementById('splitDigitalInput').value) || 0;
+      const digitalMethod = document.getElementById('splitDigitalMethod').value;
+      const digitalTid = document.getElementById('splitDigitalTid').value.trim();
+
+      const newOrder = {
+        ...orderData,
+        paymentMethod: 'SPLIT',
+        paymentStatus: 'PAID',
+        paymentDetails: {
+          cash,
+          digital,
+          digitalMethod,
+          digitalTid
+        },
+        status: 'COOKING'
+      };
+
+      orders.unshift(newOrder);
+      saveState();
+      closeSplitPaymentModal();
+      clearPosCart();
+      renderAll();
+      alert(`✅ Split Payment Settled for Order ${newOrder.id}!\nCash: PKR ${cash}\n${digitalMethod}: PKR ${digital} (Ref: ${digitalTid || 'N/A'})\nSent straight to Kitchen KDS.`);
+    }
+
+    function loadPresetClientMenu(clientSlug) {
+      if (clientSlug === 'burger-cottage') {
+        storeConfig.storeName = 'Burger Cottage';
+        storeConfig.whatsapp = '923009998877';
+        products = [
+          { id: 'bc-1', name: 'Crispy Zinger Burger', price: 550, category: 'Burgers', desc: 'Crispy golden fried chicken fillet with lettuce & secret sauce.', stock: 50 },
+          { id: 'bc-2', name: 'Smash Beef Cheeseburger', price: 750, category: 'Burgers', desc: 'Juicy grilled double beef patty with melted cheese.', stock: 30 },
+          { id: 'bc-3', name: 'Classic Grilled Chicken Burger', price: 490, category: 'Burgers', desc: 'Tender grilled chicken patty with chipotle mayo.', stock: 40 },
+          { id: 'bc-4', name: 'Cheesy Loaded Fries', price: 450, category: 'Sides & Fries', desc: 'Crispy French fries with cheese sauce & jalapeños.', stock: 60 },
+          { id: 'bc-5', name: 'Crispy Chicken Nuggets (6 Pcs)', price: 350, category: 'Sides & Fries', desc: 'Golden battered tender chicken nuggets.', stock: 40 },
+          { id: 'bc-6', name: 'Soft Drink (345ml Can)', price: 120, category: 'Beverages', desc: 'Chilled Coke / Sprite / Fanta.', stock: 100 },
+          { id: 'bc-7', name: 'Thick Chocolate Shake', price: 380, category: 'Beverages', desc: 'Belgian rich chocolate shake.', stock: 25 }
+        ];
+      } else {
+        storeConfig.storeName = 'Sultan Spice Biryani & Grill';
+        storeConfig.whatsapp = '923001234567';
+        products = [
+          { id: 'prod-1', name: 'Special Chicken Dum Biryani', price: 650, category: 'Biryani & Rice', desc: 'Aromatic long-grain basmati with chicken.', stock: 50 },
+          { id: 'prod-2', name: 'Mutton Shinwari Karahi (Half KG)', price: 1750, category: 'BBQ & Grills', desc: 'Desi ghee tender mutton.', stock: 25 },
+          { id: 'prod-3', name: 'Mint Raita & Fresh Salad', price: 120, category: 'Sides & Drinks', desc: 'Chilled yogurt cucumber dip.', stock: 80 }
+        ];
+      }
+      saveState();
+      renderAll();
+      alert(`Switched active store to: ${storeConfig.storeName} with full catalog loaded!`);
+    }
+
     // Render Master
     function renderAll() {
       document.getElementById('topStoreName').innerText = storeConfig.storeName;
@@ -924,6 +1505,7 @@
       renderAuthControls();
       renderMetrics();
       renderUnifiedQueue();
+      renderPos();
       renderStorefront();
       renderKitchenKDS();
       renderDispatch();
@@ -1096,10 +1678,24 @@
           <div class="bg-white rounded-2xl border ${isCooking ? 'border-amber-400 shadow-card' : 'border-slate-200/80'} p-5 flex flex-col justify-between space-y-4 shadow-subtle">
             <div>
               <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <span class="text-xs font-extrabold text-amber-700">Batch Ticket #${qIndex + 1}</span>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-xs font-black text-amber-700">#${qIndex + 1}</span>
+                  ${o.orderType === 'DINE_IN' ? `<span class="bg-purple-100 text-purple-800 font-extrabold px-2 py-0.5 rounded-full text-[10px]">🍽️ DINE-IN (${o.tableNo || 'Table'})</span>` : ''}
+                  ${o.orderType === 'TAKEAWAY' ? `<span class="bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-full text-[10px]">🛍️ TAKEAWAY</span>` : ''}
+                  ${o.orderType === 'DELIVERY' || !o.orderType ? `<span class="bg-cyan-100 text-cyan-800 font-extrabold px-2 py-0.5 rounded-full text-[10px]">🛵 DELIVERY</span>` : ''}
+                </div>
                 <span class="font-mono text-xs font-black text-slate-900">${o.id}</span>
               </div>
-              <p class="text-[11px] text-slate-400 mt-2">Placed: <strong>${o.time}</strong></p>
+              <div class="flex items-center justify-between text-[11px] text-slate-500 mt-2">
+                <span>Placed: <strong>${o.time}</strong></span>
+                ${o.paymentMethod === 'SPLIT' ? `
+                  <span class="text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded text-[10px]">
+                    Split: Rs.${o.paymentDetails?.cash || 0} + Rs.${o.paymentDetails?.digital || 0} (${o.paymentDetails?.digitalMethod || 'Digital'})
+                  </span>
+                ` : `
+                  <span class="font-bold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded text-[10px]">${o.paymentMethod} • ${o.paymentStatus}</span>
+                `}
+              </div>
               
               <div class="mt-3 space-y-1.5 p-3 rounded-xl bg-slate-50 border border-slate-100">
                 ${o.items.map(item => `
