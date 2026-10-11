@@ -699,69 +699,187 @@
     </div>
 
     <!-- ============================================================== -->
-    <!-- SECTION 3: CUSTOMER STOREFRONT (Mobile-first Linear Aesthetic) -->
+    <!-- SECTION 3: CUSTOMER STOREFRONT (MOBILE-APP LUXURY FAST FOOD UI) -->
     <!-- ============================================================== -->
-    <div id="view-storefront" class="max-w-md mx-auto space-y-5 view-section hidden">
-      <div class="bg-white rounded-3xl border border-slate-200/80 shadow-card overflow-hidden">
-        <!-- Banner & Branding -->
-        <div class="p-6 bg-gradient-to-tr from-slate-950 to-slate-800 text-white space-y-3 relative overflow-hidden">
-          <div class="flex items-center justify-between">
-            <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-white/10 text-slate-200 border border-white/10 flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-mint-400 animate-pulse"></span> Accepting Orders
+    <div id="view-storefront" class="max-w-md md:max-w-lg mx-auto view-section hidden pb-24">
+      
+      <!-- Outer App Frame with Warm Cream Background -->
+      <div class="bg-[#FFF9F2] text-slate-900 rounded-[36px] border border-orange-100 shadow-xl overflow-hidden p-4 md:p-6 space-y-5 font-sans">
+        
+        <!-- TOP APP HEADER -->
+        <div class="flex items-center justify-between px-1 pt-1">
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-2xl bg-orange-500 text-white flex items-center justify-center text-lg shadow-md shadow-orange-500/30">
+              <i class="fa-solid fa-burger"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-black text-slate-950 leading-tight" id="storefrontHeading">Burger Cottage</h3>
+              <p class="text-[10px] text-slate-500 flex items-center gap-1">
+                <i class="fa-solid fa-location-dot text-orange-500"></i> Defence Cantt, Lahore · 40 Min Delivery
+              </p>
+            </div>
+          </div>
+          <button onclick="openCustomerCheckoutModal()" class="relative p-2.5 rounded-2xl bg-white border border-orange-100 shadow-sm text-slate-700 hover:text-orange-600 transition">
+            <i class="fa-solid fa-bag-shopping text-base"></i>
+            <span id="storefrontCartBadgeTop" class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-orange-500 text-white text-[10px] font-black flex items-center justify-center shadow hidden">0</span>
+          </button>
+        </div>
+
+        <!-- 1. HERO PROMO BANNER (HOT DEALS) -->
+        <div class="relative bg-gradient-to-r from-[#FFE8D6] via-[#FFF0E5] to-[#FFEFE0] rounded-3xl p-5 overflow-hidden border border-orange-200/50 shadow-sm">
+          <div class="max-w-[62%] space-y-2 z-10 relative">
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white text-orange-600 text-[10px] font-black shadow-sm tracking-wide">
+              🔥 Hot Deals
             </span>
-            <span class="text-xs text-slate-400 font-mono" id="storefrontHours">Open • Delivery & Pickup</span>
+            <h2 class="text-xl font-black text-slate-950 leading-tight tracking-tight">
+              Delicious Fast Food
+            </h2>
+            <p class="text-[11px] text-slate-600 leading-snug">
+              Get your favorite fast food at your door in 40 mins.
+            </p>
+            <button onclick="filterCustomerCategory('Single Deals')" class="mt-1 px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-full font-black text-xs inline-flex items-center gap-1.5 shadow-md shadow-orange-500/30 transition">
+              Order Now <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </button>
+          </div>
+
+          <!-- Hero Food Image -->
+          <div class="absolute -right-4 -bottom-3 w-40 h-36 pointer-events-none">
+            <img src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=500&auto=format&fit=crop&q=80" alt="Fast Food Feast" class="w-full h-full object-contain drop-shadow-xl transform hover:scale-105 transition">
+          </div>
+
+          <!-- Carousel Dots -->
+          <div class="flex items-center justify-center gap-1.5 pt-3 mt-1">
+            <span class="w-5 h-1.5 rounded-full bg-orange-500"></span>
+            <span class="w-1.5 h-1.5 rounded-full bg-orange-200"></span>
+            <span class="w-1.5 h-1.5 rounded-full bg-orange-200"></span>
+          </div>
+        </div>
+
+        <!-- 2. CIRCULAR CATEGORY PILLS BAR -->
+        <div class="bg-white rounded-3xl p-3.5 border border-orange-100 shadow-sm">
+          <div class="flex items-center justify-between gap-2 overflow-x-auto custom-scroll pb-1" id="storefrontCategoryPills">
+            <!-- Dynamically populated category round buttons -->
+          </div>
+        </div>
+
+        <!-- 3. POPULAR ITEMS SECTION -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between px-1">
+            <h3 class="text-base font-black text-slate-950 tracking-tight" id="storefrontSectionTitle">Popular Items</h3>
+            <button onclick="filterCustomerCategory('ALL')" class="text-xs font-bold text-orange-600 hover:text-orange-700 flex items-center gap-1">
+              View All <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </button>
+          </div>
+
+          <!-- Popular Items Cards Grid (2-columns on mobile, 3-cols on tablet) -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3.5" id="customerProductsList">
+            <!-- Rendered via renderStorefront() -->
+          </div>
+        </div>
+
+        <!-- 4. BOTTOM FLASH OFFER PROMO BANNER -->
+        <div class="bg-gradient-to-r from-amber-100/90 to-orange-100/80 rounded-3xl p-4 border border-orange-200/60 shadow-sm flex items-center justify-between gap-3">
+          <div class="space-y-0.5">
+            <span class="text-[10px] font-black text-orange-700 uppercase tracking-wider flex items-center gap-1">
+              <i class="fa-solid fa-bolt"></i> Flash Offer
+            </span>
+            <h4 class="text-sm font-black text-slate-950">Get 20% OFF on your first order</h4>
+            <p class="text-[10px] text-slate-500 font-medium">Use code <span class="font-bold text-orange-600">COTTAGE20</span> at checkout</p>
+          </div>
+          <button onclick="filterCustomerCategory('ALL')" class="w-9 h-9 rounded-full bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-orange-500/30 transition">
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- FLOATING CHECKOUT BAR (WHEN CART HAS ITEMS) -->
+      <div id="storefrontFloatingCart" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md bg-slate-950 text-white rounded-3xl p-3.5 shadow-2xl border border-white/10 flex items-center justify-between z-40 transition-all transform duration-300 hidden">
+        <div class="flex items-center gap-3 pl-2">
+          <div class="w-10 h-10 rounded-2xl bg-orange-500 text-white flex items-center justify-center font-bold text-sm shadow">
+            <i class="fa-solid fa-bag-shopping"></i>
           </div>
           <div>
-            <h2 class="text-xl font-extrabold tracking-tight" id="storefrontHeading">Sultan Spice Biryani</h2>
-            <p class="text-xs text-slate-400 mt-0.5 flex items-center gap-1">
-              <i class="fa-solid fa-location-dot text-brand-500"></i> Lahore, Pakistan • WhatsApp Integrated
-            </p>
+            <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 block" id="floatingCartCount">0 Items in Cart</span>
+            <span class="text-sm font-black text-white font-mono" id="floatingCartTotal">PKR 0</span>
           </div>
         </div>
+        <button onclick="openCustomerCheckoutModal()" class="px-5 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-2xl font-black text-xs flex items-center gap-2 shadow-lg shadow-orange-500/30 transition">
+          View Cart & Order <i class="fa-solid fa-arrow-right text-[10px]"></i>
+        </button>
+      </div>
 
-        <!-- WhatsApp Ingestion Banner -->
-        <div class="p-3 bg-emerald-50/70 border-b border-emerald-100 flex items-center justify-between text-xs text-emerald-900 px-5">
-          <div class="flex items-center gap-2">
-            <i class="fa-brands fa-whatsapp text-emerald-600 text-base"></i>
-            <span class="font-medium">1-Click WhatsApp Instant Handoff</span>
-          </div>
-          <span class="font-mono font-bold text-emerald-800" id="storefrontPhoneBadge">923001234567</span>
-        </div>
-
-        <!-- Menu Listings -->
-        <div class="p-5 space-y-3" id="customerProductsList">
-          <!-- Dynamically populated -->
-        </div>
-
-        <!-- Checkout / Floating Cart Tray -->
-        <div class="p-5 bg-slate-50 border-t border-slate-200/60 space-y-3">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-[11px] text-slate-500 font-medium">Cart Total (incl. Delivery)</p>
-              <h4 class="text-lg font-extrabold text-slate-950" id="storefrontCartTotal">PKR 0</h4>
+      <!-- CUSTOMER CHECKOUT MODAL DRAWER -->
+      <div id="customerCheckoutModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+        <div class="bg-[#FFF9F2] rounded-t-[36px] sm:rounded-3xl border border-orange-100 shadow-2xl max-w-md w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto custom-scroll">
+          
+          <div class="flex items-center justify-between border-b border-orange-100 pb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-orange-500 text-white flex items-center justify-center text-sm shadow-sm">
+                <i class="fa-solid fa-receipt"></i>
+              </div>
+              <h3 class="text-base font-black text-slate-950">Aapka Order & Details</h3>
             </div>
-            <span class="text-xs font-bold px-2.5 py-1 bg-white border border-slate-200 text-slate-700 rounded-full" id="storefrontCartCount">0 items</span>
+            <button onclick="closeCustomerCheckoutModal()" class="w-8 h-8 rounded-full bg-white text-slate-500 hover:text-slate-800 flex items-center justify-center text-sm border border-slate-200">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
           </div>
 
+          <!-- Cart Review List -->
+          <div class="space-y-2 max-h-48 overflow-y-auto custom-scroll pr-1" id="checkoutItemsList">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <!-- Bill Summary -->
+          <div class="p-3 bg-white rounded-2xl border border-orange-100 space-y-1.5 text-xs text-slate-600">
+            <div class="flex justify-between">
+              <span>Items Total:</span>
+              <span class="font-mono font-bold text-slate-900" id="storefrontSubtotal">PKR 0</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Delivery Fee:</span>
+              <span class="font-mono font-bold text-emerald-600" id="storefrontDelivFee">Free (Promo)</span>
+            </div>
+            <div class="border-t border-slate-100 pt-1 flex justify-between font-black text-sm text-slate-950">
+              <span>Grand Total:</span>
+              <span class="font-mono text-orange-600" id="storefrontCartTotal">PKR 0</span>
+            </div>
+          </div>
+
+          <!-- Customer Address & Contact Form -->
           <div class="space-y-2">
-            <input type="text" id="custNameInput" placeholder="Aapka Naam (Customer Name)" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition">
-            <input type="tel" id="custPhoneInput" placeholder="WhatsApp Number (03xxxxxxxxx)" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition">
-            <input type="text" id="custAddressInput" placeholder="Delivery Address / Area (Lahore)" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition">
-            <select id="custPaymentInput" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white font-medium">
-              <option value="COD">Cash on Delivery (COD)</option>
-              <option value="BANK_TRANSFER">Direct Bank Transfer / Raast</option>
-              <option value="JAZZCASH">JazzCash / Easypaisa</option>
-            </select>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Aapka Naam (Customer Name)</label>
+              <input type="text" id="custNameInput" placeholder="Ali Khan" class="w-full text-xs p-3 rounded-2xl border border-slate-200 bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-0.5">WhatsApp Number (For instant delivery updates)</label>
+              <input type="tel" id="custPhoneInput" placeholder="03054122075" class="w-full text-xs p-3 rounded-2xl border border-slate-200 bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Complete Delivery Address</label>
+              <input type="text" id="custAddressInput" placeholder="House 12, Street 4, Phase 5 DHA, Lahore" class="w-full text-xs p-3 rounded-2xl border border-slate-200 bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Payment Method</label>
+              <select id="custPaymentInput" class="w-full text-xs p-3 rounded-2xl border border-slate-200 bg-white font-medium focus:ring-2 focus:ring-orange-500 focus:outline-none">
+                <option value="COD">💵 Cash on Delivery (COD)</option>
+                <option value="JAZZCASH">📱 JazzCash / Easypaisa</option>
+                <option value="BANK_TRANSFER">🏦 Bank Transfer / Raast</option>
+              </select>
+            </div>
           </div>
 
-          <button onclick="placeCustomerOrder()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-subtle transition">
-            <i class="fa-brands fa-whatsapp text-base"></i> Send Order on WhatsApp
+          <!-- Checkout Button -->
+          <button onclick="placeCustomerOrder()" class="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-2xl font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/25 transition">
+            <i class="fa-brands fa-whatsapp text-base"></i> Confirm & Send Order on WhatsApp
           </button>
         </div>
       </div>
+
     </div>
 
-    <!-- ============================================================== -->
+    <!-- ============================================================== --><!-- ============================================================== -->
     <!-- SECTION 3: KITCHEN PRODUCTION DISPLAY (Sub-Agent 3 Batcher)    -->
     <!-- ============================================================== -->
     <div id="view-kitchen" class="space-y-6 view-section hidden">
@@ -2696,31 +2814,149 @@
       });
     }
 
-    function renderStorefront() {
-      const container = document.getElementById('customerProductsList');
-      container.innerHTML = '';
+    let storefrontCategoryFilter = 'ALL';
 
-      products.forEach(p => {
-        const qty = currentCart[p.id] || 0;
-        container.innerHTML += `
-          <div class="p-4 bg-white border border-slate-200/80 rounded-2xl flex items-center justify-between gap-3 shadow-subtle hover:border-slate-300 transition">
-            <div class="flex-1">
-              <span class="text-[10px] font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full">${p.category}</span>
-              <h4 class="text-xs font-bold text-slate-950 mt-1">${p.name}</h4>
-              <p class="text-[11px] text-slate-500 line-clamp-1">${p.desc}</p>
-              <p class="text-xs font-mono font-extrabold text-slate-900 mt-1">PKR ${p.price}</p>
+    function filterCustomerCategory(catKey) {
+      storefrontCategoryFilter = catKey;
+      const titleEl = document.getElementById('storefrontSectionTitle');
+      if (titleEl) {
+        titleEl.innerText = catKey === 'ALL' ? 'Popular Items' : `${catKey} Menu`;
+      }
+      renderStorefront();
+    }
+
+    function openCustomerCheckoutModal() {
+      const modal = document.getElementById('customerCheckoutModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        renderCheckoutDrawerList();
+      }
+    }
+
+    function closeCustomerCheckoutModal() {
+      const modal = document.getElementById('customerCheckoutModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function renderCheckoutDrawerList() {
+      const list = document.getElementById('checkoutItemsList');
+      if (!list) return;
+
+      const itemIds = Object.keys(currentCart);
+      if (itemIds.length === 0) {
+        list.innerHTML = '<div class="py-6 text-center text-xs text-slate-400">Cart is empty. Add your favorite dishes!</div>';
+        return;
+      }
+
+      let html = '';
+      itemIds.forEach(id => {
+        const prod = products.find(p => p.id === id);
+        if (prod) {
+          const qty = currentCart[id];
+          const imgUrl = getProductImage(prod);
+          html += `
+            <div class="p-2.5 bg-white rounded-2xl border border-orange-100 flex items-center justify-between gap-2 shadow-sm text-xs">
+              <img src="${imgUrl}" alt="${prod.name}" class="w-10 h-10 rounded-xl object-cover shrink-0 border border-slate-100">
+              <div class="flex-1 min-w-0 pr-1">
+                <span class="font-bold text-slate-900 block truncate">${prod.name}</span>
+                <span class="text-[10px] text-orange-600 font-mono font-bold">PKR ${(prod.price * qty).toLocaleString()}</span>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0 bg-slate-50 p-1 rounded-xl border border-slate-200/60">
+                <button onclick="removeFromCart('${prod.id}'); renderCheckoutDrawerList();" class="w-5 h-5 rounded-lg bg-white shadow-sm flex items-center justify-center font-black text-xs text-slate-700">-</button>
+                <span class="font-mono font-bold text-xs w-4 text-center">${qty}</span>
+                <button onclick="addToCart('${prod.id}'); renderCheckoutDrawerList();" class="w-5 h-5 rounded-lg bg-orange-500 text-white shadow-sm flex items-center justify-center font-black text-xs">+</button>
+              </div>
             </div>
-            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200/60 p-1 rounded-xl">
+          `;
+        }
+      });
+      list.innerHTML = html;
+    }
+
+    function renderStorefront() {
+      const pillsContainer = document.getElementById('storefrontCategoryPills');
+      const container = document.getElementById('customerProductsList');
+      if (!pillsContainer || !container) return;
+
+      // 1. Render Circular Category Avatars (Matching Reference Screenshot)
+      const categories = [
+        { key: 'ALL', label: 'All', icon: 'fa-solid fa-burger', img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=120&auto=format&fit=crop&q=80' },
+        { key: 'Burgers', label: 'Burger', icon: 'fa-solid fa-burger', img: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=120&auto=format&fit=crop&q=80' },
+        { key: 'Signature Pizza', label: 'Pizza', icon: 'fa-solid fa-pizza-slice', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=120&auto=format&fit=crop&q=80' },
+        { key: 'Crispy Chicken & Wings', label: 'Chicken', icon: 'fa-solid fa-drumstick-bite', img: 'https://images.unsplash.com/photo-1527477321055-43615b629c95?w=120&auto=format&fit=crop&q=80' },
+        { key: 'Fries', label: 'Snacks', icon: 'fa-solid fa-fire', img: 'https://images.unsplash.com/photo-1576107232684-1279f3908594?w=120&auto=format&fit=crop&q=80' },
+        { key: 'Single Deals', label: 'Drinks & Deals', icon: 'fa-solid fa-glass-water', img: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=120&auto=format&fit=crop&q=80' }
+      ];
+
+      pillsContainer.innerHTML = categories.map(c => {
+        const isActive = storefrontCategoryFilter === c.key;
+        return `
+          <button onclick="filterCustomerCategory('${c.key}')" class="flex flex-col items-center gap-1.5 shrink-0 group focus:outline-none">
+            <div class="w-14 h-14 rounded-full p-0.5 border-2 transition transform duration-200 ${isActive ? 'border-orange-500 scale-105 shadow-md shadow-orange-500/25 bg-orange-500' : 'border-slate-100 bg-slate-50 group-hover:border-orange-200'} flex items-center justify-center overflow-hidden">
+              <img src="${c.img}" alt="${c.label}" class="w-full h-full object-cover rounded-full">
+            </div>
+            <span class="text-[11px] font-extrabold tracking-tight ${isActive ? 'text-orange-600' : 'text-slate-600 group-hover:text-slate-900'}">${c.label}</span>
+          </button>
+        `;
+      }).join('');
+
+      // 2. Filter products
+      let filtered = storefrontCategoryFilter === 'ALL' 
+        ? products 
+        : products.filter(p => (p.category || '').toLowerCase().includes(storefrontCategoryFilter.toLowerCase()));
+
+      if (filtered.length === 0) {
+        filtered = products; // Fallback so screen never looks empty
+      }
+
+      // 3. Render Product Cards Matching Screenshot
+      container.innerHTML = filtered.map(p => {
+        const qty = currentCart[p.id] || 0;
+        const imgUrl = getProductImage(p);
+        return `
+          <div class="bg-white rounded-3xl p-3.5 border border-orange-100/70 shadow-sm hover:shadow-md transition flex flex-col justify-between relative group">
+            <!-- Favorite Heart Icon -->
+            <button class="absolute top-3 right-3 w-6 h-6 rounded-full bg-slate-50 hover:bg-rose-50 text-slate-300 hover:text-rose-500 flex items-center justify-center text-[10px] transition z-10">
+              <i class="fa-solid fa-heart"></i>
+            </button>
+
+            <!-- Centered Food Image Cutout -->
+            <div class="w-full h-24 mb-2 flex items-center justify-center overflow-hidden rounded-2xl bg-orange-50/40 relative">
+              <img src="${imgUrl}" alt="${p.name}" class="w-24 h-24 object-cover rounded-2xl group-hover:scale-105 transition duration-300">
+              
+              <!-- Subtle kcal badge -->
+              <span class="absolute bottom-1 left-1.5 text-[8px] font-bold text-orange-600 bg-white/90 px-1.5 py-0.5 rounded-md shadow-xs">
+                ${p.calories || 450} kcal
+              </span>
+            </div>
+
+            <!-- Title & Short Description -->
+            <div>
+              <h4 class="text-xs font-black text-slate-900 leading-tight line-clamp-1">${p.name}</h4>
+              <p class="text-[10px] text-slate-400 line-clamp-1 mt-0.5">${p.desc || 'Crispy fast food favorite'}</p>
+            </div>
+
+            <!-- Price & Add Button Row -->
+            <div class="flex items-center justify-between pt-2.5 mt-2 border-t border-slate-50">
+              <span class="text-xs font-black text-orange-600 font-mono">PKR ${p.price.toLocaleString()}</span>
+              
               ${qty > 0 ? `
-                <button onclick="removeFromCart('${p.id}')" class="w-6 h-6 rounded-lg bg-white shadow-subtle flex items-center justify-center text-slate-700 font-bold hover:bg-slate-200 text-xs">-</button>
-                <span class="text-xs font-bold w-4 text-center">${qty}</span>
-              ` : ''}
-              <button onclick="addToCart('${p.id}')" class="w-6 h-6 rounded-lg bg-slate-950 text-white flex items-center justify-center font-bold hover:bg-slate-800 text-xs">+</button>
+                <div class="flex items-center gap-1 bg-orange-50 p-0.5 rounded-full border border-orange-200">
+                  <button onclick="removeFromCart('${p.id}')" class="w-5 h-5 rounded-full bg-white text-orange-600 font-black text-xs flex items-center justify-center shadow-xs">-</button>
+                  <span class="text-[11px] font-bold text-orange-700 w-4 text-center font-mono">${qty}</span>
+                  <button onclick="addToCart('${p.id}')" class="w-5 h-5 rounded-full bg-orange-500 text-white font-black text-xs flex items-center justify-center shadow-xs">+</button>
+                </div>
+              ` : `
+                <button onclick="addToCart('${p.id}')" class="w-7 h-7 rounded-full bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center font-black text-xs shadow-md shadow-orange-500/25 transition">
+                  <i class="fa-solid fa-plus text-[10px]"></i>
+                </button>
+              `}
             </div>
           </div>
         `;
-      });
+      }).join('');
 
+      // 4. Calculate Subtotal and Update Floating Trays
       let subtotal = 0;
       let count = 0;
       Object.keys(currentCart).forEach(id => {
@@ -2731,8 +2967,39 @@
         }
       });
 
-      document.getElementById('storefrontCartTotal').innerText = `PKR ${subtotal > 0 ? subtotal + storeConfig.deliveryFee : 0}`;
-      document.getElementById('storefrontCartCount').innerText = `${count} items`;
+      const deliveryFee = storeConfig.deliveryFee || 0;
+      const grandTotal = count > 0 ? subtotal + deliveryFee : 0;
+
+      // Update Top Cart Badge
+      const topBadge = document.getElementById('storefrontCartBadgeTop');
+      if (topBadge) {
+        if (count > 0) {
+          topBadge.innerText = count;
+          topBadge.classList.remove('hidden');
+        } else {
+          topBadge.classList.add('hidden');
+        }
+      }
+
+      // Update Floating Bottom Cart Bar
+      const floatingCart = document.getElementById('storefrontFloatingCart');
+      if (floatingCart) {
+        if (count > 0) {
+          floatingCart.classList.remove('hidden');
+          document.getElementById('floatingCartCount').innerText = `${count} ${count === 1 ? 'Item' : 'Items'} in Cart`;
+          document.getElementById('floatingCartTotal').innerText = `PKR ${grandTotal.toLocaleString()}`;
+        } else {
+          floatingCart.classList.add('hidden');
+        }
+      }
+
+      // Update Modal Totals
+      const subEl = document.getElementById('storefrontSubtotal');
+      const delEl = document.getElementById('storefrontDelivFee');
+      const totEl = document.getElementById('storefrontCartTotal');
+      if (subEl) subEl.innerText = `PKR ${subtotal.toLocaleString()}`;
+      if (delEl) delEl.innerText = deliveryFee === 0 ? 'Free (Promo)' : `PKR ${deliveryFee.toLocaleString()}`;
+      if (totEl) totEl.innerText = `PKR ${grandTotal.toLocaleString()}`;
     }
 
     function renderKitchenKDS() {
