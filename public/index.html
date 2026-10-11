@@ -83,9 +83,13 @@
         <div class="h-4 w-px bg-slate-200 hidden sm:block"></div>
 
         <!-- Store Name Display -->
-        <div class="hidden sm:flex items-center gap-2 text-xs text-slate-500">
-          <span>Tenant:</span>
-          <strong class="text-slate-900 font-semibold" id="topStoreName">Sultan Spice Biryani & Grill</strong>
+        <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
+          <button onclick="loadPresetClientMenu('burger-cottage')" id="tenantBtnBurger" class="px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 bg-emerald-600 text-white shadow-sm">
+            🍔 Burger Cottage (97)
+          </button>
+          <button onclick="loadPresetClientMenu('sultan-spice')" id="tenantBtnSultan" class="px-2 py-1 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">
+            🍛 Sultan Spice
+          </button>
         </div>
       </div>
 
@@ -820,677 +824,8 @@
 
   <!-- JAVASCRIPT STATE ENGINE & AUTONOMOUS AGENT LOGIC -->
   <script>
-    // State storage
-    const initialUsers = [
-      { username: 'admin', password: '123456', role: 'ADMIN', name: 'Platform Admin' },
-      { username: 'cashier', password: '123456', role: 'CASHIER', name: 'Front Counter Cashier' },
-      { username: 'chef', password: '123456', role: 'CHEF', name: 'Master Chef' },
-      { username: 'rider', password: '123456', role: 'RIDER', name: 'Fleet Courier' }
-    ];
-
-    let storeConfig = JSON.parse(localStorage.getItem('storeConfig')) || {
-      storeName: 'Sultan Spice Biryani & Grill',
-      whatsapp: '923001234567',
-      deliveryFee: 150
-    };
-
-    let users = JSON.parse(localStorage.getItem('storeUsers')) || initialUsers;
-    let products = JSON.parse(localStorage.getItem('storeProducts')) || [];
-    let orders = JSON.parse(localStorage.getItem('storeOrders')) || [];
-    let currentAuthUser = JSON.parse(localStorage.getItem('currentAuthUser')) || null;
-    let currentCart = {};
-
-    function resetToBlankData() {
-      if (confirm('Kya aap saara dummy data (dishes aur orders) mukammal khatam karna chahte hain taake apna real data enter kar sakein?')) {
-        localStorage.removeItem('storeProducts');
-        localStorage.removeItem('storeOrders');
-        products = [];
-        orders = [];
-        currentCart = {};
-        saveState();
-        renderAll();
-        alert('Data mukammal saaf ho gaya hai! Ab aap "Add Menu Item" se apni real dishes daal sakte hain.');
-      }
-    }
-
-    function getWhatsAppUpdateUrl(order, status) {
-      let rawPhone = (order.customerPhone || order.phone || '').replace(/[^0-9]/g, '');
-      if (rawPhone.startsWith('0')) rawPhone = '92' + rawPhone.substring(1);
-      if (!rawPhone.startsWith('92') && rawPhone.length === 10) rawPhone = '92' + rawPhone;
-
-      let msg = '';
-      if (status === 'COOKING') {
-        msg = `Assalam-o-Alaikum ${order.customerName}! 👨‍🍳🔥\n\n*${storeConfig.storeName}* ki kitchen ne aapka *Order #${order.id}* banana shuru kar diya hai!\n\nTaza aur lazeez khana tayyar ho raha hai.`;
-      } else if (status === 'READY_FOR_PICKUP') {
-        msg = `Assalam-o-Alaikum ${order.customerName}! 🍲✨\n\nAapka *Order #${order.id}* bilkul pack aur tayyar hai!\nRider ko handover kiya ja raha hai.`;
-      } else if (status === 'SHIPPED') {
-        msg = `Assalam-o-Alaikum ${order.customerName}! 🛵💨\n\nRider aapka *Order #${order.id}* le kar nikal chuka hai!\n\n📍 Delivery Address: ${order.address}\n💵 Total Bill: PKR ${order.total} (${order.paymentMethod})\n\nJald pohnch raha hai!`;
-      } else if (status === 'COMPLETED') {
-        msg = `Assalam-o-Alaikum ${order.customerName}! ✅\n\nAapka *Order #${order.id}* kamyabi se deliver ho gaya hai.\n*${storeConfig.storeName}* se order karne ka shukriya! Enjoy your meal! ❤️`;
-      } else {
-        msg = `Assalam-o-Alaikum ${order.customerName}! Aapke *Order #${order.id}* ka status update: *${status}*.`;
-      }
-
-      return `https://wa.me/${rawPhone}?text=${encodeURIComponent(msg)}`;
-    }
-
-    function promptWhatsAppNotification(order, status) {
-      const url = getWhatsAppUpdateUrl(order, status);
-      const statusLabels = {
-        'COOKING': 'Khana Ban Raha Hai 👨‍🍳🔥',
-        'READY_FOR_PICKUP': 'Khana Tayyar Hai 🍲✨',
-        'SHIPPED': 'Rider Nikal Chuka Hai 🛵💨',
-        'COMPLETED': 'Order Delivered ✅'
-      };
-
-      const toast = document.getElementById('whatsappNotifyToast');
-      if (toast) {
-        document.getElementById('notifyStatusTitle').innerText = statusLabels[status] || status;
-        document.getElementById('notifyCustomerName').innerText = `${order.customerName} (${order.customerPhone || order.phone || 'No phone'})`;
-        document.getElementById('notifyPreviewText').innerText = `Click karein customer ko direct WhatsApp message bhejney ke liye.`;
-        const sendBtn = document.getElementById('notifySendWhatsAppBtn');
-        sendBtn.onclick = () => {
-          window.open(url, '_blank');
-          toast.classList.add('hidden');
-        };
-        toast.classList.remove('hidden');
-      }
-    }
-
-    function saveState() {
-      localStorage.setItem('storeConfig', JSON.stringify(storeConfig));
-      localStorage.setItem('storeUsers', JSON.stringify(users));
-      localStorage.setItem('storeProducts', JSON.stringify(products));
-      localStorage.setItem('storeOrders', JSON.stringify(orders));
-      localStorage.setItem('currentAuthUser', JSON.stringify(currentAuthUser));
-    }
-
-    // Tab Navigation
-    function switchTab(tabId) {
-      document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.nav-tab').forEach(b => {
-        b.classList.remove('bg-white', 'text-slate-900', 'shadow-subtle', 'font-semibold');
-        b.classList.add('text-slate-600');
-      });
-
-      const activeBtn = document.getElementById(`tab-btn-${tabId}`);
-      if (activeBtn) {
-        activeBtn.classList.add('bg-white', 'text-slate-900', 'shadow-subtle', 'font-semibold');
-        activeBtn.classList.remove('text-slate-600');
-      }
-
-      const activeSection = document.getElementById(`view-${tabId}`);
-      if (activeSection) activeSection.classList.remove('hidden');
-
-      renderAll();
-    }
-
-    function showLoginView() {
-      document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-      document.getElementById('view-login').classList.remove('hidden');
-    }
-
-    function handlePortalLogin(e) {
-      e.preventDefault();
-      const u = document.getElementById('loginUsername').value.trim().toLowerCase();
-      const p = document.getElementById('loginPassword').value.trim();
-
-      const user = users.find(acc => acc.username.toLowerCase() === u && acc.password === p);
-      if (!user) {
-        alert('Invalid credentials!');
-        return;
-      }
-
-      currentAuthUser = user;
-      saveState();
-      e.target.reset();
-      switchTab('copilot');
-    }
-
-    function handleLogout() {
-      currentAuthUser = null;
-      saveState();
-      switchTab('copilot');
-    }
-
-    // Cart logic
-    function addToCart(prodId) {
-      currentCart[prodId] = (currentCart[prodId] || 0) + 1;
-      renderStorefront();
-    }
-
-    function removeFromCart(prodId) {
-      if (currentCart[prodId]) {
-        currentCart[prodId]--;
-        if (currentCart[prodId] <= 0) delete currentCart[prodId];
-      }
-      renderStorefront();
-    }
-
-    // WhatsApp Order Placement (Sub-Agent 1 Simulation)
-    function placeCustomerOrder() {
-      const name = document.getElementById('custNameInput').value.trim();
-      const phone = document.getElementById('custPhoneInput').value.trim();
-      const address = document.getElementById('custAddressInput').value.trim();
-      const paymentMethod = document.getElementById('custPaymentInput').value;
-
-      const itemIds = Object.keys(currentCart);
-      if (itemIds.length === 0) {
-        alert('Please add at least one item to your cart!');
-        return;
-      }
-      if (!name || !phone || !address) {
-        alert('Please enter your Name, WhatsApp Phone Number, and Delivery Address!');
-        return;
-      }
-
-      let orderItems = [];
-      let subtotal = 0;
-      itemIds.forEach(id => {
-        const prod = products.find(p => p.id === id);
-        if (prod) {
-          const qty = currentCart[id];
-          orderItems.push({ name: prod.name, qty, price: prod.price });
-          subtotal += prod.price * qty;
-        }
-      });
-
-      const total = subtotal + storeConfig.deliveryFee;
-      const orderId = 'ORD-' + Math.floor(1000 + Math.random() * 9000);
-
-      const newOrder = {
-        id: orderId,
-        customerName: name,
-        customerPhone: phone,
-        phone: phone,
-        address: address,
-        items: orderItems,
-        deliveryFee: storeConfig.deliveryFee,
-        total: total,
-        paymentMethod: paymentMethod,
-        paymentStatus: paymentMethod === 'COD' ? 'AWAITING_PAYMENT' : 'PAYMENT_SUBMITTED',
-        status: 'PLACED',
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-
-      orders.push(newOrder);
-      saveState();
-
-      // Trigger Sub-Agent 1 stream output simulation
-      document.getElementById('nlpAgentStreamOutput').innerText = JSON.stringify({
-        event: "CHAT_INGESTED",
-        orderId,
-        customer: name,
-        destination: address,
-        total: `PKR ${total}`,
-        assignedRider: "Courier Usman (Auto-Proximate)"
-      }, null, 2);
-
-      // Construct prefilled WhatsApp link
-      let message = `*NEW ORDER: ${orderId}*\n`;
-      message += `*Customer:* ${name}\n`;
-      message += `*Address:* ${address}\n`;
-      message += `*Payment:* ${paymentMethod}\n\n`;
-      message += `*ITEMS:*\n`;
-      orderItems.forEach(item => {
-        message += `• ${item.qty}x ${item.name} = PKR ${item.qty * item.price}\n`;
-      });
-      message += `\n*Delivery Fee:* PKR ${storeConfig.deliveryFee}\n`;
-      message += `*TOTAL AMOUNT:* PKR ${total}\n\n`;
-      message += `_Processed via Autonomous Sub-Agents_`;
-
-      const encodedMsg = encodeURIComponent(message);
-      const whatsappUrl = `https://wa.me/${storeConfig.whatsapp}?text=${encodedMsg}`;
-
-      currentCart = {};
-      renderAll();
-      window.open(whatsappUrl, '_blank');
-    }
-
-    // Create Product
-    function handleCreateProduct(e) {
-      e.preventDefault();
-      const name = document.getElementById('newProdName').value.trim();
-      const price = parseInt(document.getElementById('newProdPrice').value, 10);
-      const category = document.getElementById('newProdCategory').value.trim() || 'General';
-      const calories = document.getElementById('newProdCalories').value.trim() || '450 kcal';
-      const imageUrl = document.getElementById('newProdImage').value.trim() || '';
-      const desc = document.getElementById('newProdDesc').value.trim();
-
-      const newProd = {
-        id: 'prod-' + Date.now().toString(36),
-        name,
-        price,
-        category,
-        calories,
-        imageUrl,
-        desc: desc || 'Fresh item',
-        stock: 50
-      };
-
-      products.push(newProd);
-      saveState();
-      e.target.reset();
-      renderAll();
-    }
-
-    function deleteProduct(id) {
-      if (confirm('Delete this product from catalog?')) {
-        products = products.filter(p => p.id !== id);
-        saveState();
-        renderAll();
-      }
-    }
-
-    // Update Order Status - Instantly triggers WhatsApp notification to customer
-    function updateOrderStatus(orderId, newStatus) {
-      const order = orders.find(o => o.id === orderId);
-      if (order) {
-        order.status = newStatus;
-        if (newStatus === 'COMPLETED' && order.paymentMethod === 'COD') {
-          order.paymentStatus = 'PAID';
-        }
-        saveState();
-        renderAll();
-
-        // Jaise hi status badlay, usi waqt foran customer ka WhatsApp open ho jaye ga message ke sath
-        const url = getWhatsAppUpdateUrl(order, newStatus);
-        if (order.customerPhone || order.phone) {
-          window.open(url, '_blank');
-        }
-
-        // Sub-Agent 1 Auto-Stream notification log
-        const streamOutput = document.getElementById('nlpAgentStreamOutput');
-        if (streamOutput) {
-          streamOutput.innerText = JSON.stringify({
-            event: "STATUS_WHATSAPP_DISPATCHED",
-            orderId: order.id,
-            newStatus: newStatus,
-            customerPhone: order.customerPhone || order.phone,
-            timestamp: new Date().toISOString()
-          }, null, 2);
-        }
-      }
-    }
-
-    function removeSingleOrder(orderId) {
-      orders = orders.filter(o => o.id !== orderId);
-      saveState();
-      renderAll();
-    }
-
-    function clearAllOrders() {
-      if (confirm('Clear the entire live queue?')) {
-        orders = [];
-        saveState();
-        renderAll();
-      }
-    }
-
-    // ==============================================================
-    // CASHIER POS LOGIC (Dine-In, Takeaway, Delivery & Split Payment)
-    // ==============================================================
-    let posCart = {}; // { [productId]: qty }
-    let posOrderType = 'DINE_IN'; // 'DINE_IN', 'TAKEAWAY', 'DELIVERY'
-    let posCategoryFilter = 'ALL';
-
-    function setPosOrderType(type) {
-      posOrderType = type;
-      document.querySelectorAll('.pos-type-btn').forEach(b => {
-        b.classList.remove('bg-white', 'text-slate-900', 'shadow-subtle', 'font-bold');
-        b.classList.add('text-slate-600', 'font-medium');
-      });
-
-      const typeKey = type.toLowerCase().replace('_', '');
-      const btn = document.getElementById(`pos-btn-${typeKey}`);
-      if (btn) {
-        btn.classList.add('bg-white', 'text-slate-900', 'shadow-subtle', 'font-bold');
-        btn.classList.remove('text-slate-600', 'font-medium');
-      }
-
-      const tableCont = document.getElementById('posTableNoContainer');
-      const custCont = document.getElementById('posCustomerNameContainer');
-      const delivCont = document.getElementById('posDeliveryDetailsContainer');
-      const badge = document.getElementById('posTicketTypeBadge');
-
-      if (tableCont && custCont && delivCont && badge) {
-        if (type === 'DINE_IN') {
-          tableCont.classList.remove('hidden');
-          custCont.classList.add('hidden');
-          delivCont.classList.add('hidden');
-          badge.innerText = '🍽️ Dine-In Order';
-          badge.className = 'text-[11px] font-bold text-purple-700';
-        } else if (type === 'TAKEAWAY') {
-          tableCont.classList.add('hidden');
-          custCont.classList.remove('hidden');
-          delivCont.classList.add('hidden');
-          badge.innerText = '🛍️ Counter Takeaway';
-          badge.className = 'text-[11px] font-bold text-emerald-700';
-        } else if (type === 'DELIVERY') {
-          tableCont.classList.add('hidden');
-          custCont.classList.add('hidden');
-          delivCont.classList.remove('hidden');
-          badge.innerText = '🛵 Home Delivery';
-          badge.className = 'text-[11px] font-bold text-cyan-700';
-        }
-      }
-
-      renderPosTicket();
-    }
-
-    function addToPosCart(prodId) {
-      posCart[prodId] = (posCart[prodId] || 0) + 1;
-      renderPosTicket();
-      renderPosGrid();
-    }
-
-    function removeFromPosCart(prodId) {
-      if (posCart[prodId]) {
-        posCart[prodId]--;
-        if (posCart[prodId] <= 0) delete posCart[prodId];
-      }
-      renderPosTicket();
-      renderPosGrid();
-    }
-
-    function clearPosCart() {
-      posCart = {};
-      renderPosTicket();
-      renderPosGrid();
-    }
-
-    function filterPosCategory(cat) {
-      posCategoryFilter = cat;
-      renderPosGrid();
-    }
-
-    function renderPos() {
-      const activeStoreLabel = document.getElementById('posActiveStoreLabel');
-      if (activeStoreLabel) activeStoreLabel.innerText = `Store: ${storeConfig.storeName}`;
-      renderPosGrid();
-      renderPosTicket();
-    }
-
-    function renderPosGrid() {
-      const filterBar = document.getElementById('posCategoryFilters');
-      const grid = document.getElementById('posProductsGrid');
-      if (!filterBar || !grid) return;
-
-      const categories = ['ALL', ...new Set(products.map(p => p.category || 'General'))];
-      filterBar.innerHTML = categories.map(cat => `
-        <button onclick="filterPosCategory('${cat}')" class="px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition ${posCategoryFilter === cat ? 'bg-slate-950 text-white font-bold shadow-subtle' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium'}">
-          ${cat}
-        </button>
-      `).join('');
-
-      const filteredProducts = posCategoryFilter === 'ALL' ? products : products.filter(p => (p.category || 'General') === posCategoryFilter);
-
-      if (filteredProducts.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-4 py-12 text-center bg-white rounded-2xl border border-slate-200 p-6 space-y-3">
-            <i class="fa-solid fa-burger text-3xl text-slate-300"></i>
-            <p class="text-xs font-bold text-slate-700">Catalog is currently empty</p>
-            <p class="text-[11px] text-slate-400">Load sample Burger Cottage or Sultan Spice menu below:</p>
-            <div class="flex items-center justify-center gap-2 pt-2">
-              <button onclick="loadPresetClientMenu('burger-cottage')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-subtle transition">
-                🍔 Load Burger Cottage Menu
-              </button>
-              <button onclick="loadPresetClientMenu('sultan-spice')" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-subtle transition">
-                🍛 Load Sultan Spice Menu
-              </button>
-            </div>
-          </div>
-        `;
-        return;
-      }
-
-      grid.innerHTML = filteredProducts.map(p => {
-        const qty = posCart[p.id] || 0;
-        return `
-          <div onclick="addToPosCart('${p.id}')" class="bg-white p-3.5 rounded-2xl border ${qty > 0 ? 'border-emerald-500 shadow-card bg-emerald-50/20' : 'border-slate-200/80 shadow-subtle'} hover:border-emerald-400 cursor-pointer transition select-none flex flex-col justify-between min-h-[150px]">
-            <div>
-              <div class="flex items-center justify-between gap-1 mb-1.5">
-                <span class="text-[9px] uppercase tracking-wider font-extrabold text-slate-400 truncate max-w-[70px]">${p.category || 'Food'}</span>
-                <span class="text-[9px] text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded font-bold">${p.calories || '450 kcal'}</span>
-                ${qty > 0 ? `<span class="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-black flex items-center justify-center shrink-0">${qty}</span>` : ''}
-              </div>
-              ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" class="w-full h-16 object-cover rounded-xl mb-1.5 border border-slate-100">` : ''}
-              <h4 class="text-xs font-bold text-slate-900 line-clamp-2 leading-tight">${p.name}</h4>
-            </div>
-            <div class="flex items-center justify-between pt-2 border-t border-slate-100">
-              <span class="text-xs font-mono font-black text-slate-950">PKR ${p.price}</span>
-              <button class="w-6 h-6 rounded-lg bg-slate-100 hover:bg-emerald-600 hover:text-white text-slate-700 flex items-center justify-center text-xs font-bold transition">+</button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function renderPosTicket() {
-      const list = document.getElementById('posTicketItemsList');
-      const subtotalEl = document.getElementById('posSubtotal');
-      const delivEl = document.getElementById('posDeliveryFee');
-      const delivRow = document.getElementById('posDeliveryRow');
-      const totalEl = document.getElementById('posGrandTotal');
-      if (!list || !subtotalEl || !delivEl || !totalEl) return;
-
-      const itemIds = Object.keys(posCart);
-      if (itemIds.length === 0) {
-        list.innerHTML = `
-          <div class="py-8 text-center text-slate-400 text-xs">
-            <i class="fa-solid fa-basket-shopping text-2xl text-slate-200 mb-1 block"></i>
-            No items in ticket yet. Tap items to add.
-          </div>
-        `;
-        subtotalEl.innerText = 'PKR 0';
-        delivEl.innerText = 'PKR 0';
-        totalEl.innerText = 'PKR 0';
-        return;
-      }
-
-      let subtotal = 0;
-      let html = '';
-
-      itemIds.forEach(id => {
-        const prod = products.find(p => p.id === id);
-        if (prod) {
-          const qty = posCart[id];
-          const lineTotal = prod.price * qty;
-          subtotal += lineTotal;
-          html += `
-            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs">
-              <div class="flex-1 pr-2 truncate">
-                <span class="font-bold text-slate-900 block truncate">${prod.name}</span>
-                <span class="text-[10px] text-slate-500 font-mono">PKR ${prod.price} each</span>
-              </div>
-              <div class="flex items-center gap-1.5">
-                <button onclick="removeFromPosCart('${prod.id}')" class="w-5 h-5 rounded bg-white border border-slate-200 text-slate-700 hover:bg-slate-200 text-xs font-bold flex items-center justify-center">-</button>
-                <span class="font-bold text-xs w-4 text-center">${qty}</span>
-                <button onclick="addToPosCart('${prod.id}')" class="w-5 h-5 rounded bg-white border border-slate-200 text-slate-700 hover:bg-slate-200 text-xs font-bold flex items-center justify-center">+</button>
-                <span class="font-mono font-bold text-slate-900 ml-1.5 w-14 text-right">PKR ${lineTotal}</span>
-              </div>
-            </div>
-          `;
-        }
-      });
-
-      list.innerHTML = html;
-
-      const deliveryFee = posOrderType === 'DELIVERY' ? (storeConfig.deliveryFee || 150) : 0;
-      const grandTotal = subtotal + deliveryFee;
-
-      subtotalEl.innerText = `PKR ${subtotal.toLocaleString()}`;
-      delivEl.innerText = `PKR ${deliveryFee.toLocaleString()}`;
-      if (posOrderType === 'DELIVERY') {
-        if (delivRow) delivRow.classList.remove('hidden');
-      } else {
-        if (delivRow) delivRow.classList.add('hidden');
-      }
-      totalEl.innerText = `PKR ${grandTotal.toLocaleString()}`;
-    }
-
-    function getPosOrderDetails() {
-      const itemIds = Object.keys(posCart);
-      if (itemIds.length === 0) {
-        alert('Ticket is empty! Please add at least one product.');
-        return null;
-      }
-
-      let orderItems = [];
-      let subtotal = 0;
-      itemIds.forEach(id => {
-        const prod = products.find(p => p.id === id);
-        if (prod) {
-          const qty = posCart[id];
-          orderItems.push({ name: prod.name, qty, price: prod.price });
-          subtotal += prod.price * qty;
-        }
-      });
-
-      const deliveryFee = posOrderType === 'DELIVERY' ? (storeConfig.deliveryFee || 150) : 0;
-      const total = subtotal + deliveryFee;
-      const orderId = 'ORD-' + Math.floor(1000 + Math.random() * 9000);
-
-      let customerName = 'Walk-in Customer';
-      let phone = '';
-      let address = 'Dine-In / Store Counter';
-      let tableNo = '';
-
-      if (posOrderType === 'DINE_IN') {
-        tableNo = document.getElementById('posTableNoInput')?.value.trim() || 'Table 1';
-        customerName = `Dine-In (${tableNo})`;
-        address = `Dine-In (${tableNo})`;
-      } else if (posOrderType === 'TAKEAWAY') {
-        customerName = document.getElementById('posCustomerNameInput')?.value.trim() || 'Counter Takeaway';
-        address = 'Takeaway Parcel';
-      } else if (posOrderType === 'DELIVERY') {
-        phone = document.getElementById('posDeliveryPhoneInput')?.value.trim() || '';
-        address = document.getElementById('posDeliveryAddressInput')?.value.trim() || '';
-        customerName = 'Delivery Customer';
-        if (!phone || !address) {
-          alert('Delivery orders require Phone Number and Delivery Address!');
-          return null;
-        }
-      }
-
-      return {
-        id: orderId,
-        orderType: posOrderType,
-        tableNo,
-        customerName,
-        customerPhone: phone,
-        phone,
-        address,
-        items: orderItems,
-        deliveryFee,
-        total,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-    }
-
-    function punchPosOrder(paymentMethod) {
-      const orderData = getPosOrderDetails();
-      if (!orderData) return;
-
-      const newOrder = {
-        ...orderData,
-        paymentMethod: paymentMethod,
-        paymentStatus: 'PAID',
-        status: 'COOKING'
-      };
-
-      orders.unshift(newOrder);
-      saveState();
-      clearPosCart();
-      renderAll();
-      alert(`✅ Order ${newOrder.id} (${newOrder.orderType}) Punched Successfully!\nPayment: ${paymentMethod} (PAID)\nSent straight to Kitchen KDS.`);
-    }
-
-    function openSplitPaymentModal() {
-      const orderData = getPosOrderDetails();
-      if (!orderData) return;
-
-      document.getElementById('splitModalTotalBill').innerText = `PKR ${orderData.total.toLocaleString()}`;
-      document.getElementById('splitCashInput').value = Math.floor(orderData.total / 2);
-      document.getElementById('splitDigitalInput').value = orderData.total - Math.floor(orderData.total / 2);
-      document.getElementById('splitPaymentModal').classList.remove('hidden');
-      calculateSplitRemaining();
-    }
-
-    function closeSplitPaymentModal() {
-      document.getElementById('splitPaymentModal').classList.add('hidden');
-    }
-
-    function calculateSplitRemaining() {
-      const orderData = getPosOrderDetails();
-      if (!orderData) return;
-
-      const total = orderData.total;
-      const cash = parseFloat(document.getElementById('splitCashInput').value) || 0;
-      const digital = parseFloat(document.getElementById('splitDigitalInput').value) || 0;
-      const diff = total - (cash + digital);
-
-      const balanceBox = document.getElementById('splitBalanceBox');
-      const balanceLabel = document.getElementById('splitBalanceLabel');
-      const balanceAmount = document.getElementById('splitBalanceAmount');
-      const confirmBtn = document.getElementById('splitConfirmBtn');
-
-      if (diff === 0) {
-        balanceBox.className = 'p-3 rounded-xl border flex items-center justify-between font-semibold bg-emerald-50 border-emerald-300 text-emerald-800';
-        balanceLabel.innerText = 'Balance Settled (Exact):';
-        balanceAmount.innerText = 'PKR 0';
-        confirmBtn.disabled = false;
-        confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-      } else if (diff > 0) {
-        balanceBox.className = 'p-3 rounded-xl border flex items-center justify-between font-semibold bg-amber-50 border-amber-300 text-amber-800';
-        balanceLabel.innerText = 'Amount Remaining (Short):';
-        balanceAmount.innerText = `PKR ${diff.toLocaleString()}`;
-        confirmBtn.disabled = true;
-        confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
-      } else {
-        balanceBox.className = 'p-3 rounded-xl border flex items-center justify-between font-semibold bg-blue-50 border-blue-300 text-blue-800';
-        balanceLabel.innerText = 'Change to Return:';
-        balanceAmount.innerText = `PKR ${Math.abs(diff).toLocaleString()}`;
-        confirmBtn.disabled = false;
-        confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-      }
-    }
-
-    function confirmSplitPayment() {
-      const orderData = getPosOrderDetails();
-      if (!orderData) return;
-
-      const cash = parseFloat(document.getElementById('splitCashInput').value) || 0;
-      const digital = parseFloat(document.getElementById('splitDigitalInput').value) || 0;
-      const digitalMethod = document.getElementById('splitDigitalMethod').value;
-      const digitalTid = document.getElementById('splitDigitalTid').value.trim();
-
-      const newOrder = {
-        ...orderData,
-        paymentMethod: 'SPLIT',
-        paymentStatus: 'PAID',
-        paymentDetails: {
-          cash,
-          digital,
-          digitalMethod,
-          digitalTid
-        },
-        status: 'COOKING'
-      };
-
-      orders.unshift(newOrder);
-      saveState();
-      closeSplitPaymentModal();
-      clearPosCart();
-      renderAll();
-      alert(`✅ Split Payment Settled for Order ${newOrder.id}!\nCash: PKR ${cash}\n${digitalMethod}: PKR ${digital} (Ref: ${digitalTid || 'N/A'})\nSent straight to Kitchen KDS.`);
-    }
-
-    function loadPresetClientMenu(clientSlug) {
-      if (clientSlug === 'burger-cottage') {
-        storeConfig.storeName = 'Burger Cottage';
-        storeConfig.whatsapp = '923054122075';
-        products = [
+    // Master 97-item catalog for Burger Cottage
+    const BURGER_COTTAGE_MENU = [
   {
     "id": "bc-deal-1",
     "name": "Hot Deal (Xinger)",
@@ -2365,23 +1700,740 @@
     "stock": 20
   }
 ];
+
+    const SULTAN_SPICE_MENU = [
+      { id: 'prod-1', name: 'Special Chicken Dum Biryani', price: 650, category: 'Biryani & Rice', desc: 'Aromatic long-grain basmati with chicken.', calories: 720, stock: 50 },
+      { id: 'prod-2', name: 'Mutton Shinwari Karahi (Half KG)', price: 1750, category: 'BBQ & Grills', desc: 'Desi ghee tender mutton.', calories: 1250, stock: 25 },
+      { id: 'prod-3', name: 'Mint Raita & Fresh Salad', price: 120, category: 'Sides & Drinks', desc: 'Chilled yogurt cucumber dip.', calories: 95, stock: 80 }
+    ];
+
+    // State storage
+    const initialUsers = [
+      { username: 'admin', password: '123456', role: 'ADMIN', name: 'Platform Admin' },
+      { username: 'cashier', password: '123456', role: 'CASHIER', name: 'Front Counter Cashier' },
+      { username: 'chef', password: '123456', role: 'CHEF', name: 'Master Chef' },
+      { username: 'rider', password: '123456', role: 'RIDER', name: 'Fleet Courier' }
+    ];
+
+    // Domain / Store detection
+    const urlParams = new URLSearchParams(window.location.search);
+    const storeParam = urlParams.get('store');
+    const hostname = window.location.hostname.toLowerCase();
+
+    // Default to Burger Cottage unless explicitly requested
+    let savedStore = localStorage.getItem('activeStore');
+    let isBurgerStore = (storeParam === 'burger-cottage') || (hostname.includes('burger')) || (!savedStore || savedStore === 'burger-cottage');
+
+    let storeConfig = JSON.parse(localStorage.getItem('storeConfig'));
+    let products = JSON.parse(localStorage.getItem('storeProducts')) || [];
+
+    if (isBurgerStore || !storeConfig || products.length === 0) {
+      storeConfig = {
+        storeName: 'Burger Cottage',
+        whatsapp: '923054122075',
+        deliveryFee: 0,
+        address: 'Shop 6-7, Iqbal Park, Link-8, Main Boulevard Defence Cantt, Lahore',
+        phones: ['0305-4122075', '0322-8423075', '0301-4314918', '0320-4841741']
+      };
+      products = [...BURGER_COTTAGE_MENU];
+      localStorage.setItem('activeStore', 'burger-cottage');
+      localStorage.setItem('storeConfig', JSON.stringify(storeConfig));
+      localStorage.setItem('storeProducts', JSON.stringify(products));
+    }
+
+    let users = JSON.parse(localStorage.getItem('storeUsers')) || initialUsers;
+    let orders = JSON.parse(localStorage.getItem('storeOrders')) || [];
+    let currentAuthUser = JSON.parse(localStorage.getItem('currentAuthUser')) || null;
+    let currentCart = {};
+
+    function resetToBlankData() {
+      if (confirm('Kya aap saara dummy data (dishes aur orders) mukammal khatam karna chahte hain taake apna real data enter kar sakein?')) {
+        localStorage.removeItem('storeProducts');
+        localStorage.removeItem('storeOrders');
+        products = [];
+        orders = [];
+        currentCart = {};
+        saveState();
+        renderAll();
+        alert('Data mukammal saaf ho gaya hai! Ab aap "Add Menu Item" se apni real dishes daal sakte hain.');
+      }
+    }
+
+    function getWhatsAppUpdateUrl(order, status) {
+      let rawPhone = (order.customerPhone || order.phone || '').replace(/[^0-9]/g, '');
+      if (rawPhone.startsWith('0')) rawPhone = '92' + rawPhone.substring(1);
+      if (!rawPhone.startsWith('92') && rawPhone.length === 10) rawPhone = '92' + rawPhone;
+
+      let msg = '';
+      if (status === 'COOKING') {
+        msg = `Assalam-o-Alaikum ${order.customerName}! 👨‍🍳🔥\n\n*${storeConfig.storeName}* ki kitchen ne aapka *Order #${order.id}* banana shuru kar diya hai!\n\nTaza aur lazeez khana tayyar ho raha hai.`;
+      } else if (status === 'READY_FOR_PICKUP') {
+        msg = `Assalam-o-Alaikum ${order.customerName}! 🍲✨\n\nAapka *Order #${order.id}* bilkul pack aur tayyar hai!\nRider ko handover kiya ja raha hai.`;
+      } else if (status === 'SHIPPED') {
+        msg = `Assalam-o-Alaikum ${order.customerName}! 🛵💨\n\nRider aapka *Order #${order.id}* le kar nikal chuka hai!\n\n📍 Delivery Address: ${order.address}\n💵 Total Bill: PKR ${order.total} (${order.paymentMethod})\n\nJald pohnch raha hai!`;
+      } else if (status === 'COMPLETED') {
+        msg = `Assalam-o-Alaikum ${order.customerName}! ✅\n\nAapka *Order #${order.id}* kamyabi se deliver ho gaya hai.\n*${storeConfig.storeName}* se order karne ka shukriya! Enjoy your meal! ❤️`;
       } else {
-        storeConfig.storeName = 'Sultan Spice Biryani & Grill';
-        storeConfig.whatsapp = '923001234567';
-        products = [
-          { id: 'prod-1', name: 'Special Chicken Dum Biryani', price: 650, category: 'Biryani & Rice', desc: 'Aromatic long-grain basmati with chicken.', stock: 50 },
-          { id: 'prod-2', name: 'Mutton Shinwari Karahi (Half KG)', price: 1750, category: 'BBQ & Grills', desc: 'Desi ghee tender mutton.', stock: 25 },
-          { id: 'prod-3', name: 'Mint Raita & Fresh Salad', price: 120, category: 'Sides & Drinks', desc: 'Chilled yogurt cucumber dip.', stock: 80 }
-        ];
+        msg = `Assalam-o-Alaikum ${order.customerName}! Aapke *Order #${order.id}* ka status update: *${status}*.`;
+      }
+
+      return `https://wa.me/${rawPhone}?text=${encodeURIComponent(msg)}`;
+    }
+
+    function promptWhatsAppNotification(order, status) {
+      const url = getWhatsAppUpdateUrl(order, status);
+      const statusLabels = {
+        'COOKING': 'Khana Ban Raha Hai 👨‍🍳🔥',
+        'READY_FOR_PICKUP': 'Khana Tayyar Hai 🍲✨',
+        'SHIPPED': 'Rider Nikal Chuka Hai 🛵💨',
+        'COMPLETED': 'Order Delivered ✅'
+      };
+
+      const toast = document.getElementById('whatsappNotifyToast');
+      if (toast) {
+        document.getElementById('notifyStatusTitle').innerText = statusLabels[status] || status;
+        document.getElementById('notifyCustomerName').innerText = `${order.customerName} (${order.customerPhone || order.phone || 'No phone'})`;
+        document.getElementById('notifyPreviewText').innerText = `Click karein customer ko direct WhatsApp message bhejney ke liye.`;
+        const sendBtn = document.getElementById('notifySendWhatsAppBtn');
+        sendBtn.onclick = () => {
+          window.open(url, '_blank');
+          toast.classList.add('hidden');
+        };
+        toast.classList.remove('hidden');
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem('storeConfig', JSON.stringify(storeConfig));
+      localStorage.setItem('storeUsers', JSON.stringify(users));
+      localStorage.setItem('storeProducts', JSON.stringify(products));
+      localStorage.setItem('storeOrders', JSON.stringify(orders));
+      localStorage.setItem('currentAuthUser', JSON.stringify(currentAuthUser));
+    }
+
+    // Tab Navigation
+    function switchTab(tabId) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-tab').forEach(b => {
+        b.classList.remove('bg-white', 'text-slate-900', 'shadow-subtle', 'font-semibold');
+        b.classList.add('text-slate-600');
+      });
+
+      const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-white', 'text-slate-900', 'shadow-subtle', 'font-semibold');
+        activeBtn.classList.remove('text-slate-600');
+      }
+
+      const activeSection = document.getElementById(`view-${tabId}`);
+      if (activeSection) activeSection.classList.remove('hidden');
+
+      renderAll();
+    }
+
+    function showLoginView() {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+      document.getElementById('view-login').classList.remove('hidden');
+    }
+
+    function handlePortalLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById('loginUsername').value.trim().toLowerCase();
+      const p = document.getElementById('loginPassword').value.trim();
+
+      const user = users.find(acc => acc.username.toLowerCase() === u && acc.password === p);
+      if (!user) {
+        alert('Invalid credentials!');
+        return;
+      }
+
+      currentAuthUser = user;
+      saveState();
+      e.target.reset();
+      switchTab('copilot');
+    }
+
+    function handleLogout() {
+      currentAuthUser = null;
+      saveState();
+      switchTab('copilot');
+    }
+
+    // Cart logic
+    function addToCart(prodId) {
+      currentCart[prodId] = (currentCart[prodId] || 0) + 1;
+      renderStorefront();
+    }
+
+    function removeFromCart(prodId) {
+      if (currentCart[prodId]) {
+        currentCart[prodId]--;
+        if (currentCart[prodId] <= 0) delete currentCart[prodId];
+      }
+      renderStorefront();
+    }
+
+    // WhatsApp Order Placement (Sub-Agent 1 Simulation)
+    function placeCustomerOrder() {
+      const name = document.getElementById('custNameInput').value.trim();
+      const phone = document.getElementById('custPhoneInput').value.trim();
+      const address = document.getElementById('custAddressInput').value.trim();
+      const paymentMethod = document.getElementById('custPaymentInput').value;
+
+      const itemIds = Object.keys(currentCart);
+      if (itemIds.length === 0) {
+        alert('Please add at least one item to your cart!');
+        return;
+      }
+      if (!name || !phone || !address) {
+        alert('Please enter your Name, WhatsApp Phone Number, and Delivery Address!');
+        return;
+      }
+
+      let orderItems = [];
+      let subtotal = 0;
+      itemIds.forEach(id => {
+        const prod = products.find(p => p.id === id);
+        if (prod) {
+          const qty = currentCart[id];
+          orderItems.push({ name: prod.name, qty, price: prod.price });
+          subtotal += prod.price * qty;
+        }
+      });
+
+      const total = subtotal + storeConfig.deliveryFee;
+      const orderId = 'ORD-' + Math.floor(1000 + Math.random() * 9000);
+
+      const newOrder = {
+        id: orderId,
+        customerName: name,
+        customerPhone: phone,
+        phone: phone,
+        address: address,
+        items: orderItems,
+        deliveryFee: storeConfig.deliveryFee,
+        total: total,
+        paymentMethod: paymentMethod,
+        paymentStatus: paymentMethod === 'COD' ? 'AWAITING_PAYMENT' : 'PAYMENT_SUBMITTED',
+        status: 'PLACED',
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+
+      orders.push(newOrder);
+      saveState();
+
+      // Trigger Sub-Agent 1 stream output simulation
+      document.getElementById('nlpAgentStreamOutput').innerText = JSON.stringify({
+        event: "CHAT_INGESTED",
+        orderId,
+        customer: name,
+        destination: address,
+        total: `PKR ${total}`,
+        assignedRider: "Courier Usman (Auto-Proximate)"
+      }, null, 2);
+
+      // Construct prefilled WhatsApp link
+      let message = `*NEW ORDER: ${orderId}*\n`;
+      message += `*Customer:* ${name}\n`;
+      message += `*Address:* ${address}\n`;
+      message += `*Payment:* ${paymentMethod}\n\n`;
+      message += `*ITEMS:*\n`;
+      orderItems.forEach(item => {
+        message += `• ${item.qty}x ${item.name} = PKR ${item.qty * item.price}\n`;
+      });
+      message += `\n*Delivery Fee:* PKR ${storeConfig.deliveryFee}\n`;
+      message += `*TOTAL AMOUNT:* PKR ${total}\n\n`;
+      message += `_Processed via Autonomous Sub-Agents_`;
+
+      const encodedMsg = encodeURIComponent(message);
+      const whatsappUrl = `https://wa.me/${storeConfig.whatsapp}?text=${encodedMsg}`;
+
+      currentCart = {};
+      renderAll();
+      window.open(whatsappUrl, '_blank');
+    }
+
+    // Create Product
+    function handleCreateProduct(e) {
+      e.preventDefault();
+      const name = document.getElementById('newProdName').value.trim();
+      const price = parseInt(document.getElementById('newProdPrice').value, 10);
+      const category = document.getElementById('newProdCategory').value.trim() || 'General';
+      const calories = document.getElementById('newProdCalories').value.trim() || '450 kcal';
+      const imageUrl = document.getElementById('newProdImage').value.trim() || '';
+      const desc = document.getElementById('newProdDesc').value.trim();
+
+      const newProd = {
+        id: 'prod-' + Date.now().toString(36),
+        name,
+        price,
+        category,
+        calories,
+        imageUrl,
+        desc: desc || 'Fresh item',
+        stock: 50
+      };
+
+      products.push(newProd);
+      saveState();
+      e.target.reset();
+      renderAll();
+    }
+
+    function deleteProduct(id) {
+      if (confirm('Delete this product from catalog?')) {
+        products = products.filter(p => p.id !== id);
+        saveState();
+        renderAll();
+      }
+    }
+
+    // Update Order Status - Instantly triggers WhatsApp notification to customer
+    function updateOrderStatus(orderId, newStatus) {
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = newStatus;
+        if (newStatus === 'COMPLETED' && order.paymentMethod === 'COD') {
+          order.paymentStatus = 'PAID';
+        }
+        saveState();
+        renderAll();
+
+        // Jaise hi status badlay, usi waqt foran customer ka WhatsApp open ho jaye ga message ke sath
+        const url = getWhatsAppUpdateUrl(order, newStatus);
+        if (order.customerPhone || order.phone) {
+          window.open(url, '_blank');
+        }
+
+        // Sub-Agent 1 Auto-Stream notification log
+        const streamOutput = document.getElementById('nlpAgentStreamOutput');
+        if (streamOutput) {
+          streamOutput.innerText = JSON.stringify({
+            event: "STATUS_WHATSAPP_DISPATCHED",
+            orderId: order.id,
+            newStatus: newStatus,
+            customerPhone: order.customerPhone || order.phone,
+            timestamp: new Date().toISOString()
+          }, null, 2);
+        }
+      }
+    }
+
+    function removeSingleOrder(orderId) {
+      orders = orders.filter(o => o.id !== orderId);
+      saveState();
+      renderAll();
+    }
+
+    function clearAllOrders() {
+      if (confirm('Clear the entire live queue?')) {
+        orders = [];
+        saveState();
+        renderAll();
+      }
+    }
+
+    // ==============================================================
+    // CASHIER POS LOGIC (Dine-In, Takeaway, Delivery & Split Payment)
+    // ==============================================================
+    let posCart = {}; // { [productId]: qty }
+    let posOrderType = 'DINE_IN'; // 'DINE_IN', 'TAKEAWAY', 'DELIVERY'
+    let posCategoryFilter = 'ALL';
+
+    function setPosOrderType(type) {
+      posOrderType = type;
+      document.querySelectorAll('.pos-type-btn').forEach(b => {
+        b.classList.remove('bg-white', 'text-slate-900', 'shadow-subtle', 'font-bold');
+        b.classList.add('text-slate-600', 'font-medium');
+      });
+
+      const typeKey = type.toLowerCase().replace('_', '');
+      const btn = document.getElementById(`pos-btn-${typeKey}`);
+      if (btn) {
+        btn.classList.add('bg-white', 'text-slate-900', 'shadow-subtle', 'font-bold');
+        btn.classList.remove('text-slate-600', 'font-medium');
+      }
+
+      const tableCont = document.getElementById('posTableNoContainer');
+      const custCont = document.getElementById('posCustomerNameContainer');
+      const delivCont = document.getElementById('posDeliveryDetailsContainer');
+      const badge = document.getElementById('posTicketTypeBadge');
+
+      if (tableCont && custCont && delivCont && badge) {
+        if (type === 'DINE_IN') {
+          tableCont.classList.remove('hidden');
+          custCont.classList.add('hidden');
+          delivCont.classList.add('hidden');
+          badge.innerText = '🍽️ Dine-In Order';
+          badge.className = 'text-[11px] font-bold text-purple-700';
+        } else if (type === 'TAKEAWAY') {
+          tableCont.classList.add('hidden');
+          custCont.classList.remove('hidden');
+          delivCont.classList.add('hidden');
+          badge.innerText = '🛍️ Counter Takeaway';
+          badge.className = 'text-[11px] font-bold text-emerald-700';
+        } else if (type === 'DELIVERY') {
+          tableCont.classList.add('hidden');
+          custCont.classList.add('hidden');
+          delivCont.classList.remove('hidden');
+          badge.innerText = '🛵 Home Delivery';
+          badge.className = 'text-[11px] font-bold text-cyan-700';
+        }
+      }
+
+      renderPosTicket();
+    }
+
+    function addToPosCart(prodId) {
+      posCart[prodId] = (posCart[prodId] || 0) + 1;
+      renderPosTicket();
+      renderPosGrid();
+    }
+
+    function removeFromPosCart(prodId) {
+      if (posCart[prodId]) {
+        posCart[prodId]--;
+        if (posCart[prodId] <= 0) delete posCart[prodId];
+      }
+      renderPosTicket();
+      renderPosGrid();
+    }
+
+    function clearPosCart() {
+      posCart = {};
+      renderPosTicket();
+      renderPosGrid();
+    }
+
+    function filterPosCategory(cat) {
+      posCategoryFilter = cat;
+      renderPosGrid();
+    }
+
+    function renderPos() {
+      const activeStoreLabel = document.getElementById('posActiveStoreLabel');
+      if (activeStoreLabel) activeStoreLabel.innerText = `Store: ${storeConfig.storeName}`;
+      renderPosGrid();
+      renderPosTicket();
+    }
+
+    function renderPosGrid() {
+      const filterBar = document.getElementById('posCategoryFilters');
+      const grid = document.getElementById('posProductsGrid');
+      if (!filterBar || !grid) return;
+
+      const categories = ['ALL', ...new Set(products.map(p => p.category || 'General'))];
+      filterBar.innerHTML = categories.map(cat => `
+        <button onclick="filterPosCategory('${cat}')" class="px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition ${posCategoryFilter === cat ? 'bg-slate-950 text-white font-bold shadow-subtle' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium'}">
+          ${cat}
+        </button>
+      `).join('');
+
+      const filteredProducts = posCategoryFilter === 'ALL' ? products : products.filter(p => (p.category || 'General') === posCategoryFilter);
+
+      if (filteredProducts.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-4 py-12 text-center bg-white rounded-2xl border border-slate-200 p-6 space-y-3">
+            <i class="fa-solid fa-burger text-3xl text-slate-300"></i>
+            <p class="text-xs font-bold text-slate-700">Catalog is currently empty</p>
+            <p class="text-[11px] text-slate-400">Load sample Burger Cottage or Sultan Spice menu below:</p>
+            <div class="flex items-center justify-center gap-2 pt-2">
+              <button onclick="loadPresetClientMenu('burger-cottage')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-subtle transition">
+                🍔 Load Burger Cottage Menu
+              </button>
+              <button onclick="loadPresetClientMenu('sultan-spice')" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-subtle transition">
+                🍛 Load Sultan Spice Menu
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filteredProducts.map(p => {
+        const qty = posCart[p.id] || 0;
+        return `
+          <div onclick="addToPosCart('${p.id}')" class="bg-white p-3.5 rounded-2xl border ${qty > 0 ? 'border-emerald-500 shadow-card bg-emerald-50/20' : 'border-slate-200/80 shadow-subtle'} hover:border-emerald-400 cursor-pointer transition select-none flex flex-col justify-between min-h-[150px]">
+            <div>
+              <div class="flex items-center justify-between gap-1 mb-1.5">
+                <span class="text-[9px] uppercase tracking-wider font-extrabold text-slate-400 truncate max-w-[70px]">${p.category || 'Food'}</span>
+                <span class="text-[9px] text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded font-bold">${p.calories || '450 kcal'}</span>
+                ${qty > 0 ? `<span class="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-black flex items-center justify-center shrink-0">${qty}</span>` : ''}
+              </div>
+              ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" class="w-full h-16 object-cover rounded-xl mb-1.5 border border-slate-100">` : ''}
+              <h4 class="text-xs font-bold text-slate-900 line-clamp-2 leading-tight">${p.name}</h4>
+            </div>
+            <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+              <span class="text-xs font-mono font-black text-slate-950">PKR ${p.price}</span>
+              <button class="w-6 h-6 rounded-lg bg-slate-100 hover:bg-emerald-600 hover:text-white text-slate-700 flex items-center justify-center text-xs font-bold transition">+</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderPosTicket() {
+      const list = document.getElementById('posTicketItemsList');
+      const subtotalEl = document.getElementById('posSubtotal');
+      const delivEl = document.getElementById('posDeliveryFee');
+      const delivRow = document.getElementById('posDeliveryRow');
+      const totalEl = document.getElementById('posGrandTotal');
+      if (!list || !subtotalEl || !delivEl || !totalEl) return;
+
+      const itemIds = Object.keys(posCart);
+      if (itemIds.length === 0) {
+        list.innerHTML = `
+          <div class="py-8 text-center text-slate-400 text-xs">
+            <i class="fa-solid fa-basket-shopping text-2xl text-slate-200 mb-1 block"></i>
+            No items in ticket yet. Tap items to add.
+          </div>
+        `;
+        subtotalEl.innerText = 'PKR 0';
+        delivEl.innerText = 'PKR 0';
+        totalEl.innerText = 'PKR 0';
+        return;
+      }
+
+      let subtotal = 0;
+      let html = '';
+
+      itemIds.forEach(id => {
+        const prod = products.find(p => p.id === id);
+        if (prod) {
+          const qty = posCart[id];
+          const lineTotal = prod.price * qty;
+          subtotal += lineTotal;
+          html += `
+            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs">
+              <div class="flex-1 pr-2 truncate">
+                <span class="font-bold text-slate-900 block truncate">${prod.name}</span>
+                <span class="text-[10px] text-slate-500 font-mono">PKR ${prod.price} each</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button onclick="removeFromPosCart('${prod.id}')" class="w-5 h-5 rounded bg-white border border-slate-200 text-slate-700 hover:bg-slate-200 text-xs font-bold flex items-center justify-center">-</button>
+                <span class="font-bold text-xs w-4 text-center">${qty}</span>
+                <button onclick="addToPosCart('${prod.id}')" class="w-5 h-5 rounded bg-white border border-slate-200 text-slate-700 hover:bg-slate-200 text-xs font-bold flex items-center justify-center">+</button>
+                <span class="font-mono font-bold text-slate-900 ml-1.5 w-14 text-right">PKR ${lineTotal}</span>
+              </div>
+            </div>
+          `;
+        }
+      });
+
+      list.innerHTML = html;
+
+      const deliveryFee = posOrderType === 'DELIVERY' ? (storeConfig.deliveryFee || 150) : 0;
+      const grandTotal = subtotal + deliveryFee;
+
+      subtotalEl.innerText = `PKR ${subtotal.toLocaleString()}`;
+      delivEl.innerText = `PKR ${deliveryFee.toLocaleString()}`;
+      if (posOrderType === 'DELIVERY') {
+        if (delivRow) delivRow.classList.remove('hidden');
+      } else {
+        if (delivRow) delivRow.classList.add('hidden');
+      }
+      totalEl.innerText = `PKR ${grandTotal.toLocaleString()}`;
+    }
+
+    function getPosOrderDetails() {
+      const itemIds = Object.keys(posCart);
+      if (itemIds.length === 0) {
+        alert('Ticket is empty! Please add at least one product.');
+        return null;
+      }
+
+      let orderItems = [];
+      let subtotal = 0;
+      itemIds.forEach(id => {
+        const prod = products.find(p => p.id === id);
+        if (prod) {
+          const qty = posCart[id];
+          orderItems.push({ name: prod.name, qty, price: prod.price });
+          subtotal += prod.price * qty;
+        }
+      });
+
+      const deliveryFee = posOrderType === 'DELIVERY' ? (storeConfig.deliveryFee || 150) : 0;
+      const total = subtotal + deliveryFee;
+      const orderId = 'ORD-' + Math.floor(1000 + Math.random() * 9000);
+
+      let customerName = 'Walk-in Customer';
+      let phone = '';
+      let address = 'Dine-In / Store Counter';
+      let tableNo = '';
+
+      if (posOrderType === 'DINE_IN') {
+        tableNo = document.getElementById('posTableNoInput')?.value.trim() || 'Table 1';
+        customerName = `Dine-In (${tableNo})`;
+        address = `Dine-In (${tableNo})`;
+      } else if (posOrderType === 'TAKEAWAY') {
+        customerName = document.getElementById('posCustomerNameInput')?.value.trim() || 'Counter Takeaway';
+        address = 'Takeaway Parcel';
+      } else if (posOrderType === 'DELIVERY') {
+        phone = document.getElementById('posDeliveryPhoneInput')?.value.trim() || '';
+        address = document.getElementById('posDeliveryAddressInput')?.value.trim() || '';
+        customerName = 'Delivery Customer';
+        if (!phone || !address) {
+          alert('Delivery orders require Phone Number and Delivery Address!');
+          return null;
+        }
+      }
+
+      return {
+        id: orderId,
+        orderType: posOrderType,
+        tableNo,
+        customerName,
+        customerPhone: phone,
+        phone,
+        address,
+        items: orderItems,
+        deliveryFee,
+        total,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+    }
+
+    function punchPosOrder(paymentMethod) {
+      const orderData = getPosOrderDetails();
+      if (!orderData) return;
+
+      const newOrder = {
+        ...orderData,
+        paymentMethod: paymentMethod,
+        paymentStatus: 'PAID',
+        status: 'COOKING'
+      };
+
+      orders.unshift(newOrder);
+      saveState();
+      clearPosCart();
+      renderAll();
+      alert(`✅ Order ${newOrder.id} (${newOrder.orderType}) Punched Successfully!\nPayment: ${paymentMethod} (PAID)\nSent straight to Kitchen KDS.`);
+    }
+
+    function openSplitPaymentModal() {
+      const orderData = getPosOrderDetails();
+      if (!orderData) return;
+
+      document.getElementById('splitModalTotalBill').innerText = `PKR ${orderData.total.toLocaleString()}`;
+      document.getElementById('splitCashInput').value = Math.floor(orderData.total / 2);
+      document.getElementById('splitDigitalInput').value = orderData.total - Math.floor(orderData.total / 2);
+      document.getElementById('splitPaymentModal').classList.remove('hidden');
+      calculateSplitRemaining();
+    }
+
+    function closeSplitPaymentModal() {
+      document.getElementById('splitPaymentModal').classList.add('hidden');
+    }
+
+    function calculateSplitRemaining() {
+      const orderData = getPosOrderDetails();
+      if (!orderData) return;
+
+      const total = orderData.total;
+      const cash = parseFloat(document.getElementById('splitCashInput').value) || 0;
+      const digital = parseFloat(document.getElementById('splitDigitalInput').value) || 0;
+      const diff = total - (cash + digital);
+
+      const balanceBox = document.getElementById('splitBalanceBox');
+      const balanceLabel = document.getElementById('splitBalanceLabel');
+      const balanceAmount = document.getElementById('splitBalanceAmount');
+      const confirmBtn = document.getElementById('splitConfirmBtn');
+
+      if (diff === 0) {
+        balanceBox.className = 'p-3 rounded-xl border flex items-center justify-between font-semibold bg-emerald-50 border-emerald-300 text-emerald-800';
+        balanceLabel.innerText = 'Balance Settled (Exact):';
+        balanceAmount.innerText = 'PKR 0';
+        confirmBtn.disabled = false;
+        confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      } else if (diff > 0) {
+        balanceBox.className = 'p-3 rounded-xl border flex items-center justify-between font-semibold bg-amber-50 border-amber-300 text-amber-800';
+        balanceLabel.innerText = 'Amount Remaining (Short):';
+        balanceAmount.innerText = `PKR ${diff.toLocaleString()}`;
+        confirmBtn.disabled = true;
+        confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        balanceBox.className = 'p-3 rounded-xl border flex items-center justify-between font-semibold bg-blue-50 border-blue-300 text-blue-800';
+        balanceLabel.innerText = 'Change to Return:';
+        balanceAmount.innerText = `PKR ${Math.abs(diff).toLocaleString()}`;
+        confirmBtn.disabled = false;
+        confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    }
+
+    function confirmSplitPayment() {
+      const orderData = getPosOrderDetails();
+      if (!orderData) return;
+
+      const cash = parseFloat(document.getElementById('splitCashInput').value) || 0;
+      const digital = parseFloat(document.getElementById('splitDigitalInput').value) || 0;
+      const digitalMethod = document.getElementById('splitDigitalMethod').value;
+      const digitalTid = document.getElementById('splitDigitalTid').value.trim();
+
+      const newOrder = {
+        ...orderData,
+        paymentMethod: 'SPLIT',
+        paymentStatus: 'PAID',
+        paymentDetails: {
+          cash,
+          digital,
+          digitalMethod,
+          digitalTid
+        },
+        status: 'COOKING'
+      };
+
+      orders.unshift(newOrder);
+      saveState();
+      closeSplitPaymentModal();
+      clearPosCart();
+      renderAll();
+      alert(`✅ Split Payment Settled for Order ${newOrder.id}!\nCash: PKR ${cash}\n${digitalMethod}: PKR ${digital} (Ref: ${digitalTid || 'N/A'})\nSent straight to Kitchen KDS.`);
+    }
+
+    function loadPresetClientMenu(clientSlug) {
+      if (clientSlug === 'burger-cottage') {
+        localStorage.setItem('activeStore', 'burger-cottage');
+        storeConfig = {
+          storeName: 'Burger Cottage',
+          whatsapp: '923054122075',
+          deliveryFee: 0,
+          address: 'Shop 6-7, Iqbal Park, Link-8, Main Boulevard Defence Cantt, Lahore',
+          phones: ['0305-4122075', '0322-8423075', '0301-4314918', '0320-4841741']
+        };
+        products = [...BURGER_COTTAGE_MENU];
+      } else {
+        localStorage.setItem('activeStore', 'sultan-spice');
+        storeConfig = {
+          storeName: 'Sultan Spice Biryani & Grill',
+          whatsapp: '923001234567',
+          deliveryFee: 150,
+          address: 'Main Commercial Area, Lahore'
+        };
+        products = [...SULTAN_SPICE_MENU];
       }
       saveState();
       renderAll();
-      alert(`Switched active store to: ${storeConfig.storeName} with full catalog loaded!`);
+      alert('Switched active store to: ' + storeConfig.storeName + ' (' + products.length + ' items loaded!)');
     }
 
     // Render Master
     function renderAll() {
-      document.getElementById('topStoreName').innerText = storeConfig.storeName;
+      const isBC = storeConfig.storeName.includes('Burger Cottage');
+      const btnBurger = document.getElementById('tenantBtnBurger');
+      const btnSultan = document.getElementById('tenantBtnSultan');
+      if (btnBurger && btnSultan) {
+        if (isBC) {
+          btnBurger.className = 'px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 bg-emerald-600 text-white shadow-sm';
+          btnSultan.className = 'px-2 py-1 rounded-lg font-medium transition text-slate-600 hover:text-slate-900';
+        } else {
+          btnBurger.className = 'px-2 py-1 rounded-lg font-medium transition text-slate-600 hover:text-slate-900';
+          btnSultan.className = 'px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 bg-brand-600 text-white shadow-sm';
+        }
+      }
+      const topNameEl = document.getElementById('topStoreName');
+      if (topNameEl) topNameEl.innerText = storeConfig.storeName;
       document.getElementById('storefrontHeading').innerText = storeConfig.storeName;
       document.getElementById('storefrontPhoneBadge').innerText = storeConfig.whatsapp;
 
