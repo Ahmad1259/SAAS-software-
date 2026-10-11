@@ -64,18 +64,18 @@
 
   <!-- TOP MINIMALIST HEADER -->
   <header class="glass-nav border-b border-slate-200/80 sticky top-0 z-50 transition-all">
-    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 min-h-16 py-2 sm:py-0 flex flex-wrap items-center justify-between gap-2 sm:gap-4">
       
       <!-- Brand & Entity Selector -->
-      <div class="flex items-center gap-4">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-xl bg-slate-950 flex items-center justify-center text-white font-extrabold text-sm shadow-subtle">
+      <div class="flex items-center gap-2 sm:gap-4 flex-wrap">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-slate-950 flex items-center justify-center text-white font-extrabold text-sm shadow-subtle shrink-0">
             <i class="fa-solid fa-shapes text-xs text-brand-500"></i>
           </div>
           <div>
-            <h1 class="font-extrabold tracking-tight text-sm text-slate-950 flex items-center gap-2">
+            <h1 class="font-extrabold tracking-tight text-xs sm:text-sm text-slate-950 flex items-center gap-1 sm:gap-2">
               Commerce Cloud
-              <span class="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">Linear Core</span>
+              <span class="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 hidden sm:inline-block">Linear Core</span>
             </h1>
           </div>
         </div>
@@ -83,9 +83,9 @@
         <div class="h-4 w-px bg-slate-200 hidden sm:block"></div>
 
         <!-- Store Name Display (Burger Cottage Dedicated Brand) -->
-        <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
-          <button onclick="loadPresetClientMenu('burger-cottage')" id="tenantBtnBurger" class="px-3 py-1.5 rounded-lg font-black transition flex items-center gap-1.5 bg-emerald-600 text-white shadow-sm">
-            🍔 Burger Cottage (97 Authentic Items)
+        <div class="flex items-center gap-1.5 bg-slate-100 p-0.5 sm:p-1 rounded-xl border border-slate-200 text-xs">
+          <button onclick="loadPresetClientMenu('burger-cottage')" id="tenantBtnBurger" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg font-black transition flex items-center gap-1.5 bg-emerald-600 text-white shadow-sm text-[11px] sm:text-xs">
+            🍔 Burger Cottage
           </button>
           <button onclick="loadPresetClientMenu('sultan-spice')" id="tenantBtnSultan" class="hidden px-2 py-1 rounded-lg font-medium transition text-slate-400 hover:text-slate-600 text-[10px]">
             🍛 Sultan Spice
@@ -94,39 +94,39 @@
       </div>
 
       <!-- Autonomous Agent System Health Status -->
-      <div class="hidden md:flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200/80 text-xs text-slate-600 font-medium">
+      <div class="hidden lg:flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200/80 text-xs text-slate-600 font-medium">
         <span class="w-2 h-2 rounded-full bg-mint-500 pulse-ring"></span>
         <span class="tracking-tight">System Health: <strong class="text-slate-900 font-semibold">4 Sub-Agents Autonomous</strong></span>
       </div>
 
-      <!-- Navigation & Action Buttons -->
-      <div class="flex items-center gap-3">
-        <div class="flex bg-slate-100/80 p-1 rounded-xl border border-slate-200/60 text-xs font-medium">
-          <button onclick="switchTab('copilot')" id="tab-btn-copilot" class="nav-tab px-3 py-1.5 rounded-lg text-slate-900 bg-white shadow-subtle font-semibold flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-wand-magic-sparkles text-brand-600"></i> Co-Pilot Grid
+      <!-- Navigation & Action Buttons (Mobile Horizontal Scrollable) -->
+      <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end overflow-x-auto custom-scroll pb-1 sm:pb-0">
+        <div class="flex bg-slate-100/90 p-1 rounded-xl border border-slate-200/60 text-xs font-medium shrink-0 space-x-1">
+          <button onclick="switchTab('copilot')" id="tab-btn-copilot" class="nav-tab px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-900 bg-white shadow-subtle font-semibold flex items-center gap-1 sm:gap-1.5 transition text-[11px] sm:text-xs whitespace-nowrap">
+            <i class="fa-solid fa-wand-magic-sparkles text-brand-600"></i> <span class="hidden xs:inline">Co-Pilot</span><span class="xs:hidden">Grid</span>
           </button>
-          <button onclick="switchTab('pos')" id="tab-btn-pos" class="nav-tab px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-cash-register text-emerald-600"></i> Cashier POS
+          <button onclick="switchTab('pos')" id="tab-btn-pos" class="nav-tab px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1 sm:gap-1.5 transition text-[11px] sm:text-xs whitespace-nowrap">
+            <i class="fa-solid fa-cash-register text-emerald-600"></i> POS
           </button>
-          <button onclick="switchTab('storefront')" id="tab-btn-storefront" class="nav-tab px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-store"></i> Storefront
+          <button onclick="switchTab('storefront')" id="tab-btn-storefront" class="nav-tab px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1 sm:gap-1.5 transition text-[11px] sm:text-xs whitespace-nowrap">
+            <i class="fa-solid fa-store text-orange-500"></i> Storefront
           </button>
-          <button onclick="switchTab('kitchen')" id="tab-btn-kitchen" class="nav-tab px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-fire-burner text-amber-500"></i> Kitchen KDS
+          <button onclick="switchTab('kitchen')" id="tab-btn-kitchen" class="nav-tab px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1 sm:gap-1.5 transition text-[11px] sm:text-xs whitespace-nowrap">
+            <i class="fa-solid fa-fire-burner text-amber-500"></i> Kitchen
           </button>
-          <button onclick="switchTab('dispatch')" id="tab-btn-dispatch" class="nav-tab px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-motorcycle text-cyan-500"></i> Dispatch & Riders
+          <button onclick="switchTab('dispatch')" id="tab-btn-dispatch" class="nav-tab px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1 sm:gap-1.5 transition text-[11px] sm:text-xs whitespace-nowrap">
+            <i class="fa-solid fa-motorcycle text-cyan-500"></i> Riders
           </button>
         </div>
 
         <!-- Auth / Admin Controls Container -->
-        <div id="authContainer" class="flex items-center gap-2"></div>
+        <div id="authContainer" class="flex items-center gap-1 shrink-0"></div>
       </div>
     </div>
   </header>
 
-  <!-- MAIN VIEWPORT -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-6 md:p-8 space-y-8">
+  <!-- MAIN VIEWPORT (Responsive Padding) -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 md:p-8 space-y-6 sm:space-y-8">
 
     <!-- ============================================================== -->
     <!-- SECTION 1: CENTRAL AI CO-PILOT GRID (ADMIN & SUPERVISION)      -->
@@ -513,32 +513,32 @@
         </aside>
 
         <!-- PANE 2: MAIN PRODUCTS & CATALOG AREA -->
-        <main class="flex-1 bg-[#1F1D2B] p-5 lg:p-7 flex flex-col justify-between overflow-hidden">
+        <main class="flex-1 bg-[#1F1D2B] p-3 sm:p-5 lg:p-7 flex flex-col justify-between overflow-hidden">
           <div>
             <!-- Top Restaurant Header & Live Search Bar -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#2D303E]">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 sm:pb-5 border-b border-[#2D303E]">
               <div>
-                <h2 class="text-2xl font-black text-white tracking-tight flex items-center gap-2" id="posActiveStoreLabel">
+                <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2" id="posActiveStoreLabel">
                   Burger Cottage
-                  <span class="text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full bg-[#EA7C69]/20 text-[#EA7C69] border border-[#EA7C69]/30">Open 2 PM - 4 AM</span>
+                  <span class="text-[9px] sm:text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-[#EA7C69]/20 text-[#EA7C69] border border-[#EA7C69]/30">Open 2 PM - 4 AM</span>
                 </h2>
-                <p class="text-xs text-[#889898] mt-0.5">Shop 6-7, Iqbal Park, Main Blvd Defence Cantt, Lahore · 97 Items</p>
+                <p class="text-[11px] sm:text-xs text-[#889898] mt-0.5">Shop 6-7, Iqbal Park, Main Blvd Defence Cantt, Lahore · 97 Items</p>
               </div>
 
               <!-- Search Bar -->
               <div class="relative w-full sm:w-80">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                <input type="text" id="posSearchInput" oninput="handlePosSearch(event)" placeholder="Search menu here..." class="w-full pl-9 pr-4 py-2.5 rounded-2xl bg-[#2D303E] text-white text-xs border border-transparent focus:border-[#EA7C69] focus:outline-none placeholder-slate-400 transition">
+                <input type="text" id="posSearchInput" oninput="handlePosSearch(event)" placeholder="Search menu here..." class="w-full pl-9 pr-4 py-2 sm:py-2.5 rounded-2xl bg-[#2D303E] text-white text-xs border border-transparent focus:border-[#EA7C69] focus:outline-none placeholder-slate-400 transition">
               </div>
             </div>
 
             <!-- Category Pills Row (Horizontal Scroll) -->
-            <div class="flex items-center gap-2.5 overflow-x-auto py-4 custom-scroll" id="posCategoryFilters">
+            <div class="flex items-center gap-2 sm:gap-2.5 overflow-x-auto py-3 sm:py-4 custom-scroll" id="posCategoryFilters">
               <!-- Dynamically rendered pills -->
             </div>
 
-            <!-- Products Grid -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 max-h-[580px] overflow-y-auto pr-1 custom-scroll" id="posProductsGrid">
+            <!-- Products Grid (1 column on small phones, 2 on medium phones, 3-4 on desktops) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 max-h-[580px] overflow-y-auto pr-1 custom-scroll" id="posProductsGrid">
               <!-- Dynamically populated product cards -->
             </div>
           </div>
@@ -701,28 +701,28 @@
     <!-- ============================================================== -->
     <!-- SECTION 3: INTERACTIVE STOREFRONT (KFC-INSPIRED DUAL-COLUMN WITH SUB-AGENTS) -->
     <!-- ============================================================== -->
-    <div id="view-storefront" class="max-w-5xl mx-auto view-section hidden pb-28 space-y-7">
+    <div id="view-storefront" class="max-w-5xl mx-auto view-section hidden pb-28 space-y-4 sm:space-y-7">
       
       <!-- 1. TOP SUB-AGENTS MONITORING ROW (Autonomous Ecosystem Live) -->
-      <div class="bg-white rounded-3xl border border-slate-200/80 p-5 sm:p-6 shadow-subtle space-y-4">
+      <div class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 p-3.5 sm:p-6 shadow-subtle space-y-3 sm:space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
           <div>
-            <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
-              <span class="text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+            <div class="flex items-center gap-1.5 sm:gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                 Sub-Agent Network Synchronized
               </span>
             </div>
-            <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mt-1 flex items-center gap-2">
+            <h2 class="text-lg sm:text-2xl font-black text-slate-900 tracking-tight mt-1 flex items-center gap-2">
               <span id="storefrontHeading">Burger Cottage</span>
-              <span class="text-xs font-bold text-slate-400 font-mono bg-slate-100 px-2.5 py-1 rounded-xl">KFC-Tier Storefront</span>
+              <span class="text-[10px] sm:text-xs font-bold text-slate-400 font-mono bg-slate-100 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-xl">KFC-Tier Storefront</span>
             </h2>
-            <p class="text-xs text-slate-500">Autonomous multi-agent architecture: real-time live monitoring paired with on-page instant deal customization.</p>
+            <p class="text-[11px] sm:text-xs text-slate-500">Autonomous multi-agent architecture: real-time live monitoring paired with on-page instant deal customization.</p>
           </div>
 
           <!-- Quick Cart Trigger -->
           <div class="flex items-center gap-2 self-start sm:self-center">
-            <button onclick="openCustomerCheckoutModal()" class="px-4 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-2.5 shadow-subtle transition">
+            <button onclick="openCustomerCheckoutModal()" class="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-2 sm:gap-2.5 shadow-subtle transition">
               <i class="fa-solid fa-basket-shopping text-orange-400"></i>
               <span>Active Cart</span>
               <span id="storefrontHeaderCartCount" class="w-5 h-5 rounded-full bg-orange-600 text-white font-black text-[10px] flex items-center justify-center">0</span>
@@ -730,8 +730,8 @@
           </div>
         </div>
 
-        <!-- EXACTLY 4 SPECIALIZED SYSTEM SUB-AGENTS STATUS CARDS -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <!-- EXACTLY 4 SPECIALIZED SYSTEM SUB-AGENTS STATUS CARDS (1 Col on Smallest Mobile, 2 on Tablet, 4 on Desktop) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           <!-- 1. Co-Pilot Grid (Active / Optimization State) -->
           <div onclick="switchTab('copilot')" class="p-3.5 bg-slate-50/70 hover:bg-white rounded-2xl border border-slate-200/80 hover:border-slate-300 shadow-xs hover:shadow-subtle transition cursor-pointer group">
             <div class="flex items-center justify-between mb-1.5">
@@ -3340,11 +3340,11 @@
         const priceDisplay = isFromVariant ? `from PKR ${p.price.toLocaleString()}` : `PKR ${p.price.toLocaleString()}`;
 
         return `
-          <div onclick="openCustomizationOverlay('${p.id}', event)" class="bg-white rounded-3xl border border-slate-200/90 hover:border-slate-400 hover:shadow-card p-4 sm:p-5 transition cursor-pointer flex flex-row items-center justify-between gap-4 group relative select-none">
+          <div onclick="openCustomizationOverlay('${p.id}', event)" class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 hover:border-slate-400 hover:shadow-card p-3 sm:p-5 transition cursor-pointer flex flex-row items-center justify-between gap-3 sm:gap-4 group relative select-none">
             
             <!-- Left Column: Item Name, Price, Composition Summary & Badges -->
-            <div class="flex-1 min-w-0 pr-1 space-y-1.5">
-              <h4 class="font-extrabold text-sm sm:text-base text-slate-900 group-hover:text-orange-600 transition leading-snug line-clamp-2">
+            <div class="flex-1 min-w-0 pr-1 space-y-1 sm:space-y-1.5">
+              <h4 class="font-extrabold text-xs sm:text-base text-slate-900 group-hover:text-orange-600 transition leading-snug line-clamp-2">
                 ${p.name}
               </h4>
               
@@ -3352,35 +3352,35 @@
                 ${priceDisplay}
               </div>
 
-              <p class="text-xs text-slate-500 font-normal leading-relaxed line-clamp-2">
+              <p class="text-[11px] sm:text-xs text-slate-500 font-normal leading-relaxed line-clamp-2">
                 ${p.desc || 'Crispy delicious chicken fillet with seasoned fries and soft drink.'}
               </p>
 
               <!-- Metric & Rating Tags -->
-              <div class="flex items-center gap-2 pt-1 flex-wrap">
-                <span class="text-[10px] font-bold text-orange-700 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-200/60 flex items-center gap-1">
-                  <i class="fa-solid fa-fire text-orange-500 text-[9px]"></i> Popular
+              <div class="flex items-center gap-1.5 sm:gap-2 pt-0.5 sm:pt-1 flex-wrap">
+                <span class="text-[9px] sm:text-[10px] font-bold text-orange-700 bg-orange-50 px-1.5 sm:px-2 py-0.5 rounded-md border border-orange-200/60 flex items-center gap-1">
+                  <i class="fa-solid fa-fire text-orange-500 text-[8px] sm:text-[9px]"></i> Popular
                 </span>
-                <span class="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
+                <span class="text-[9px] sm:text-[10px] font-bold text-slate-600 bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded-md">
                   ${p.calories || 750} kcal
                 </span>
-                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 hidden sm:inline-flex items-center gap-1">
-                  <i class="fa-solid fa-thumbs-up text-emerald-600 text-[9px]"></i> 96% Match
+                <span class="text-[9px] sm:text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 sm:px-2 py-0.5 rounded-md border border-emerald-200/60 hidden sm:inline-flex items-center gap-1">
+                  <i class="fa-solid fa-thumbs-up text-emerald-600 text-[9px]"></i> 96%
                 </span>
               </div>
             </div>
 
             <!-- Right Column: Food Image Asset + Embedded Floating '+' Action Circle -->
-            <div class="w-28 sm:w-36 h-28 sm:h-32 rounded-2xl relative shrink-0 overflow-hidden bg-slate-100 border border-slate-200/70">
+            <div class="w-24 sm:w-36 h-24 sm:h-32 rounded-xl sm:rounded-2xl relative shrink-0 overflow-hidden bg-slate-100 border border-slate-200/70">
               <img src="${imgUrl}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
               
               <!-- Direct Floating Action '+' Circle embedded on bottom-right corner -->
-              <button onclick="openCustomizationOverlay('${p.id}', event)" class="absolute bottom-2 right-2 w-9 h-9 rounded-full bg-white shadow-md border border-slate-200/80 flex items-center justify-center text-slate-900 hover:bg-orange-600 hover:text-white hover:border-orange-600 transition transform hover:scale-110 active:scale-95 group/btn" title="Customize Deal">
-                <i class="fa-solid fa-plus text-xs"></i>
+              <button onclick="openCustomizationOverlay('${p.id}', event)" class="absolute bottom-1.5 sm:bottom-2 right-1.5 sm:right-2 w-8 sm:w-9 h-8 sm:h-9 rounded-full bg-white shadow-md border border-slate-200/80 flex items-center justify-center text-slate-900 hover:bg-orange-600 hover:text-white hover:border-orange-600 transition transform hover:scale-110 active:scale-95 group/btn" title="Customize Deal">
+                <i class="fa-solid fa-plus text-[10px] sm:text-xs"></i>
               </button>
 
               ${qty > 0 ? `
-                <span class="absolute top-2 left-2 w-6 h-6 rounded-full bg-orange-600 text-white font-black text-xs flex items-center justify-center shadow-md ring-2 ring-white">
+                <span class="absolute top-1.5 sm:top-2 left-1.5 sm:left-2 w-5 sm:w-6 h-5 sm:h-6 rounded-full bg-orange-600 text-white font-black text-[10px] sm:text-xs flex items-center justify-center shadow-md ring-2 ring-white">
                   ${qty}
                 </span>
               ` : ''}
