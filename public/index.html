@@ -870,7 +870,7 @@
       }
     }
 
-    // Update Order Status
+    // Update Order Status - Instantly triggers WhatsApp notification to customer
     function updateOrderStatus(orderId, newStatus) {
       const order = orders.find(o => o.id === orderId);
       if (order) {
@@ -880,7 +880,24 @@
         }
         saveState();
         renderAll();
-        promptWhatsAppNotification(order, newStatus);
+
+        // Jaise hi status badlay, usi waqt foran customer ka WhatsApp open ho jaye ga message ke sath
+        const url = getWhatsAppUpdateUrl(order, newStatus);
+        if (order.customerPhone || order.phone) {
+          window.open(url, '_blank');
+        }
+
+        // Sub-Agent 1 Auto-Stream notification log
+        const streamOutput = document.getElementById('nlpAgentStreamOutput');
+        if (streamOutput) {
+          streamOutput.innerText = JSON.stringify({
+            event: "STATUS_WHATSAPP_DISPATCHED",
+            orderId: order.id,
+            newStatus: newStatus,
+            customerPhone: order.customerPhone || order.phone,
+            timestamp: new Date().toISOString()
+          }, null, 2);
+        }
       }
     }
 
