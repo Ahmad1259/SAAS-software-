@@ -822,53 +822,22 @@
               </div>
             </div>
 
-            <!-- SECTION A: REQUIRED CHOICE SELECTION ("Choose Your Soft Drink") -->
+            <!-- SECTION A: DRINK SELECTION (OPTIONAL FOR SINGLE PRODUCTS, INCLUDED FOR DEALS) -->
             <div class="space-y-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
               <div class="flex items-center justify-between">
                 <div>
                   <h4 class="text-xs font-black text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-glass-water text-orange-500"></i> Choose Your Soft Drink
+                    <i class="fa-solid fa-glass-water text-orange-500"></i> <span id="customDrinkSectionTitle">Cold Drink / Beverage</span>
                   </h4>
-                  <p class="text-[11px] text-slate-500">Select 1 beverage included in your meal</p>
+                  <p class="text-[11px] text-slate-500" id="customDrinkSectionSubtitle">Optional - Add a chilled drink to your order</p>
                 </div>
-                <span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[9px] font-black uppercase tracking-wider">
-                  Required
+                <span id="customDrinkBadge" class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[9px] font-black uppercase tracking-wider">
+                  Optional
                 </span>
               </div>
 
-              <!-- Radio Group for Drinks -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
-                <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-500 cursor-pointer transition bg-slate-50/50 hover:bg-orange-50/30">
-                  <div class="flex items-center gap-2.5">
-                    <input type="radio" name="customDrinkChoice" value="Pepsi 345ml Regular" checked onchange="recalculateCustomPrice()" class="text-orange-600 focus:ring-orange-500">
-                    <span class="font-bold text-slate-800">Pepsi 345ml</span>
-                  </div>
-                  <span class="text-[10px] font-mono text-slate-400">Included</span>
-                </label>
-
-                <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-500 cursor-pointer transition bg-slate-50/50 hover:bg-orange-50/30">
-                  <div class="flex items-center gap-2.5">
-                    <input type="radio" name="customDrinkChoice" value="7Up 345ml Regular" onchange="recalculateCustomPrice()" class="text-orange-600 focus:ring-orange-500">
-                    <span class="font-bold text-slate-800">7Up 345ml</span>
-                  </div>
-                  <span class="text-[10px] font-mono text-slate-400">Included</span>
-                </label>
-
-                <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-500 cursor-pointer transition bg-slate-50/50 hover:bg-orange-50/30">
-                  <div class="flex items-center gap-2.5">
-                    <input type="radio" name="customDrinkChoice" value="Mirinda 345ml Regular" onchange="recalculateCustomPrice()" class="text-orange-600 focus:ring-orange-500">
-                    <span class="font-bold text-slate-800">Mirinda 345ml</span>
-                  </div>
-                  <span class="text-[10px] font-mono text-slate-400">Included</span>
-                </label>
-
-                <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-500 cursor-pointer transition bg-slate-50/50 hover:bg-orange-50/30">
-                  <div class="flex items-center gap-2.5">
-                    <input type="radio" name="customDrinkChoice" value="Mountain Dew 345ml" onchange="recalculateCustomPrice()" class="text-orange-600 focus:ring-orange-500">
-                    <span class="font-bold text-slate-800">Mountain Dew</span>
-                  </div>
-                  <span class="text-[10px] font-mono text-slate-400">Included</span>
-                </label>
+              <!-- Radio Group for Drinks (Populated dynamically) -->
+              <div id="customDrinkOptionsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
               </div>
             </div>
 
@@ -3247,14 +3216,116 @@
       // Populate deal header info
       document.getElementById('customModalImage').src = getProductImage(prod);
       document.getElementById('customModalTitle').innerText = prod.name;
-      document.getElementById('customModalDesc').innerText = prod.desc || 'Crispy fast food favorite meal deal.';
+      document.getElementById('customModalDesc').innerText = prod.desc || 'Fresh crispy fast food favorite.';
       document.getElementById('customModalBasePrice').innerText = `PKR ${prod.price.toLocaleString()}`;
       document.getElementById('customModalCalories').innerText = `${prod.calories || 650} kcal`;
 
-      // Reset Required Drink Radio Group (default to Pepsi)
-      const drinkRadios = document.getElementsByName('customDrinkChoice');
-      if (drinkRadios && drinkRadios.length > 0) {
-        drinkRadios[0].checked = true;
+      // Check whether this product is a deal that comes with a drink
+      const isDealWithDrink = (prod.category && prod.category.toLowerCase().includes('deal')) ||
+                              (prod.desc && (prod.desc.toLowerCase().includes('drink') || prod.desc.toLowerCase().includes('cold drink') || prod.desc.toLowerCase().includes('ltr'))) ||
+                              (prod.name && prod.name.toLowerCase().includes('deal'));
+
+      const titleEl = document.getElementById('customDrinkSectionTitle');
+      const subtitleEl = document.getElementById('customDrinkSectionSubtitle');
+      const badgeEl = document.getElementById('customDrinkBadge');
+      const containerEl = document.getElementById('customDrinkOptionsContainer');
+
+      if (isDealWithDrink) {
+        if (titleEl) titleEl.innerText = 'Included Deal Beverage';
+        if (subtitleEl) subtitleEl.innerText = 'This deal includes a complimentary cold drink. Select your flavor:';
+        if (badgeEl) {
+          badgeEl.innerText = 'Included in Deal';
+          badgeEl.className = 'px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[9px] font-black uppercase tracking-wider';
+        }
+        if (containerEl) {
+          containerEl.innerHTML = `
+            <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-500 cursor-pointer transition bg-slate-50/50 hover:bg-orange-50/30">
+              <div class="flex items-center gap-2.5">
+                <input type="radio" name="customDrinkChoice" value="Pepsi" data-price="0" checked onchange="recalculateCustomPrice()" class="text-orange-600 focus:ring-orange-500">
+                <span class="font-bold text-slate-800">Pepsi Regular</span>
+              </div>
+              <span class="text-[10px] font-mono text-emerald-600 font-bold">Included</span>
+            </label>
+            <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-500 cursor-pointer transition bg-slate-50/50 hover:bg-orange-50/30">
+              <div class="flex items-center gap-2.5">
+                <input type="radio" name="customDrinkChoice" value="7Up" data-price="0" onchange="recalculateCustomPrice()" class="text-orange-600 focus:ring-orange-500">
+                <span class="font-bold text-slate-800">7Up Regular</span>
+              </div>
+              <span class="text-[10px] font-mono text-emerald-600 font-bold">Included</span>
+            </label>
+            <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-500 cursor-pointer transition bg-slate-50/50 hover:bg-orange-50/30">
+              <div class="flex items-center gap-2.5">
+                <input type="radio" name="customDrinkChoice" value="Mirinda" data-price="0" onchange="recalculateCustomPrice()" class="text-orange-600 focus:ring-orange-500">
+                <span class="font-bold text-slate-800">Mirinda Regular</span>
+              </div>
+              <span class="text-[10px] font-mono text-emerald-600 font-bold">Included</span>
+            </label>
+            <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-500 cursor-pointer transition bg-slate-50/50 hover:bg-orange-50/30">
+              <div class="flex items-center gap-2.5">
+                <input type="radio" name="customDrinkChoice" value="Mountain Dew" data-price="0" onchange="recalculateCustomPrice()" class="text-orange-600 focus:ring-orange-500">
+                <span class="font-bold text-slate-800">Mountain Dew</span>
+              </div>
+              <span class="text-[10px] font-mono text-emerald-600 font-bold">Included</span>
+            </label>
+            <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-slate-400 cursor-pointer transition bg-slate-50/50 hover:bg-slate-100 sm:col-span-2">
+              <div class="flex items-center gap-2.5">
+                <input type="radio" name="customDrinkChoice" value="NONE" data-price="0" onchange="recalculateCustomPrice()" class="text-slate-600 focus:ring-slate-500">
+                <span class="font-bold text-slate-700">No Drink Needed (Baghair Drink Ke)</span>
+              </div>
+              <span class="text-[10px] font-mono text-slate-400">Skip</span>
+            </label>
+          `;
+        }
+      } else {
+        // Standalone product (Single Burger, Roll, Pizza, etc.) -> Drink is 100% OPTIONAL, NOT COMPULSORY!
+        if (titleEl) titleEl.innerText = 'Cold Drink / Beverage (Optional)';
+        if (subtitleEl) subtitleEl.innerText = 'Drink compulsory nahi hai. Baghair drink ke order karein ya optional shamil karein:';
+        if (badgeEl) {
+          badgeEl.innerText = 'Optional';
+          badgeEl.className = 'px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[9px] font-black uppercase tracking-wider';
+        }
+        if (containerEl) {
+          containerEl.innerHTML = `
+            <label class="flex items-center justify-between p-3 rounded-xl border-2 border-emerald-500 bg-emerald-50/40 cursor-pointer transition sm:col-span-2">
+              <div class="flex items-center gap-2.5">
+                <input type="radio" name="customDrinkChoice" value="NONE" data-price="0" checked onchange="recalculateCustomPrice()" class="text-emerald-600 focus:ring-emerald-500">
+                <div>
+                  <span class="font-black text-slate-900 block">No Drink (Baghair Drink Ke)</span>
+                  <span class="text-[10px] text-slate-500">Bina drink ke direct order karein (Optional)</span>
+                </div>
+              </div>
+              <span class="text-[11px] font-bold text-emerald-700 bg-white px-2.5 py-0.5 rounded-lg border border-emerald-200">PKR 0</span>
+            </label>
+            <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-500 cursor-pointer transition bg-slate-50/50 hover:bg-orange-50/30">
+              <div class="flex items-center gap-2.5">
+                <input type="radio" name="customDrinkChoice" value="Pepsi 345ml" data-price="120" onchange="recalculateCustomPrice()" class="text-orange-600 focus:ring-orange-500">
+                <span class="font-bold text-slate-800">Pepsi 345ml</span>
+              </div>
+              <span class="text-[10px] font-mono text-slate-700 font-bold">+PKR 120</span>
+            </label>
+            <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-500 cursor-pointer transition bg-slate-50/50 hover:bg-orange-50/30">
+              <div class="flex items-center gap-2.5">
+                <input type="radio" name="customDrinkChoice" value="7Up 345ml" data-price="120" onchange="recalculateCustomPrice()" class="text-orange-600 focus:ring-orange-500">
+                <span class="font-bold text-slate-800">7Up 345ml</span>
+              </div>
+              <span class="text-[10px] font-mono text-slate-700 font-bold">+PKR 120</span>
+            </label>
+            <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-500 cursor-pointer transition bg-slate-50/50 hover:bg-orange-50/30">
+              <div class="flex items-center gap-2.5">
+                <input type="radio" name="customDrinkChoice" value="Mirinda 345ml" data-price="120" onchange="recalculateCustomPrice()" class="text-orange-600 focus:ring-orange-500">
+                <span class="font-bold text-slate-800">Mirinda 345ml</span>
+              </div>
+              <span class="text-[10px] font-mono text-slate-700 font-bold">+PKR 120</span>
+            </label>
+            <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-orange-500 cursor-pointer transition bg-slate-50/50 hover:bg-orange-50/30">
+              <div class="flex items-center gap-2.5">
+                <input type="radio" name="customDrinkChoice" value="Mountain Dew" data-price="120" onchange="recalculateCustomPrice()" class="text-orange-600 focus:ring-orange-500">
+                <span class="font-bold text-slate-800">Mountain Dew</span>
+              </div>
+              <span class="text-[10px] font-mono text-slate-700 font-bold">+PKR 120</span>
+            </label>
+          `;
+        }
       }
 
       // Reset Add-ons
@@ -3298,6 +3369,16 @@
       if (!currentCustomProd) return;
       let unitPrice = currentCustomProd.price;
 
+      // Add extra drink cost if an optional drink was selected
+      const drinkRadios = document.getElementsByName('customDrinkChoice');
+      for (const r of drinkRadios) {
+        if (r.checked) {
+          const cost = parseFloat(r.getAttribute('data-price')) || 0;
+          unitPrice += cost;
+          break;
+        }
+      }
+
       // Add-ons calculation
       if (document.getElementById('addon-piece')?.checked) unitPrice += 320;
       if (document.getElementById('addon-sauce')?.checked) unitPrice += 120;
@@ -3318,19 +3399,21 @@
     function commitCustomizedItemToCart() {
       if (!currentCustomProd) return;
 
-      // Required Drink Radio verification
+      // Drink selection check
       const drinkRadios = document.getElementsByName('customDrinkChoice');
-      let chosenDrink = 'Pepsi 345ml';
+      let chosenDrink = 'NONE';
+      let drinkExtraCost = 0;
       for (const r of drinkRadios) {
         if (r.checked) {
           chosenDrink = r.value;
+          drinkExtraCost = parseFloat(r.getAttribute('data-price')) || 0;
           break;
         }
       }
 
       // Addons array
       let selectedAddons = [];
-      let extraUnitCost = 0;
+      let extraUnitCost = drinkExtraCost;
       if (document.getElementById('addon-piece')?.checked) { selectedAddons.push('Extra Chicken Piece (+320)'); extraUnitCost += 320; }
       if (document.getElementById('addon-sauce')?.checked) { selectedAddons.push('Garlic Mayo Dip (+120)'); extraUnitCost += 120; }
       if (document.getElementById('addon-fries')?.checked) { selectedAddons.push('Cheesy Fries Upgrade (+190)'); extraUnitCost += 190; }
@@ -3339,14 +3422,20 @@
       const notes = document.getElementById('customNotesInput')?.value.trim() || '';
       const fallback = document.getElementById('customFallbackSelect')?.value || 'REMOVE';
 
+      // Naming format: only show drink if customer actively selected one
+      const isNoDrink = !chosenDrink || chosenDrink === 'NONE' || chosenDrink.toLowerCase().includes('baghair');
+      const displayName = isNoDrink 
+        ? currentCustomProd.name 
+        : `${currentCustomProd.name} (+ ${chosenDrink.split(' ')[0]})`;
+
       // Item descriptor for cart
       const customId = currentCustomProd.id + '-c' + Date.now().toString().slice(-4);
       const customItem = {
         id: customId,
         baseId: currentCustomProd.id,
-        name: `${currentCustomProd.name} (${chosenDrink.split(' ')[0]})`,
+        name: displayName,
         price: currentCustomProd.price + extraUnitCost,
-        drink: chosenDrink,
+        drink: isNoDrink ? '' : chosenDrink,
         addons: selectedAddons,
         notes: notes,
         fallback: fallback,
@@ -3363,7 +3452,7 @@
       renderAll();
 
       // Show alert confirmation
-      const addMsg = `🍗 Added to Order!\n${currentCustomProd.name} (x${customQty})\nDrink: ${chosenDrink}` +
+      const addMsg = `🍗 Added to Order!\n${currentCustomProd.name} (x${customQty})\nDrink: ${isNoDrink ? 'None (Optional)' : chosenDrink}` +
         (selectedAddons.length > 0 ? `\nAdd-ons: ${selectedAddons.join(', ')}` : '') +
         (notes ? `\nNotes: ${notes}` : '');
       alert(addMsg);
