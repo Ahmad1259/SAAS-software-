@@ -413,9 +413,20 @@
               </div>
             </div>
 
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-600 mb-1">Calories (Energy)</label>
+                <input type="text" id="newProdCalories" placeholder="e.g. 550 kcal" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-slate-600 mb-1">Photo URL (Optional)</label>
+                <input type="url" id="newProdImage" placeholder="https://... (or blank)" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+              </div>
+            </div>
+
             <div>
               <label class="block text-[11px] font-bold text-slate-600 mb-1">Ingredients / Notes</label>
-              <textarea id="newProdDesc" rows="2" placeholder="Fragrant basmati rice cooked with fresh spices..." class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition"></textarea>
+              <textarea id="newProdDesc" rows="2" placeholder="Ingredients, recipe notes or details..." class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition"></textarea>
             </div>
 
             <button type="submit" class="w-full py-3 bg-slate-950 hover:bg-slate-800 text-white rounded-xl font-bold text-xs shadow-subtle transition flex items-center justify-center gap-2">
@@ -1042,6 +1053,8 @@
       const name = document.getElementById('newProdName').value.trim();
       const price = parseInt(document.getElementById('newProdPrice').value, 10);
       const category = document.getElementById('newProdCategory').value.trim() || 'General';
+      const calories = document.getElementById('newProdCalories').value.trim() || '450 kcal';
+      const imageUrl = document.getElementById('newProdImage').value.trim() || '';
       const desc = document.getElementById('newProdDesc').value.trim();
 
       const newProd = {
@@ -1049,6 +1062,8 @@
         name,
         price,
         category,
+        calories,
+        imageUrl,
         desc: desc || 'Fresh item',
         stock: 50
       };
@@ -1232,13 +1247,15 @@
       grid.innerHTML = filteredProducts.map(p => {
         const qty = posCart[p.id] || 0;
         return `
-          <div onclick="addToPosCart('${p.id}')" class="bg-white p-3.5 rounded-2xl border ${qty > 0 ? 'border-emerald-500 shadow-card bg-emerald-50/20' : 'border-slate-200/80 shadow-subtle'} hover:border-emerald-400 cursor-pointer transition select-none flex flex-col justify-between h-36">
+          <div onclick="addToPosCart('${p.id}')" class="bg-white p-3.5 rounded-2xl border ${qty > 0 ? 'border-emerald-500 shadow-card bg-emerald-50/20' : 'border-slate-200/80 shadow-subtle'} hover:border-emerald-400 cursor-pointer transition select-none flex flex-col justify-between min-h-[150px]">
             <div>
-              <div class="flex items-center justify-between">
-                <span class="text-[9px] uppercase tracking-wider font-extrabold text-slate-400 truncate max-w-[80px]">${p.category || 'Food'}</span>
-                ${qty > 0 ? `<span class="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-black flex items-center justify-center">${qty}</span>` : ''}
+              <div class="flex items-center justify-between gap-1 mb-1.5">
+                <span class="text-[9px] uppercase tracking-wider font-extrabold text-slate-400 truncate max-w-[70px]">${p.category || 'Food'}</span>
+                <span class="text-[9px] text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded font-bold">${p.calories || '450 kcal'}</span>
+                ${qty > 0 ? `<span class="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-black flex items-center justify-center shrink-0">${qty}</span>` : ''}
               </div>
-              <h4 class="text-xs font-bold text-slate-900 mt-1 line-clamp-2 leading-tight">${p.name}</h4>
+              ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" class="w-full h-16 object-cover rounded-xl mb-1.5 border border-slate-100">` : ''}
+              <h4 class="text-xs font-bold text-slate-900 line-clamp-2 leading-tight">${p.name}</h4>
             </div>
             <div class="flex items-center justify-between pt-2 border-t border-slate-100">
               <span class="text-xs font-mono font-black text-slate-950">PKR ${p.price}</span>
@@ -1713,9 +1730,19 @@
                   <i class="fa-solid fa-fire-burner"></i> Start Cooking
                 </button>
               ` : `
-                <button onclick="updateOrderStatus('${o.id}', 'READY_FOR_PICKUP')" class="flex-1 py-2.5 bg-mint-600 hover:bg-mint-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
-                  <i class="fa-solid fa-check"></i> Mark Ready for Rider
-                </button>
+                ${o.orderType === 'DINE_IN' ? `
+                  <button onclick="updateOrderStatus('${o.id}', 'COMPLETED')" class="flex-1 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-utensils"></i> Served to Table
+                  </button>
+                ` : o.orderType === 'TAKEAWAY' ? `
+                  <button onclick="updateOrderStatus('${o.id}', 'COMPLETED')" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-bag-shopping"></i> Handed to Customer
+                  </button>
+                ` : `
+                  <button onclick="updateOrderStatus('${o.id}', 'READY_FOR_PICKUP')" class="flex-1 py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-motorcycle"></i> Ready for Rider
+                  </button>
+                `}
               `}
               <a href="${getWhatsAppUpdateUrl(o, o.status)}" target="_blank" class="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded-xl text-xs font-bold flex items-center gap-1" title="Customer ko WhatsApp Update Bhein">
                 <i class="fa-brands fa-whatsapp text-sm"></i>
@@ -1733,7 +1760,8 @@
       const container = document.getElementById('dispatchGrid');
       container.innerHTML = '';
 
-      const dispatchOrders = orders.filter(o => o.status === 'READY_FOR_PICKUP' || o.status === 'SHIPPED');
+      // RIDERS ONLY GET DELIVERY ORDERS (Takeaway & Dine-In are handled at the counter/tables)
+      const dispatchOrders = orders.filter(o => (!o.orderType || o.orderType === 'DELIVERY') && (o.status === 'READY_FOR_PICKUP' || o.status === 'SHIPPED'));
 
       if (dispatchOrders.length === 0) {
         container.innerHTML = `
