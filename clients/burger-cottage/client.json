@@ -2,17 +2,17 @@
   "clientId": "burger-cottage-01",
   "clientName": "Burger Cottage",
   "slug": "burger-cottage",
-  "status": "ONBOARDING",
+  "status": "ACTIVE",
   "owner": {
     "name": "Owner Burger Cottage",
-    "phone": "03xx-xxxxxxx",
-    "whatsapp": "923xxxxxxxxx",
+    "phone": "0305-4122075",
+    "whatsapp": "923054122075",
     "email": "contact@burgercottage.pk"
   },
   "location": {
     "city": "Lahore",
-    "branch": "Main Branch",
-    "address": "Burger Cottage, Pakistan"
+    "branch": "Iqbal Park, Defence Cantt, Lahore",
+    "address": "Shop 6-7, Iqbal Park, Link-8, Main Boulevard Defence Cantt, Lahore"
   },
   "database": {
     "provider": "Supabase PostgreSQL",
@@ -29,5 +29,15 @@
   "links": {
     "local": "http://192.168.1.12:3000/?store=burger-cottage",
     "live": "https://tricky-candies-carry.loca.lt/?store=burger-cottage"
+  },
+  "operational": {
+    "timings": "Open 7 days, 2:00 PM – 4:00 AM",
+    "deliveryNote": "Free home delivery (40 min)",
+    "allPhones": [
+      "0305-4122075",
+      "0322-8423075",
+      "0301-4314918",
+      "0320-4841741"
+    ]
   }
 }
