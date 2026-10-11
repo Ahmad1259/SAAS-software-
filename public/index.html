@@ -82,12 +82,12 @@
 
         <div class="h-4 w-px bg-slate-200 hidden sm:block"></div>
 
-        <!-- Store Name Display -->
+        <!-- Store Name Display (Burger Cottage Dedicated Brand) -->
         <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
-          <button onclick="loadPresetClientMenu('burger-cottage')" id="tenantBtnBurger" class="px-2.5 py-1 rounded-lg font-bold transition flex items-center gap-1 bg-emerald-600 text-white shadow-sm">
-            🍔 Burger Cottage (97)
+          <button onclick="loadPresetClientMenu('burger-cottage')" id="tenantBtnBurger" class="px-3 py-1.5 rounded-lg font-black transition flex items-center gap-1.5 bg-emerald-600 text-white shadow-sm">
+            🍔 Burger Cottage (97 Authentic Items)
           </button>
-          <button onclick="loadPresetClientMenu('sultan-spice')" id="tenantBtnSultan" class="px-2 py-1 rounded-lg font-medium transition text-slate-600 hover:text-slate-900">
+          <button onclick="loadPresetClientMenu('sultan-spice')" id="tenantBtnSultan" class="hidden px-2 py-1 rounded-lg font-medium transition text-slate-400 hover:text-slate-600 text-[10px]">
             🍛 Sultan Spice
           </button>
         </div>
@@ -2111,12 +2111,12 @@
 
     // Default to Burger Cottage unless explicitly requested
     let savedStore = localStorage.getItem('activeStore');
-    let isBurgerStore = (storeParam === 'burger-cottage') || (hostname.includes('burger')) || (!savedStore || savedStore === 'burger-cottage');
+    let isBurgerStore = (storeParam !== 'sultan-spice');
 
     let storeConfig = JSON.parse(localStorage.getItem('storeConfig'));
     let products = JSON.parse(localStorage.getItem('storeProducts')) || [];
 
-    if (isBurgerStore || !storeConfig || products.length === 0) {
+    if (isBurgerStore || !storeConfig || products.length === 0 || !storeConfig.storeName.includes('Burger Cottage')) {
       storeConfig = {
         storeName: 'Burger Cottage',
         whatsapp: '923054122075',
@@ -2128,6 +2128,9 @@
       localStorage.setItem('activeStore', 'burger-cottage');
       localStorage.setItem('storeConfig', JSON.stringify(storeConfig));
       localStorage.setItem('storeProducts', JSON.stringify(products));
+    } else if (storeParam === 'sultan-spice') {
+      const btnSultan = document.getElementById('tenantBtnSultan');
+      if (btnSultan) btnSultan.classList.remove('hidden');
     }
 
     let users = JSON.parse(localStorage.getItem('storeUsers')) || initialUsers;
@@ -2923,7 +2926,8 @@
       const topNameEl = document.getElementById('topStoreName');
       if (topNameEl) topNameEl.innerText = storeConfig.storeName;
       document.getElementById('storefrontHeading').innerText = storeConfig.storeName;
-      document.getElementById('storefrontPhoneBadge').innerText = storeConfig.whatsapp;
+      const phoneBadge = document.getElementById('storefrontPhoneBadge');
+      if (phoneBadge) phoneBadge.innerText = storeConfig.whatsapp;
 
       renderAuthControls();
       renderMetrics();
@@ -3190,11 +3194,10 @@
       renderAll();
 
       // Show alert confirmation
-      alert(`🍗 Added to Order!
-${currentCustomProd.name} (x${customQty})
-Drink: ${chosenDrink}${selectedAddons.length > 0 ? '
-Add-ons: ' + selectedAddons.join(', ') : ''}${notes ? '
-Notes: ' + notes : ''}`);
+      const addMsg = `🍗 Added to Order!\n${currentCustomProd.name} (x${customQty})\nDrink: ${chosenDrink}` +
+        (selectedAddons.length > 0 ? `\nAdd-ons: ${selectedAddons.join(', ')}` : '') +
+        (notes ? `\nNotes: ${notes}` : '');
+      alert(addMsg);
     }
 
     // -------------------------------------------------------------
