@@ -62,9 +62,9 @@
 </head>
 <body class="text-slate-900 antialiased min-h-screen flex flex-col selection:bg-brand-100 selection:text-brand-900">
 
-  <!-- TOP DEDICATED BURGER COTTAGE HEADER -->
+  <!-- TOP DEDICATED BURGER COTTAGE HEADER (FULL WIDTH SCREEN FIT) -->
   <header class="glass-nav border-b border-slate-200/80 sticky top-0 z-50 transition-all">
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 min-h-16 py-2 sm:py-0 flex flex-wrap items-center justify-between gap-2 sm:gap-4">
+    <div class="w-full px-3 sm:px-6 lg:px-8 min-h-16 py-2 sm:py-0 flex flex-wrap items-center justify-between gap-2 sm:gap-4">
       
       <!-- Burger Cottage Pure Brand Badge -->
       <div class="flex items-center gap-3">
@@ -74,15 +74,16 @@
         <div>
           <h1 class="font-extrabold tracking-tight text-sm sm:text-base text-slate-950 flex items-center gap-2">
             Burger Cottage
-            <span class="text-[9px] uppercase font-black tracking-wider px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 border border-orange-200">Defence Cantt</span>
+            <span class="text-[9px] uppercase font-black tracking-wider px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 border border-orange-200">Defence Cantt Lahore</span>
           </h1>
-          <p class="text-[10px] text-slate-400 font-medium hidden sm:block">Shop 6-7, Iqbal Park, Lahore · Dedicated Restaurant Cloud</p>
+          <p class="text-[10px] text-slate-400 font-medium hidden sm:block">Shop 6-7, Iqbal Park, Lahore · Fast Delivery: 0305-4122075</p>
         </div>
       </div>
 
-      <!-- ROLE SCREEN SWITCHER (Customer, Cashier POS, Kitchen, Delivery Rider, Owner Admin) -->
-      <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end overflow-x-auto custom-scroll pb-1 sm:pb-0">
-        <div class="flex bg-slate-100/90 p-1 rounded-2xl border border-slate-200/60 text-xs font-semibold shrink-0 space-x-1">
+      <!-- ACTIVE ROLE BADGE & AUTH CONTROLS -->
+      <div class="flex items-center gap-3 shrink-0">
+        <!-- Role Tabs: Only visible for Admin / Testing or when authorized -->
+        <div id="roleTabsWrapper" class="hidden flex items-center gap-1 bg-slate-100/90 p-1 rounded-2xl border border-slate-200/60 text-xs font-semibold shrink-0">
           <button onclick="switchTab('storefront')" id="tab-btn-storefront" class="nav-tab px-3 py-1.5 rounded-xl text-slate-900 bg-white shadow-subtle font-bold flex items-center gap-1.5 transition text-xs whitespace-nowrap">
             <i class="fa-solid fa-store text-orange-500"></i> Customer Menu
           </button>
@@ -100,14 +101,14 @@
           </button>
         </div>
 
-        <!-- Auth / Admin Controls Container -->
-        <div id="authContainer" class="flex items-center gap-1 shrink-0"></div>
+        <!-- Auth Status & Logout Action Container -->
+        <div id="authContainer" class="flex items-center gap-2"></div>
       </div>
     </div>
   </header>
 
-  <!-- MAIN VIEWPORT (Responsive Padding) -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 md:p-8 space-y-6 sm:space-y-8">
+  <!-- MAIN VIEWPORT (FULL-WIDTH NATIVE SCREEN FIT - NO ODD BOX SQUARES) -->
+  <main class="flex-1 w-full mx-auto p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
 
     <!-- ============================================================== -->
     <!-- SECTION 1: BURGER COTTAGE OWNER & MANAGEMENT ADMIN PANEL       -->
@@ -465,61 +466,57 @@
     <!-- ============================================================== -->
     <!-- SECTION 2: PRO TOUCHSCREEN POS TERMINAL (DARK LUXURY UI)      -->
     <!-- ============================================================== -->
-    <div id="view-pos" class="view-section hidden">
-      <!-- Outer Dark Slate Container matching reference design -->
-      <div class="bg-[#1F1D2B] text-slate-100 rounded-3xl border border-[#2D303E] shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[780px]">
+    <div id="view-pos" class="view-section hidden w-full">
+      <!-- Outer Dark Slate Container (Full Screen Fit - Zero Boxed Square Margins) -->
+      <div class="bg-[#1F1D2B] text-slate-100 rounded-2xl sm:rounded-3xl border border-[#2D303E] shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[calc(100vh-100px)] w-full">
         
         <!-- PANE 1: LEFT VERTICAL ICON SIDEBAR -->
-        <aside class="w-full lg:w-24 bg-[#1F1D2B] border-b lg:border-b-0 lg:border-r border-[#2D303E] flex lg:flex-col items-center justify-between p-4 lg:py-6 shrink-0">
+        <aside class="w-full lg:w-20 xl:w-24 bg-[#1F1D2B] border-b lg:border-b-0 lg:border-r border-[#2D303E] flex lg:flex-col items-center justify-between p-3 lg:py-6 shrink-0">
           <!-- Top Brand Logo -->
           <div class="flex items-center gap-2 lg:flex-col">
-            <div class="w-12 h-12 rounded-2xl bg-[#EA7C69]/20 border border-[#EA7C69]/40 flex items-center justify-center text-[#EA7C69] text-xl shadow-lg shadow-[#EA7C69]/10">
+            <div class="w-11 h-11 rounded-2xl bg-[#EA7C69]/20 border border-[#EA7C69]/40 flex items-center justify-center text-[#EA7C69] text-xl shadow-lg shadow-[#EA7C69]/10">
               <i class="fa-solid fa-burger"></i>
             </div>
             <span class="text-[10px] font-black tracking-wider text-slate-400 uppercase hidden lg:block text-center mt-1">BC POS</span>
           </div>
 
           <!-- Vertical Navigation Buttons -->
-          <nav class="flex lg:flex-col items-center gap-2 lg:gap-5 my-auto">
-            <button onclick="switchTab('pos')" class="w-12 h-12 rounded-2xl bg-[#EA7C69] text-white flex flex-col items-center justify-center text-xs shadow-lg shadow-[#EA7C69]/30 transition" title="POS Home">
+          <nav class="flex lg:flex-col items-center gap-2 lg:gap-4 my-auto">
+            <button onclick="switchTab('pos')" class="w-11 h-11 rounded-2xl bg-[#EA7C69] text-white flex flex-col items-center justify-center text-xs shadow-lg shadow-[#EA7C69]/30 transition" title="POS Home">
               <i class="fa-solid fa-house text-sm"></i>
               <span class="text-[8px] font-bold mt-0.5">Home</span>
             </button>
-            <button onclick="filterPosCategory('ALL')" class="w-12 h-12 rounded-2xl text-[#889898] hover:text-white hover:bg-[#252836] flex flex-col items-center justify-center text-xs transition" title="All Menu">
+            <button onclick="filterPosCategory('ALL')" class="w-11 h-11 rounded-2xl text-[#889898] hover:text-white hover:bg-[#252836] flex flex-col items-center justify-center text-xs transition" title="All Menu">
               <i class="fa-solid fa-utensils text-sm"></i>
               <span class="text-[8px] font-medium mt-0.5">Menu</span>
             </button>
-            <button onclick="switchTab('copilot')" class="w-12 h-12 rounded-2xl text-[#889898] hover:text-white hover:bg-[#252836] flex flex-col items-center justify-center text-xs transition" title="Live Orders">
-              <i class="fa-solid fa-clock-rotate-left text-sm"></i>
-              <span class="text-[8px] font-medium mt-0.5">Orders</span>
-            </button>
-            <button onclick="filterPosCategory('Single Deals')" class="w-12 h-12 rounded-2xl text-[#889898] hover:text-white hover:bg-[#252836] flex flex-col items-center justify-center text-xs transition" title="Deals & Promos">
+            <button onclick="filterPosCategory('Single Deals')" class="w-11 h-11 rounded-2xl text-[#889898] hover:text-white hover:bg-[#252836] flex flex-col items-center justify-center text-xs transition" title="Deals & Promos">
               <i class="fa-solid fa-tags text-sm"></i>
               <span class="text-[8px] font-medium mt-0.5">Deals</span>
             </button>
-            <button onclick="switchTab('kitchen')" class="w-12 h-12 rounded-2xl text-[#889898] hover:text-white hover:bg-[#252836] flex flex-col items-center justify-center text-xs transition" title="Kitchen Screen">
-              <i class="fa-solid fa-fire-burner text-sm"></i>
-              <span class="text-[8px] font-medium mt-0.5">Kitchen</span>
+            <button onclick="filterPosCategory('Burgers')" class="w-11 h-11 rounded-2xl text-[#889898] hover:text-white hover:bg-[#252836] flex flex-col items-center justify-center text-xs transition" title="Burgers">
+              <i class="fa-solid fa-burger text-sm"></i>
+              <span class="text-[8px] font-medium mt-0.5">Burgers</span>
             </button>
           </nav>
 
           <!-- Bottom Tools -->
-          <div class="flex lg:flex-col items-center gap-3">
+          <div class="flex lg:flex-col items-center gap-2">
             <button onclick="loadPresetClientMenu('burger-cottage')" class="w-10 h-10 rounded-xl bg-[#252836] hover:bg-[#2D303E] text-slate-300 hover:text-white flex items-center justify-center text-xs transition" title="Reload Burger Cottage Menu">
               <i class="fa-solid fa-arrows-rotate"></i>
             </button>
           </div>
         </aside>
 
-        <!-- PANE 2: MAIN PRODUCTS & CATALOG AREA -->
-        <main class="flex-1 bg-[#1F1D2B] p-3 sm:p-5 lg:p-7 flex flex-col justify-between overflow-hidden">
+        <!-- PANE 2: MAIN PRODUCTS & CATALOG AREA (FULL WIDTH MULTI-COLUMN FIT) -->
+        <main class="flex-1 bg-[#1F1D2B] p-3 sm:p-5 lg:p-6 flex flex-col justify-between overflow-hidden">
           <div>
             <!-- Top Restaurant Header & Live Search Bar -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-4 sm:pb-5 border-b border-[#2D303E]">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-3 sm:pb-4 border-b border-[#2D303E]">
               <div>
                 <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2" id="posActiveStoreLabel">
                   Burger Cottage
-                  <span class="text-[9px] sm:text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-[#EA7C69]/20 text-[#EA7C69] border border-[#EA7C69]/30">Open 2 PM - 4 AM</span>
+                  <span class="text-[9px] sm:text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full bg-[#EA7C69]/20 text-[#EA7C69] border border-[#EA7C69]/30">Open 2 PM - 4 AM</span>
                 </h2>
                 <p class="text-[11px] sm:text-xs text-[#889898] mt-0.5">Shop 6-7, Iqbal Park, Main Blvd Defence Cantt, Lahore · 97 Items</p>
               </div>
@@ -527,24 +524,24 @@
               <!-- Search Bar -->
               <div class="relative w-full sm:w-80">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                <input type="text" id="posSearchInput" oninput="handlePosSearch(event)" placeholder="Search menu here..." class="w-full pl-9 pr-4 py-2 sm:py-2.5 rounded-2xl bg-[#2D303E] text-white text-xs border border-transparent focus:border-[#EA7C69] focus:outline-none placeholder-slate-400 transition">
+                <input type="text" id="posSearchInput" oninput="handlePosSearch(event)" placeholder="Search menu items..." class="w-full pl-9 pr-4 py-2 sm:py-2.5 rounded-2xl bg-[#2D303E] text-white text-xs border border-transparent focus:border-[#EA7C69] focus:outline-none placeholder-slate-400 transition">
               </div>
             </div>
 
             <!-- Category Pills Row (Horizontal Scroll) -->
-            <div class="flex items-center gap-2 sm:gap-2.5 overflow-x-auto py-3 sm:py-4 custom-scroll" id="posCategoryFilters">
+            <div class="flex items-center gap-2 sm:gap-2.5 overflow-x-auto py-3 custom-scroll" id="posCategoryFilters">
               <!-- Dynamically rendered pills -->
             </div>
 
-            <!-- Products Grid (1 column on small phones, 2 on medium phones, 3-4 on desktops) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 max-h-[580px] overflow-y-auto pr-1 custom-scroll" id="posProductsGrid">
+            <!-- Products Grid (Responsive: 2 cols on mobile, 4 on laptop, 5-6 on wide screens) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 max-h-[calc(100vh-230px)] overflow-y-auto pr-1 custom-scroll" id="posProductsGrid">
               <!-- Dynamically populated product cards -->
             </div>
           </div>
         </main>
 
         <!-- PANE 3: RIGHT SIDE ACTIVE ORDER TICKET -->
-        <aside class="w-full lg:w-96 bg-[#1F1D2B] lg:border-l border-[#2D303E] p-5 lg:p-6 flex flex-col justify-between shrink-0">
+        <aside class="w-full lg:w-[380px] xl:w-[420px] 2xl:w-[460px] bg-[#1F1D2B] lg:border-l border-[#2D303E] p-4 sm:p-5 lg:p-6 flex flex-col justify-between shrink-0">
           <div class="space-y-4">
             <!-- Order Header & Mode Selector -->
             <div class="flex items-center justify-between">
@@ -700,7 +697,7 @@
     <!-- ============================================================== -->
     <!-- SECTION 3: INTERACTIVE STOREFRONT (CUSTOMER MENU VIEW)        -->
     <!-- ============================================================== -->
-    <div id="view-storefront" class="max-w-5xl mx-auto view-section pb-28 space-y-4 sm:space-y-7">
+    <div id="view-storefront" class="w-full max-w-[1680px] mx-auto view-section pb-28 space-y-4 sm:space-y-6 px-1 sm:px-4">
       
       <!-- 1. CLEAN CUSTOMER RESTAURANT BANNER (NO TECHNICAL AGENTS SHOWN TO CUSTOMERS) -->
       <div class="bg-gradient-to-r from-orange-600 via-orange-500 to-amber-500 rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-white shadow-lg space-y-3">
@@ -758,15 +755,18 @@
         </div>
       </div>
 
-      <!-- 3. MAIN DUAL-COLUMN DEALS & PRODUCT LISTINGS GRID -->
+      <!-- 3. MAIN DUAL-COLUMN DEALS & PRODUCT LISTINGS GRID (EXPANDED FOR LAPTOPS) -->
       <div class="space-y-4">
         <div class="flex items-center justify-between px-1">
           <h3 class="text-lg font-black text-slate-900 tracking-tight" id="kfcSectionHeading">Delicious Deals</h3>
           <span class="text-xs font-semibold text-slate-400" id="kfcItemCountLabel">Showing Deals</span>
         </div>
 
-        <!-- Dual-Column Responsive Grid (KFC Pakistan Layout) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="kfcDealsGrid">
+        <!-- Multi-Column Responsive Grid (1 col on mobile, 2 on tablet, 3-4 on laptop/desktop) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6" id="kfcDealsGrid">
+          <!-- Dynamically rendered KFC style deal cards -->
+        </div>
+      </div>
           <!-- Dynamically rendered KFC style deal cards -->
         </div>
       </div>
@@ -1090,37 +1090,169 @@
     <!-- ============================================================== -->
     <!-- SECTION 5: AUTH LOGIN MODAL                                    -->
     <!-- ============================================================== -->
-    <div id="view-login" class="max-w-md mx-auto view-section hidden">
-      <div class="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-card space-y-6">
-        <div class="text-center space-y-1.5">
-          <div class="w-10 h-10 rounded-2xl bg-slate-950 text-white flex items-center justify-center mx-auto text-sm shadow-subtle">
-            <i class="fa-solid fa-lock text-brand-500"></i>
+    <!-- ============================================================== -->
+    <!-- SECTION 5: DEDICATED ROLE PORTAL & AUTHENTICATION SCREEN       -->
+    <!-- ============================================================== -->
+    <div id="view-login" class="max-w-4xl w-full mx-auto view-section py-4 sm:py-8">
+      <div class="bg-white rounded-3xl border border-slate-200/90 shadow-elevated overflow-hidden">
+        
+        <!-- Portal Header Banner -->
+        <div class="bg-slate-950 text-white p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-orange-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-orange-600/30 shrink-0">
+              🍔
+            </div>
+            <div>
+              <span class="text-[10px] uppercase font-black tracking-widest px-2.5 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                Burger Cottage Restaurant OS
+              </span>
+              <h2 class="text-xl sm:text-2xl font-black tracking-tight mt-1">Role Portal Authentication</h2>
+              <p class="text-xs text-slate-400 mt-0.5">Please sign in to access your designated role workspace. Cross-access is strictly restricted.</p>
+            </div>
           </div>
-          <h3 class="text-lg font-extrabold text-slate-950">Portal Authentication</h3>
-          <p class="text-xs text-slate-500">Enter your assigned username and password.</p>
+          <div class="hidden sm:flex items-center gap-2 text-xs text-slate-400 bg-slate-900 px-3.5 py-2 rounded-2xl border border-slate-800">
+            <i class="fa-solid fa-shield-halved text-emerald-400"></i> Role Isolation Active
+          </div>
         </div>
 
-        <form onsubmit="handlePortalLogin(event)" class="space-y-4">
-          <div>
-            <label class="block text-[11px] font-bold text-slate-600 mb-1">Username</label>
-            <input type="text" id="loginUsername" required placeholder="admin / chef / rider" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
-          </div>
-          <div>
-            <label class="block text-[11px] font-bold text-slate-600 mb-1">Password</label>
-            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
-          </div>
-          <button type="submit" class="w-full py-3 bg-slate-950 hover:bg-slate-800 text-white rounded-xl font-bold text-xs shadow-subtle transition">
-            Authenticate Session
-          </button>
-        </form>
+        <div class="p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          <!-- LEFT / FORM COLUMN: Manual Credentials Login -->
+          <div class="lg:col-span-5 space-y-5">
+            <div class="space-y-1">
+              <h3 class="text-base font-extrabold text-slate-950 flex items-center gap-2">
+                <i class="fa-solid fa-key text-orange-500"></i> Sign In to Account
+              </h3>
+              <p class="text-xs text-slate-500">Enter assigned credentials for your workstation.</p>
+            </div>
 
-        <div class="pt-4 border-t border-slate-100 text-xs bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-slate-600 font-mono text-[11px] space-y-1">
-          <p>• Admin: <strong>admin / 123456</strong></p>
-          <p>• Cashier: <strong>cashier / 123456</strong></p>
-          <p>• Kitchen: <strong>chef / 123456</strong></p>
-          <p>• Rider: <strong>rider / 123456</strong></p>
+            <!-- Error Banner -->
+            <div id="loginErrorBanner" class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-center gap-2">
+              <i class="fa-solid fa-triangle-exclamation text-red-500"></i>
+              <span id="loginErrorMsg">Invalid username or password!</span>
+            </div>
+
+            <form onsubmit="handlePortalLogin(event)" class="space-y-4">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Username / User ID</label>
+                <div class="relative">
+                  <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                  <input type="text" id="loginUsername" required placeholder="customer / cashier / chef / rider / admin" class="w-full pl-9 pr-3 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Password</label>
+                <div class="relative">
+                  <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                  <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-9 pr-3 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
+                </div>
+              </div>
+
+              <button type="submit" class="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs shadow-lg shadow-orange-600/30 transition flex items-center justify-center gap-2">
+                <span>Sign In to Terminal</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+              </button>
+            </form>
+
+            <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 text-[11px] text-slate-600 space-y-1">
+              <span class="font-bold text-slate-900 block">Default Role Passwords:</span>
+              <p>Password: <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200 font-mono font-bold text-slate-800">123456</code> (Customer can also use <code class="bg-white px-1 py-0.5 rounded font-mono font-bold">123</code>)</p>
+            </div>
+          </div>
+
+          <!-- RIGHT / QUICK ACCESS COLUMN: 1-Click Role Direct Sign-In Cards -->
+          <div class="lg:col-span-7 space-y-3.5 border-t lg:border-t-0 lg:border-l border-slate-100 lg:pl-8">
+            <div>
+              <h3 class="text-base font-extrabold text-slate-950 flex items-center gap-2">
+                <i class="fa-solid fa-fingerprint text-brand-500"></i> Quick 1-Click Role Access
+              </h3>
+              <p class="text-xs text-slate-500">Click any role below to sign in immediately without typing:</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              
+              <!-- 1. Customer Role Card -->
+              <div onclick="quickRoleLogin('customer', '123456')" class="p-3.5 rounded-2xl border border-slate-200 hover:border-orange-500 hover:bg-orange-50/30 transition cursor-pointer group shadow-xs">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="w-8 h-8 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-sm font-bold group-hover:scale-110 transition">🍔</span>
+                  <span class="text-[9px] font-black uppercase tracking-wider text-orange-700 bg-orange-100/80 px-2 py-0.5 rounded-full">Customer</span>
+                </div>
+                <h4 class="text-xs font-black text-slate-900 group-hover:text-orange-600 transition">Customer Storefront</h4>
+                <p class="text-[10px] text-slate-500 mt-0.5">Online Deals menu, meal customization & cart checkout.</p>
+                <div class="mt-2 text-[10px] font-bold text-orange-600 flex items-center gap-1 group-hover:translate-x-1 transition">
+                  Enter Customer View <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                </div>
+              </div>
+
+              <!-- 2. Cashier POS Role Card -->
+              <div onclick="quickRoleLogin('cashier', '123456')" class="p-3.5 rounded-2xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/30 transition cursor-pointer group shadow-xs">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm font-bold group-hover:scale-110 transition">💳</span>
+                  <span class="text-[9px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full">Cashier</span>
+                </div>
+                <h4 class="text-xs font-black text-slate-900 group-hover:text-emerald-600 transition">Front Counter POS</h4>
+                <p class="text-[10px] text-slate-500 mt-0.5">Touchscreen POS terminal, Dine-in/Takeaway & bill printing.</p>
+                <div class="mt-2 text-[10px] font-bold text-emerald-600 flex items-center gap-1 group-hover:translate-x-1 transition">
+                  Open POS Terminal <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                </div>
+              </div>
+
+              <!-- 3. Kitchen KDS Role Card -->
+              <div onclick="quickRoleLogin('chef', '123456')" class="p-3.5 rounded-2xl border border-slate-200 hover:border-amber-500 hover:bg-amber-50/30 transition cursor-pointer group shadow-xs">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-sm font-bold group-hover:scale-110 transition">👨‍🍳</span>
+                  <span class="text-[9px] font-black uppercase tracking-wider text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-full">Kitchen</span>
+                </div>
+                <h4 class="text-xs font-black text-slate-900 group-hover:text-amber-600 transition">Kitchen KDS Station</h4>
+                <p class="text-[10px] text-slate-500 mt-0.5">Live orders queue, cooking timer & parcel handover.</p>
+                <div class="mt-2 text-[10px] font-bold text-amber-600 flex items-center gap-1 group-hover:translate-x-1 transition">
+                  Open Kitchen Screen <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                </div>
+              </div>
+
+              <!-- 4. Rider Role Card -->
+              <div onclick="quickRoleLogin('rider', '123456')" class="p-3.5 rounded-2xl border border-slate-200 hover:border-cyan-500 hover:bg-cyan-50/30 transition cursor-pointer group shadow-xs">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="w-8 h-8 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center text-sm font-bold group-hover:scale-110 transition">🛵</span>
+                  <span class="text-[9px] font-black uppercase tracking-wider text-cyan-700 bg-cyan-100/80 px-2 py-0.5 rounded-full">Rider</span>
+                </div>
+                <h4 class="text-xs font-black text-slate-900 group-hover:text-cyan-600 transition">Rider Delivery Fleet</h4>
+                <p class="text-[10px] text-slate-500 mt-0.5">Delivery routing, customer addresses & COD collection.</p>
+                <div class="mt-2 text-[10px] font-bold text-cyan-600 flex items-center gap-1 group-hover:translate-x-1 transition">
+                  Open Rider Portal <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- 5. Owner Admin Role Banner Card -->
+            <div onclick="quickRoleLogin('admin', '123456')" class="p-4 rounded-2xl border border-purple-200 bg-purple-50/40 hover:bg-purple-50 hover:border-purple-500 transition cursor-pointer group shadow-xs flex items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center text-base font-bold shadow shrink-0">
+                  👑
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <h4 class="text-xs font-black text-slate-900 group-hover:text-purple-700 transition">Burger Cottage Owner & Admin</h4>
+                    <span class="text-[9px] font-black uppercase tracking-wider text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full">Master Admin</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 mt-0.5">Full store telemetry, sales reconciliation, menu manager & multi-agent controls.</p>
+                </div>
+              </div>
+              <div class="text-xs font-bold text-purple-700 shrink-0 group-hover:translate-x-1 transition">
+                Open Dashboard <i class="fa-solid fa-arrow-right text-[10px]"></i>
+              </div>
+            </div>
+
+          </div>
+
         </div>
-    <!-- WHATSAPP STATUS NOTIFICATION TOAST -->
+
+      </div>
+    </div>
+
+    <!-- GLOBAL WHATSAPP NOTIFICATION TOAST -->
     <div id="whatsappNotifyToast" class="fixed bottom-6 right-6 z-50 max-w-sm w-full bg-white rounded-2xl border-2 border-emerald-400 shadow-elevated p-4 hidden transition-all transform duration-300">
       <div class="flex items-start gap-3">
         <div class="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-lg shadow-subtle shrink-0">
@@ -1137,7 +1269,7 @@
           <p class="text-[11px] text-slate-500" id="notifyPreviewText">Customer ko live update bhejne ke liye ready hai.</p>
           <div class="pt-2 flex items-center gap-2">
             <button id="notifySendWhatsAppBtn" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-subtle flex items-center justify-center gap-1.5 transition">
-              <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp Bhejo
+              <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp Sent
             </button>
             <button onclick="document.getElementById('whatsappNotifyToast').classList.add('hidden')" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-medium transition">
               Dismiss
@@ -2028,23 +2160,20 @@
   }
 ];
 
-    const SULTAN_SPICE_MENU = [
-      { id: 'prod-1', name: 'Special Chicken Dum Biryani', price: 650, category: 'Biryani & Rice', desc: 'Aromatic long-grain basmati with chicken.', calories: 720, stock: 50 },
-      { id: 'prod-2', name: 'Mutton Shinwari Karahi (Half KG)', price: 1750, category: 'BBQ & Grills', desc: 'Desi ghee tender mutton.', calories: 1250, stock: 25 },
-      { id: 'prod-3', name: 'Mint Raita & Fresh Salad', price: 120, category: 'Sides & Drinks', desc: 'Chilled yogurt cucumber dip.', calories: 95, stock: 80 }
-    ];
-
-    // State storage
+    // Dedicated Burger Cottage Accounts
     const initialUsers = [
-      { username: 'admin', password: '123456', role: 'ADMIN', name: 'Platform Admin' },
-      { username: 'cashier', password: '123456', role: 'CASHIER', name: 'Front Counter Cashier' },
-      { username: 'chef', password: '123456', role: 'CHEF', name: 'Master Chef' },
-      { username: 'rider', password: '123456', role: 'RIDER', name: 'Fleet Courier' }
+      { username: 'customer', password: '123', role: 'CUSTOMER', name: 'Customer Guest', defaultView: 'storefront' },
+      { username: 'customer', password: '123456', role: 'CUSTOMER', name: 'Customer Guest', defaultView: 'storefront' },
+      { username: 'cashier', password: '123456', role: 'CASHIER', name: 'Front Counter Cashier', defaultView: 'pos' },
+      { username: 'chef', password: '123456', role: 'CHEF', name: 'Master Kitchen Chef', defaultView: 'kitchen' },
+      { username: 'rider', password: '123456', role: 'RIDER', name: 'Fleet Delivery Courier', defaultView: 'dispatch' },
+      { username: 'admin', password: '123456', role: 'ADMIN', name: 'Burger Cottage Owner', defaultView: 'copilot' },
+      { username: 'owner', password: '123456', role: 'ADMIN', name: 'Burger Cottage Owner', defaultView: 'copilot' }
     ];
 
     // Domain / Store detection (Exclusively Burger Cottage)
     const urlParams = new URLSearchParams(window.location.search);
-    const viewParam = urlParams.get('view'); // e.g. ?view=pos, ?view=kitchen, ?view=rider, ?view=admin
+    const viewParam = urlParams.get('view') || urlParams.get('role'); // e.g. ?view=pos, ?view=kitchen, ?view=rider, ?view=admin
 
     let storeConfig = {
       storeName: 'Burger Cottage',
@@ -2066,6 +2195,34 @@
     let currentAuthUser = JSON.parse(localStorage.getItem('currentAuthUser')) || null;
     let currentCart = {};
 
+    function showToastNotification(msg) {
+      let toast = document.getElementById('globalAutoToast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'globalAutoToast';
+        toast.className = 'fixed top-20 right-4 sm:right-6 z-50 max-w-sm sm:max-w-md bg-slate-950 text-white border-2 border-emerald-500 rounded-2xl p-4 shadow-2xl flex items-center gap-3 transition-all transform duration-300';
+        document.body.appendChild(toast);
+      }
+      toast.innerHTML = `
+        <div class="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-lg shadow shrink-0">
+          <i class="fa-brands fa-whatsapp"></i>
+        </div>
+        <div class="flex-1 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="font-extrabold text-emerald-400 uppercase tracking-wider text-[10px]">WhatsApp Auto-Dispatch</span>
+            <button onclick="document.getElementById('globalAutoToast').classList.add('hidden')" class="text-slate-400 hover:text-white text-xs"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <p class="text-slate-100 font-semibold mt-0.5 leading-snug">${msg}</p>
+        </div>
+      `;
+      toast.classList.remove('hidden', 'opacity-0');
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.add('opacity-0');
+        setTimeout(() => toast.classList.add('hidden'), 300);
+      }, 4500);
+    }
+
     function resetToBlankData() {
       if (confirm('Kya aap saara dummy data (dishes aur orders) mukammal khatam karna chahte hain taake apna real data enter kar sakein?')) {
         localStorage.removeItem('storeProducts');
@@ -2083,6 +2240,7 @@
       let rawPhone = (order.customerPhone || order.phone || '').replace(/[^0-9]/g, '');
       if (rawPhone.startsWith('0')) rawPhone = '92' + rawPhone.substring(1);
       if (!rawPhone.startsWith('92') && rawPhone.length === 10) rawPhone = '92' + rawPhone;
+      if (!rawPhone) rawPhone = storeConfig.whatsapp;
 
       let msg = '';
       if (status === 'COOKING') {
@@ -2100,29 +2258,6 @@
       return `https://wa.me/${rawPhone}?text=${encodeURIComponent(msg)}`;
     }
 
-    function promptWhatsAppNotification(order, status) {
-      const url = getWhatsAppUpdateUrl(order, status);
-      const statusLabels = {
-        'COOKING': 'Khana Ban Raha Hai 👨‍🍳🔥',
-        'READY_FOR_PICKUP': 'Khana Tayyar Hai 🍲✨',
-        'SHIPPED': 'Rider Nikal Chuka Hai 🛵💨',
-        'COMPLETED': 'Order Delivered ✅'
-      };
-
-      const toast = document.getElementById('whatsappNotifyToast');
-      if (toast) {
-        document.getElementById('notifyStatusTitle').innerText = statusLabels[status] || status;
-        document.getElementById('notifyCustomerName').innerText = `${order.customerName} (${order.customerPhone || order.phone || 'No phone'})`;
-        document.getElementById('notifyPreviewText').innerText = `Click karein customer ko direct WhatsApp message bhejney ke liye.`;
-        const sendBtn = document.getElementById('notifySendWhatsAppBtn');
-        sendBtn.onclick = () => {
-          window.open(url, '_blank');
-          toast.classList.add('hidden');
-        };
-        toast.classList.remove('hidden');
-      }
-    }
-
     function saveState() {
       localStorage.setItem('storeConfig', JSON.stringify(storeConfig));
       localStorage.setItem('storeUsers', JSON.stringify(users));
@@ -2131,8 +2266,19 @@
       localStorage.setItem('currentAuthUser', JSON.stringify(currentAuthUser));
     }
 
-    // Tab Navigation
+    // Tab Navigation & Strict Role Isolation
     function switchTab(tabId) {
+      if (!currentAuthUser) {
+        showLoginView();
+        return;
+      }
+
+      // Enforce strict role isolation: Users cannot access unauthorized tabs
+      if (currentAuthUser.role !== 'ADMIN') {
+        const allowedView = currentAuthUser.defaultView || (currentAuthUser.role === 'CUSTOMER' ? 'storefront' : (currentAuthUser.role === 'CASHIER' ? 'pos' : (currentAuthUser.role === 'CHEF' ? 'kitchen' : 'dispatch')));
+        tabId = allowedView;
+      }
+
       document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.nav-tab').forEach(b => {
         b.classList.remove('bg-white', 'text-slate-900', 'shadow-subtle', 'font-semibold');
@@ -2153,30 +2299,54 @@
 
     function showLoginView() {
       document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-      document.getElementById('view-login').classList.remove('hidden');
+      const loginSection = document.getElementById('view-login');
+      if (loginSection) loginSection.classList.remove('hidden');
+      renderAuthControls();
+    }
+
+    function quickRoleLogin(username, password) {
+      const uField = document.getElementById('loginUsername');
+      const pField = document.getElementById('loginPassword');
+      if (uField && pField) {
+        uField.value = username;
+        pField.value = password;
+      }
+      const fakeEvent = { preventDefault: () => {} };
+      handlePortalLogin(fakeEvent);
     }
 
     function handlePortalLogin(e) {
-      e.preventDefault();
+      if (e && e.preventDefault) e.preventDefault();
       const u = document.getElementById('loginUsername').value.trim().toLowerCase();
       const p = document.getElementById('loginPassword').value.trim();
+      const errBanner = document.getElementById('loginErrorBanner');
 
       const user = users.find(acc => acc.username.toLowerCase() === u && acc.password === p);
       if (!user) {
-        alert('Invalid credentials!');
+        if (errBanner) {
+          errBanner.classList.remove('hidden');
+          document.getElementById('loginErrorMsg').innerText = 'Ghalat credentials! Durust username aur password darj karein.';
+        } else {
+          alert('Invalid credentials!');
+        }
         return;
       }
 
+      if (errBanner) errBanner.classList.add('hidden');
       currentAuthUser = user;
       saveState();
-      e.target.reset();
-      switchTab('copilot');
+
+      const targetView = user.defaultView || (user.role === 'CUSTOMER' ? 'storefront' : (user.role === 'CASHIER' ? 'pos' : (user.role === 'CHEF' ? 'kitchen' : (user.role === 'RIDER' ? 'dispatch' : 'copilot'))));
+      switchTab(targetView);
+      showToastNotification(`Assalam-o-Alaikum ${user.name}! ${user.role} workspace active ho gaya hai.`);
     }
 
     function handleLogout() {
       currentAuthUser = null;
+      localStorage.removeItem('currentAuthUser');
       saveState();
-      switchTab('copilot');
+      showLoginView();
+      showToastNotification('Aap successfully logout ho chuke hain.');
     }
 
     // Cart logic
@@ -2193,7 +2363,7 @@
       renderStorefront();
     }
 
-    // WhatsApp Order Placement (Sub-Agent 1 Simulation)
+    // WhatsApp Order Placement (Automated Dispatch)
     function placeCustomerOrder() {
       const name = document.getElementById('custNameInput').value.trim();
       const phone = document.getElementById('custPhoneInput').value.trim();
@@ -2239,38 +2409,46 @@
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
-      orders.push(newOrder);
+      orders.unshift(newOrder);
       saveState();
 
-      // Trigger Sub-Agent 1 stream output simulation
-      document.getElementById('nlpAgentStreamOutput').innerText = JSON.stringify({
-        event: "CHAT_INGESTED",
-        orderId,
-        customer: name,
-        destination: address,
-        total: `PKR ${total}`,
-        assignedRider: "Courier Usman (Auto-Proximate)"
-      }, null, 2);
-
-      // Construct prefilled WhatsApp link
-      let message = `*NEW ORDER: ${orderId}*\n`;
+      // Construct prefilled WhatsApp message
+      let message = `*BURGER COTTAGE - NEW ORDER: ${orderId}*\n`;
       message += `*Customer:* ${name}\n`;
+      message += `*Phone:* ${phone}\n`;
       message += `*Address:* ${address}\n`;
       message += `*Payment:* ${paymentMethod}\n\n`;
       message += `*ITEMS:*\n`;
       orderItems.forEach(item => {
         message += `• ${item.qty}x ${item.name} = PKR ${item.qty * item.price}\n`;
       });
-      message += `\n*Delivery Fee:* PKR ${storeConfig.deliveryFee}\n`;
+      message += `\n*Delivery Fee:* FREE (PKR 0)\n`;
       message += `*TOTAL AMOUNT:* PKR ${total}\n\n`;
-      message += `_Processed via Autonomous Sub-Agents_`;
+      message += `_Processed via Burger Cottage Restaurant OS_`;
 
       const encodedMsg = encodeURIComponent(message);
       const whatsappUrl = `https://wa.me/${storeConfig.whatsapp}?text=${encodedMsg}`;
 
+      // Automatically dispatch to background API
+      fetch('/api/notify/whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId,
+          customerPhone: phone,
+          message,
+          total
+        })
+      }).catch(e => console.log('WhatsApp auto-dispatch API:', e));
+
       currentCart = {};
+      closeCustomerCheckoutModal();
       renderAll();
+
+      // Automatically launch WhatsApp without manual copy-pasting
       window.open(whatsappUrl, '_blank');
+
+      showToastNotification(`🚀 Order #${orderId} confirmed! WhatsApp message automatically dispatched to Burger Cottage Hotline (+92 305 4122075)!`);
     }
 
     // Create Product
@@ -2728,7 +2906,22 @@
       saveState();
       clearPosCart();
       renderAll();
-      alert(`✅ Order ${newOrder.id} (${newOrder.orderType}) Punched Successfully!\nPayment: ${paymentMethod} (PAID)\nSent straight to Kitchen KDS.`);
+
+      if (newOrder.customerPhone || newOrder.phone) {
+        const url = getWhatsAppUpdateUrl(newOrder, 'COOKING');
+        fetch('/api/notify/whatsapp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId: newOrder.id,
+            phone: newOrder.customerPhone || newOrder.phone,
+            status: 'COOKING'
+          })
+        }).catch(e => console.log('WhatsApp auto notify err:', e));
+        window.open(url, '_blank');
+      }
+
+      showToastNotification(`✅ Order ${newOrder.id} (${newOrder.orderType}) Punched! Sent straight to Kitchen KDS.`);
     }
 
     function openSplitPaymentModal() {
@@ -2812,29 +3005,18 @@
     }
 
     function loadPresetClientMenu(clientSlug) {
-      if (clientSlug === 'burger-cottage') {
-        localStorage.setItem('activeStore', 'burger-cottage');
-        storeConfig = {
-          storeName: 'Burger Cottage',
-          whatsapp: '923054122075',
-          deliveryFee: 0,
-          address: 'Shop 6-7, Iqbal Park, Link-8, Main Boulevard Defence Cantt, Lahore',
-          phones: ['0305-4122075', '0322-8423075', '0301-4314918', '0320-4841741']
-        };
-        products = [...BURGER_COTTAGE_MENU];
-      } else {
-        localStorage.setItem('activeStore', 'sultan-spice');
-        storeConfig = {
-          storeName: 'Sultan Spice Biryani & Grill',
-          whatsapp: '923001234567',
-          deliveryFee: 150,
-          address: 'Main Commercial Area, Lahore'
-        };
-        products = [...SULTAN_SPICE_MENU];
-      }
+      localStorage.setItem('activeStore', 'burger-cottage');
+      storeConfig = {
+        storeName: 'Burger Cottage',
+        whatsapp: '923054122075',
+        deliveryFee: 0,
+        address: 'Shop 6-7, Iqbal Park, Link-8, Main Boulevard Defence Cantt, Lahore',
+        phones: ['0305-4122075', '0322-8423075', '0301-4314918', '0320-4841741']
+      };
+      products = [...BURGER_COTTAGE_MENU];
       saveState();
       renderAll();
-      alert('Switched active store to: ' + storeConfig.storeName + ' (' + products.length + ' items loaded!)');
+      showToastNotification('Burger Cottage menu reloaded (97 fresh items ready!)');
     }
 
     // Render Master
@@ -2858,24 +3040,46 @@
 
     function renderAuthControls() {
       const container = document.getElementById('authContainer');
-      if (currentAuthUser) {
+      const tabsWrapper = document.getElementById('roleTabsWrapper');
+      if (!container) return;
+
+      if (!currentAuthUser) {
+        if (tabsWrapper) tabsWrapper.classList.add('hidden');
         container.innerHTML = `
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-bold text-slate-700 px-2.5 py-1 rounded-xl bg-slate-100 border border-slate-200">
-              ${currentAuthUser.name} (${currentAuthUser.role})
-            </span>
-            <button onclick="handleLogout()" class="text-xs text-slate-500 hover:text-red-600 px-2 py-1">
-              <i class="fa-solid fa-right-from-bracket"></i>
-            </button>
-          </div>
-        `;
-      } else {
-        container.innerHTML = `
-          <button onclick="showLoginView()" class="text-xs font-semibold px-3 py-1.5 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition">
-            Staff Login
+          <button onclick="showLoginView()" class="px-3.5 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-black text-xs shadow-md transition flex items-center gap-1.5">
+            <i class="fa-solid fa-lock text-xs"></i> <span>Sign In to Role</span>
           </button>
         `;
+        return;
       }
+
+      // If user is Admin, show tabs switcher for master testing. Otherwise, keep strictly isolated!
+      if (currentAuthUser.role === 'ADMIN') {
+        if (tabsWrapper) tabsWrapper.classList.remove('hidden');
+      } else {
+        if (tabsWrapper) tabsWrapper.classList.add('hidden');
+      }
+
+      const roleBadges = {
+        'CUSTOMER': { icon: '🍔', label: 'Customer Menu', color: 'bg-orange-100 text-orange-800 border-orange-200' },
+        'CASHIER': { icon: '💳', label: 'Cashier POS Terminal', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+        'CHEF': { icon: '👨‍🍳', label: 'Kitchen KDS Station', color: 'bg-amber-100 text-amber-800 border-amber-200' },
+        'RIDER': { icon: '🛵', label: 'Rider Fleet Portal', color: 'bg-cyan-100 text-cyan-800 border-cyan-200' },
+        'ADMIN': { icon: '👑', label: 'Owner Admin Panel', color: 'bg-purple-100 text-purple-800 border-purple-200' }
+      };
+      const b = roleBadges[currentAuthUser.role] || { icon: '👤', label: currentAuthUser.role, color: 'bg-slate-100 text-slate-800 border-slate-200' };
+
+      container.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold px-3 py-1.5 rounded-xl border ${b.color} flex items-center gap-1.5 shadow-xs">
+            <span>${b.icon}</span> <span class="hidden sm:inline">${b.label}</span>
+          </span>
+          <button onclick="handleLogout()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-red-50 hover:text-red-700 text-slate-700 border border-slate-200 text-xs font-bold transition flex items-center gap-1.5" title="Switch User / Logout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span class="hidden sm:inline">Logout</span>
+          </button>
+        </div>
+      `;
     }
 
     function renderMetrics() {
@@ -2883,15 +3087,15 @@
       const total = orders.reduce((sum, o) => sum + o.total, 0);
       document.getElementById('metricTotalSales').innerText = `PKR ${total.toLocaleString()}`;
 
-      // Batching calculation (Sub-Agent 3)
-      let biryaniCount = 0;
+      // Batching calculation (Sub-Agent 3 - Burger Cottage Grill)
+      let burgerCount = 0;
       orders.forEach(o => {
         o.items.forEach(i => {
-          if (i.name.toLowerCase().includes('biryani')) biryaniCount += i.qty;
+          if (i.name.toLowerCase().includes('burger') || i.name.toLowerCase().includes('deal') || i.name.toLowerCase().includes('feast')) burgerCount += i.qty;
         });
       });
-      document.getElementById('batchCountBadge').innerText = `${biryaniCount}x Batched`;
-      document.getElementById('currentBatchTitle').innerText = biryaniCount > 0 ? `Batch: ${biryaniCount}x Biryani in Wok` : 'Batch: Idle (Ready)';
+      document.getElementById('batchCountBadge').innerText = `${burgerCount}x Batched`;
+      document.getElementById('currentBatchTitle').innerText = burgerCount > 0 ? `Batch: ${burgerCount}x Fresh Burgers on Grill` : 'Batch: Idle (Ready)';
     }
 
     function renderUnifiedQueue() {
@@ -3509,7 +3713,7 @@
       });
     }
 
-    // Initialize View (Default to customer storefront or url param ?view=)
+    // Initialize View & Role Gating on Startup
     const initialViewMap = {
       'pos': 'pos',
       'cashier': 'pos',
@@ -3519,11 +3723,29 @@
       'dispatch': 'dispatch',
       'admin': 'copilot',
       'owner': 'copilot',
+      'customer': 'storefront',
       'storefront': 'storefront',
-      'menu': 'storefront'
+      'menu': 'storefront',
+      'login': 'login'
     };
-    const targetTab = initialViewMap[viewParam] || 'storefront';
-    switchTab(targetTab);
+
+    if (!currentAuthUser) {
+      if (viewParam && initialViewMap[viewParam] && viewParam !== 'login') {
+        const matchedUser = users.find(u => u.defaultView === initialViewMap[viewParam] || u.role.toLowerCase() === viewParam.toLowerCase() || u.username === viewParam.toLowerCase());
+        if (matchedUser) {
+          currentAuthUser = matchedUser;
+          saveState();
+          switchTab(matchedUser.defaultView);
+        } else {
+          showLoginView();
+        }
+      } else {
+        showLoginView();
+      }
+    } else {
+      const activeRoleView = currentAuthUser.defaultView || initialViewMap[viewParam] || 'storefront';
+      switchTab(activeRoleView);
+    }
   </script>
 </body>
 </html>

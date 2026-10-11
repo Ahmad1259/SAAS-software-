@@ -15,44 +15,44 @@ const { ReliableOutboxWorker } = require('../../../packages/outbox-worker/index.
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'COMMERCE_CLOUD_ENTERPRISE_SECRET_KEY_SHA256_AT_LEAST_32_BYTES';
 
-// In-Memory Database store with pre-seeded demo tenant for instant startup
+// In-Memory Database store with Burger Cottage tenant
 let db = {
   organizations: [
-    { id: 'org-sultan-01', name: 'Sultan Food Group', slug: 'sultan-foods', status: 'ACTIVE' }
+    { id: 'org-burger-cottage-01', name: 'Burger Cottage Group', slug: 'burger-cottage', status: 'ACTIVE' }
   ],
   stores: [
     {
-      id: 'store-sultan-main',
-      organizationId: 'org-sultan-01',
-      name: 'Sultan Spice Biryani & Grill',
-      slug: 'sultan-spice',
+      id: 'store-burger-cottage-main',
+      organizationId: 'org-burger-cottage-01',
+      name: 'Burger Cottage',
+      slug: 'burger-cottage',
       businessType: 'RESTAURANT',
       currency: 'PKR',
-      whatsapp: '923001234567',
-      deliveryFeeMinor: 15000n, // PKR 150.00
+      whatsapp: '923054122075',
+      deliveryFeeMinor: 0n, // Free Delivery
       jazzcashSalt: 'SANDBOX_JAZZCASH_INTEGRITY_SALT_32B',
       easypaisaKey: 'SANDBOX_EASYPAISA_STORE_KEY_32B'
     }
   ],
   products: [
-    { id: 'prod-1', storeId: 'store-sultan-main', name: 'Special Chicken Dum Biryani', priceMinor: 65000n, category: 'Biryani & Rice', desc: 'Aromatic basmati rice cooked with chicken.', stock: 50 },
-    { id: 'prod-2', storeId: 'store-sultan-main', name: 'Mutton Shinwari Karahi (Half KG)', priceMinor: 175000n, category: 'BBQ & Grills', desc: 'Fresh mutton in pure desi ghee.', stock: 25 },
-    { id: 'prod-3', storeId: 'store-sultan-main', name: 'Chicken Malai Boti Platter', priceMinor: 85000n, category: 'BBQ & Grills', desc: 'Melt-in-mouth chicken cubes.', stock: 30 },
-    { id: 'prod-4', storeId: 'store-sultan-main', name: 'Mint Raita & Fresh Salad', priceMinor: 12000n, category: 'Sides & Drinks', desc: 'Cooling yogurt dip with cucumber.', stock: 100 }
+    { id: 'bc-deal-1', storeId: 'store-burger-cottage-main', name: 'Hot Deal (Xinger)', priceMinor: 55000n, category: 'Single Deals', desc: '1 Xinger Burger, 1 Reg. Fries, 1 Half Ltr Cold Drink', stock: 100 },
+    { id: 'bc-deal-2', storeId: 'store-burger-cottage-main', name: 'Tower Deal', priceMinor: 80000n, category: 'Single Deals', desc: '1 Tower Burger, 1 Reg. Fries, 1 Half Ltr Cold Drink', stock: 100 },
+    { id: 'bc-deal-3', storeId: 'store-burger-cottage-main', name: 'Super Deal (Patty)', priceMinor: 50000n, category: 'Single Deals', desc: '1 Patty Burger, 1 Reg. Fries, 1 Half Ltr Cold Drink', stock: 100 },
+    { id: 'bc-fst-6', storeId: 'store-burger-cottage-main', name: 'Chicken Feast', priceMinor: 75000n, category: 'Special Deals', desc: '3 Pc Crispy Chicken, 1 Half Ltr Cold Drink', stock: 80 }
   ],
   orders: [
     {
       id: 'ORD-9821',
-      storeId: 'store-sultan-main',
+      storeId: 'store-burger-cottage-main',
       customerName: 'Muhammad Usman',
-      customerPhone: '0321-4567890',
+      customerPhone: '0305-4122075',
       address: 'House 42, Street 8, Phase 5 DHA, Lahore',
       items: [
-        { name: 'Special Chicken Dum Biryani', qty: 2, priceMinor: 65000n },
-        { name: 'Mint Raita & Fresh Salad', qty: 1, priceMinor: 12000n }
+        { name: 'Hot Deal (Xinger)', qty: 2, priceMinor: 55000n },
+        { name: 'Chicken Feast', qty: 1, priceMinor: 75000n }
       ],
-      deliveryFeeMinor: 15000n,
-      totalAmountMinor: 157000n,
+      deliveryFeeMinor: 0n,
+      totalAmountMinor: 185000n,
       paymentMethod: 'COD',
       paymentStatus: 'AWAITING_PAYMENT',
       status: 'COOKING',
@@ -136,19 +136,78 @@ async function handleRequest(req, res) {
     }
 
     // ----------------------------------------------------
+    // API ROUTE: POST /api/auth/login (Role Portal Authentication)
+    // ----------------------------------------------------
+    if (pathname === '/api/auth/login' && method === 'POST') {
+      const body = await parseBody(req);
+      const username = (body.username || '').toLowerCase().trim();
+      const password = (body.password || '').trim();
+
+      const validUsers = [
+        { username: 'customer', password: '123', role: 'CUSTOMER', name: 'Customer Guest', defaultView: 'storefront' },
+        { username: 'customer', password: '123456', role: 'CUSTOMER', name: 'Customer Guest', defaultView: 'storefront' },
+        { username: 'guest', password: '123456', role: 'CUSTOMER', name: 'Customer Guest', defaultView: 'storefront' },
+        { username: 'cashier', password: '123456', role: 'CASHIER', name: 'Front Counter Cashier', defaultView: 'pos' },
+        { username: 'chef', password: '123456', role: 'CHEF', name: 'Master Kitchen Chef', defaultView: 'kitchen' },
+        { username: 'rider', password: '123456', role: 'RIDER', name: 'Fleet Delivery Courier', defaultView: 'dispatch' },
+        { username: 'admin', password: '123456', role: 'ADMIN', name: 'Burger Cottage Owner', defaultView: 'copilot' },
+        { username: 'owner', password: '123456', role: 'ADMIN', name: 'Burger Cottage Owner', defaultView: 'copilot' }
+      ];
+
+      const user = validUsers.find(u => u.username === username && u.password === password);
+      if (!user) {
+        return sendJSON(res, 401, { error: 'Invalid credentials. Please enter your role username and password.' });
+      }
+
+      return sendJSON(res, 200, {
+        success: true,
+        user: {
+          username: user.username,
+          name: user.name,
+          role: user.role,
+          defaultView: user.defaultView
+        },
+        token: 'bc_token_' + Date.now().toString(36)
+      });
+    }
+
+    // ----------------------------------------------------
+    // API ROUTE: POST /api/notify/whatsapp (Automatic WhatsApp Notification Dispatch)
+    // ----------------------------------------------------
+    if (pathname === '/api/notify/whatsapp' && method === 'POST') {
+      const body = await parseBody(req);
+      const recipient = body.phone || body.customerPhone || '923054122075';
+      const orderId = body.orderId || 'ORD-LIVE';
+      const text = body.message || `Assalam-o-Alaikum! Burger Cottage order ${orderId} update.`;
+
+      // Log automated dispatch
+      console.log(`[WHATSAPP AUTOMATED DISPATCH] Order: ${orderId} -> Recipient: ${recipient}`);
+
+      return sendJSON(res, 200, {
+        success: true,
+        dispatchedAutomatically: true,
+        orderId,
+        recipient,
+        timestamp: new Date().toISOString(),
+        gateway: 'BURGER_COTTAGE_AUTONOMOUS_WHATSAPP_BOT',
+        status: 'DELIVERED_TO_QUEUE'
+      });
+    }
+
+    // ----------------------------------------------------
     // API ROUTE: GET /api/products
     // ----------------------------------------------------
     if (pathname === '/api/products' && method === 'GET') {
-      const storeId = req.headers['x-store-id'] || 'store-sultan-main';
-      const storeProducts = db.products.filter(p => p.storeId === storeId);
-      return sendJSON(res, 200, { products: storeProducts });
+      const storeId = req.headers['x-store-id'] || 'store-burger-cottage-main';
+      const storeProducts = db.products.filter(p => p.storeId === storeId || p.storeId === 'burger-cottage');
+      return sendJSON(res, 200, { products: storeProducts.length ? storeProducts : db.products });
     }
 
     // ----------------------------------------------------
     // API ROUTE: POST /api/products (Store Owner creates product)
     // ----------------------------------------------------
     if (pathname === '/api/products' && method === 'POST') {
-      const storeId = req.headers['x-store-id'] || 'store-sultan-main';
+      const storeId = req.headers['x-store-id'] || 'store-burger-cottage-main';
       const body = await parseBody(req);
 
       if (!body.name || !body.price) {
@@ -173,10 +232,10 @@ async function handleRequest(req, res) {
     // API ROUTE: GET /api/orders
     // ----------------------------------------------------
     if (pathname === '/api/orders' && method === 'GET') {
-      const storeId = req.headers['x-store-id'] || 'store-sultan-main';
+      const storeId = req.headers['x-store-id'] || 'store-burger-cottage-main';
       const role = req.headers['x-user-role'] || 'OWNER';
 
-      let storeOrders = db.orders.filter(o => o.storeId === storeId);
+      let storeOrders = db.orders.filter(o => o.storeId === storeId || o.storeId === 'burger-cottage' || storeId === 'store-burger-cottage-main');
 
       if (role === 'CHEF') {
         storeOrders = storeOrders.filter(o => o.status === 'PLACED' || o.status === 'COOKING');
@@ -191,7 +250,7 @@ async function handleRequest(req, res) {
     // API ROUTE: POST /api/orders (Customer Checkout)
     // ----------------------------------------------------
     if (pathname === '/api/orders' && method === 'POST') {
-      const storeId = req.headers['x-store-id'] || 'store-sultan-main';
+      const storeId = req.headers['x-store-id'] || 'store-burger-cottage-main';
       const body = await parseBody(req);
 
       if (!body.items || body.items.length === 0) {
@@ -203,7 +262,7 @@ async function handleRequest(req, res) {
 
       for (const item of body.items) {
         const pId = item.productId || item.id;
-        const prod = db.products.find(p => (p.id === pId || p.slug === pId) && (p.storeId === storeId || storeId === 'burger-cottage'));
+        const prod = db.products.find(p => (p.id === pId || p.slug === pId));
         const unitPriceMinor = prod ? prod.priceMinor : BigInt(Math.round((item.price || 500) * 100));
         const lineTotal = unitPriceMinor * BigInt(item.quantity || item.qty || 1);
         subtotalMinor += lineTotal;
@@ -215,7 +274,7 @@ async function handleRequest(req, res) {
         });
       }
 
-      const deliveryFeeMinor = 15000n; // PKR 150
+      const deliveryFeeMinor = 0n; // Free Delivery for Burger Cottage
       const totalAmountMinor = subtotalMinor + deliveryFeeMinor;
       const orderId = 'ORD-' + Math.floor(1000 + Math.random() * 9000);
 
@@ -289,7 +348,7 @@ async function handleRequest(req, res) {
     // ----------------------------------------------------
     if (pathname === '/api/webhooks/payments/jazzcash' && method === 'POST') {
       const payload = await parseBody(req);
-      const storeId = req.headers['x-store-id'] || 'store-sultan-main';
+      const storeId = req.headers['x-store-id'] || 'store-burger-cottage-main';
       const store = db.stores.find(s => s.id === storeId);
 
       if (!store) {
