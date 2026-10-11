@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "dotenv": "^18.0.7",
+    "localtunnel": "^2.0.2",
     "pg": "^8.23.1"
   }
 }

@@ -1,0 +1,62 @@
+{
+  "currency": "PKR",
+  "categories": [
+    {
+      "name": "Burgers & Sandwiches",
+      "items": [
+        {
+          "name": "Crispy Zinger Burger",
+          "price": 550,
+          "description": "Crispy golden fried chicken fillet topped with iceberg lettuce and secret sauce.",
+          "stock": 50
+        },
+        {
+          "name": "Smash Beef Cheeseburger",
+          "price": 750,
+          "description": "Juicy grilled double beef patty with melted cheddar cheese and caramelized onions.",
+          "stock": 30
+        },
+        {
+          "name": "Classic Grilled Chicken Burger",
+          "price": 490,
+          "description": "Tender grilled chicken patty with chipotle mayo and pickles.",
+          "stock": 40
+        }
+      ]
+    },
+    {
+      "name": "Loaded Fries & Sides",
+      "items": [
+        {
+          "name": "Cheesy Loaded Fries",
+          "price": 450,
+          "description": "Crispy French fries smothered in liquid cheese, jalapeños, and chicken chunks.",
+          "stock": 60
+        },
+        {
+          "name": "Crispy Chicken Nuggets (6 Pcs)",
+          "price": 350,
+          "description": "Golden battered tender chicken nuggets served with garlic dip.",
+          "stock": 40
+        }
+      ]
+    },
+    {
+      "name": "Beverages & Shakes",
+      "items": [
+        {
+          "name": "Soft Drink (345ml Can)",
+          "price": 120,
+          "description": "Chilled Coke / Sprite / Fanta.",
+          "stock": 100
+        },
+        {
+          "name": "Thick Chocolate Shake",
+          "price": 380,
+          "description": "Rich creamy Belgian chocolate shake.",
+          "stock": 25
+        }
+      ]
+    }
+  ]
+}

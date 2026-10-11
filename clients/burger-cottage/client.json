@@ -1,0 +1,33 @@
+{
+  "clientId": "burger-cottage-01",
+  "clientName": "Burger Cottage",
+  "slug": "burger-cottage",
+  "status": "ONBOARDING",
+  "owner": {
+    "name": "Owner Burger Cottage",
+    "phone": "03xx-xxxxxxx",
+    "whatsapp": "923xxxxxxxxx",
+    "email": "contact@burgercottage.pk"
+  },
+  "location": {
+    "city": "Lahore",
+    "branch": "Main Branch",
+    "address": "Burger Cottage, Pakistan"
+  },
+  "database": {
+    "provider": "Supabase PostgreSQL",
+    "region": "ap-southeast-2",
+    "projectId": "utdpjnaorqpjsdyxiixs",
+    "poolerUrl": "postgresql://postgres.utdpjnaorqpjsdyxiixs:ilyIyB7dux9eM9wc@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres"
+  },
+  "paymentMethods": {
+    "cod": true,
+    "jazzcash": true,
+    "easypaisa": true,
+    "bankTransfer": true
+  },
+  "links": {
+    "local": "http://192.168.1.12:3000/?store=burger-cottage",
+    "live": "https://tricky-candies-carry.loca.lt/?store=burger-cottage"
+  }
+}
