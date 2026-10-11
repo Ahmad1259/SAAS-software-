@@ -717,8 +717,12 @@
             </p>
           </div>
 
-          <!-- Quick Cart Trigger -->
-          <div class="flex items-center gap-2 self-start sm:self-center">
+          <!-- Quick Cart & WhatsApp Menu Share Trigger -->
+          <div class="flex items-center gap-2 self-start sm:self-center flex-wrap">
+            <button onclick="shareMenuOnWhatsApp()" class="px-3.5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-2 shadow-lg transition transform active:scale-95" title="Customer ko WhatsApp par menu link bhejein">
+              <i class="fa-brands fa-whatsapp text-sm"></i>
+              <span>Send Menu on WhatsApp</span>
+            </button>
             <button onclick="openCustomerCheckoutModal()" class="px-4 py-2.5 rounded-2xl bg-slate-950 hover:bg-slate-900 text-white text-xs font-bold flex items-center gap-2.5 shadow-xl transition transform active:scale-95">
               <i class="fa-solid fa-basket-shopping text-orange-400"></i>
               <span>View Cart</span>
@@ -1104,14 +1108,16 @@
             </div>
             <div>
               <span class="text-[10px] uppercase font-black tracking-widest px-2.5 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30">
-                Burger Cottage Restaurant OS
+                Staff & Management Portal
               </span>
-              <h2 class="text-xl sm:text-2xl font-black tracking-tight mt-1">Role Portal Authentication</h2>
-              <p class="text-xs text-slate-400 mt-0.5">Please sign in to access your designated role workspace. Cross-access is strictly restricted.</p>
+              <h2 class="text-xl sm:text-2xl font-black tracking-tight mt-1">Staff Workstation Authentication</h2>
+              <p class="text-xs text-slate-400 mt-0.5">Cashier, Kitchen, Rider & Owner login. Customers do not need login (Menu is open publicly).</p>
             </div>
           </div>
-          <div class="hidden sm:flex items-center gap-2 text-xs text-slate-400 bg-slate-900 px-3.5 py-2 rounded-2xl border border-slate-800">
-            <i class="fa-solid fa-shield-halved text-emerald-400"></i> Role Isolation Active
+          <div class="flex items-center gap-2">
+            <button onclick="switchTab('storefront')" class="px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition flex items-center gap-2 shadow-xs">
+              <i class="fa-solid fa-arrow-left"></i> <span>Back to Customer Menu</span>
+            </button>
           </div>
         </div>
 
@@ -1121,9 +1127,9 @@
           <div class="lg:col-span-5 space-y-5">
             <div class="space-y-1">
               <h3 class="text-base font-extrabold text-slate-950 flex items-center gap-2">
-                <i class="fa-solid fa-key text-orange-500"></i> Sign In to Account
+                <i class="fa-solid fa-key text-orange-500"></i> Staff Sign In
               </h3>
-              <p class="text-xs text-slate-500">Enter assigned credentials for your workstation.</p>
+              <p class="text-xs text-slate-500">Enter assigned staff credentials for your workstation.</p>
             </div>
 
             <!-- Error Banner -->
@@ -1134,10 +1140,10 @@
 
             <form onsubmit="handlePortalLogin(event)" class="space-y-4">
               <div>
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">Username / User ID</label>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Staff Username</label>
                 <div class="relative">
                   <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                  <input type="text" id="loginUsername" required placeholder="customer / cashier / chef / rider / admin" class="w-full pl-9 pr-3 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
+                  <input type="text" id="loginUsername" required placeholder="cashier / chef / rider / admin" class="w-full pl-9 pr-3 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
                 </div>
               </div>
 
@@ -1150,42 +1156,29 @@
               </div>
 
               <button type="submit" class="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs shadow-lg shadow-orange-600/30 transition flex items-center justify-center gap-2">
-                <span>Sign In to Terminal</span>
+                <span>Unlock Workstation</span>
                 <i class="fa-solid fa-arrow-right text-xs"></i>
               </button>
             </form>
 
             <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 text-[11px] text-slate-600 space-y-1">
-              <span class="font-bold text-slate-900 block">Default Role Passwords:</span>
-              <p>Password: <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200 font-mono font-bold text-slate-800">123456</code> (Customer can also use <code class="bg-white px-1 py-0.5 rounded font-mono font-bold">123</code>)</p>
+              <span class="font-bold text-slate-900 block">Default Staff Passwords:</span>
+              <p>All staff roles use password: <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200 font-mono font-bold text-slate-800">123456</code></p>
             </div>
           </div>
 
-          <!-- RIGHT / QUICK ACCESS COLUMN: 1-Click Role Direct Sign-In Cards -->
+          <!-- RIGHT / QUICK ACCESS COLUMN: 1-Click Staff Roles -->
           <div class="lg:col-span-7 space-y-3.5 border-t lg:border-t-0 lg:border-l border-slate-100 lg:pl-8">
             <div>
               <h3 class="text-base font-extrabold text-slate-950 flex items-center gap-2">
-                <i class="fa-solid fa-fingerprint text-brand-500"></i> Quick 1-Click Role Access
+                <i class="fa-solid fa-fingerprint text-brand-500"></i> Quick Staff Role Access
               </h3>
-              <p class="text-xs text-slate-500">Click any role below to sign in immediately without typing:</p>
+              <p class="text-xs text-slate-500">Click any staff role below to sign in instantly:</p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
               
-              <!-- 1. Customer Role Card -->
-              <div onclick="quickRoleLogin('customer', '123456')" class="p-3.5 rounded-2xl border border-slate-200 hover:border-orange-500 hover:bg-orange-50/30 transition cursor-pointer group shadow-xs">
-                <div class="flex items-center justify-between mb-1.5">
-                  <span class="w-8 h-8 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-sm font-bold group-hover:scale-110 transition">🍔</span>
-                  <span class="text-[9px] font-black uppercase tracking-wider text-orange-700 bg-orange-100/80 px-2 py-0.5 rounded-full">Customer</span>
-                </div>
-                <h4 class="text-xs font-black text-slate-900 group-hover:text-orange-600 transition">Customer Storefront</h4>
-                <p class="text-[10px] text-slate-500 mt-0.5">Online Deals menu, meal customization & cart checkout.</p>
-                <div class="mt-2 text-[10px] font-bold text-orange-600 flex items-center gap-1 group-hover:translate-x-1 transition">
-                  Enter Customer View <i class="fa-solid fa-chevron-right text-[8px]"></i>
-                </div>
-              </div>
-
-              <!-- 2. Cashier POS Role Card -->
+              <!-- 1. Cashier POS Role Card -->
               <div onclick="quickRoleLogin('cashier', '123456')" class="p-3.5 rounded-2xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/30 transition cursor-pointer group shadow-xs">
                 <div class="flex items-center justify-between mb-1.5">
                   <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm font-bold group-hover:scale-110 transition">💳</span>
@@ -1198,7 +1191,7 @@
                 </div>
               </div>
 
-              <!-- 3. Kitchen KDS Role Card -->
+              <!-- 2. Kitchen KDS Role Card -->
               <div onclick="quickRoleLogin('chef', '123456')" class="p-3.5 rounded-2xl border border-slate-200 hover:border-amber-500 hover:bg-amber-50/30 transition cursor-pointer group shadow-xs">
                 <div class="flex items-center justify-between mb-1.5">
                   <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-sm font-bold group-hover:scale-110 transition">👨‍🍳</span>
@@ -1211,7 +1204,7 @@
                 </div>
               </div>
 
-              <!-- 4. Rider Role Card -->
+              <!-- 3. Rider Role Card -->
               <div onclick="quickRoleLogin('rider', '123456')" class="p-3.5 rounded-2xl border border-slate-200 hover:border-cyan-500 hover:bg-cyan-50/30 transition cursor-pointer group shadow-xs">
                 <div class="flex items-center justify-between mb-1.5">
                   <span class="w-8 h-8 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center text-sm font-bold group-hover:scale-110 transition">🛵</span>
@@ -1221,6 +1214,19 @@
                 <p class="text-[10px] text-slate-500 mt-0.5">Delivery routing, customer addresses & COD collection.</p>
                 <div class="mt-2 text-[10px] font-bold text-cyan-600 flex items-center gap-1 group-hover:translate-x-1 transition">
                   Open Rider Portal <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                </div>
+              </div>
+
+              <!-- 4. Public Menu Quick Jump -->
+              <div onclick="switchTab('storefront')" class="p-3.5 rounded-2xl border border-orange-200 bg-orange-50/30 hover:bg-orange-50 transition cursor-pointer group shadow-xs">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="w-8 h-8 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-sm font-bold group-hover:scale-110 transition">🍔</span>
+                  <span class="text-[9px] font-black uppercase tracking-wider text-orange-700 bg-orange-100 px-2 py-0.5 rounded-full">Public</span>
+                </div>
+                <h4 class="text-xs font-black text-slate-900 group-hover:text-orange-600 transition">Customer Catalogue</h4>
+                <p class="text-[10px] text-slate-500 mt-0.5">Open public menu (no login required for customers).</p>
+                <div class="mt-2 text-[10px] font-bold text-orange-600 flex items-center gap-1 group-hover:translate-x-1 transition">
+                  Open Customer Menu <i class="fa-solid fa-chevron-right text-[8px]"></i>
                 </div>
               </div>
 
@@ -1249,7 +1255,6 @@
 
         </div>
 
-      </div>
     </div>
 
     <!-- GLOBAL WHATSAPP NOTIFICATION TOAST -->
@@ -2268,12 +2273,34 @@
 
     // Tab Navigation & Strict Role Isolation
     function switchTab(tabId) {
+      // 1. Customer Storefront / Menu is 100% PUBLIC (Zero login required)
+      if (tabId === 'storefront') {
+        document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.nav-tab').forEach(b => {
+          b.classList.remove('bg-white', 'text-slate-900', 'shadow-subtle', 'font-semibold');
+          b.classList.add('text-slate-600');
+        });
+
+        const activeBtn = document.getElementById('tab-btn-storefront');
+        if (activeBtn) {
+          activeBtn.classList.add('bg-white', 'text-slate-900', 'shadow-subtle', 'font-semibold');
+          activeBtn.classList.remove('text-slate-600');
+        }
+
+        const activeSection = document.getElementById('view-storefront');
+        if (activeSection) activeSection.classList.remove('hidden');
+
+        renderAll();
+        return;
+      }
+
+      // 2. Staff Workstations require Staff Authentication
       if (!currentAuthUser) {
         showLoginView();
         return;
       }
 
-      // Enforce strict role isolation: Users cannot access unauthorized tabs
+      // Enforce strict role isolation: Non-admin staff cannot access unauthorized tabs
       if (currentAuthUser.role !== 'ADMIN') {
         const allowedView = currentAuthUser.defaultView || (currentAuthUser.role === 'CUSTOMER' ? 'storefront' : (currentAuthUser.role === 'CASHIER' ? 'pos' : (currentAuthUser.role === 'CHEF' ? 'kitchen' : 'dispatch')));
         tabId = allowedView;
@@ -2345,8 +2372,22 @@
       currentAuthUser = null;
       localStorage.removeItem('currentAuthUser');
       saveState();
-      showLoginView();
-      showToastNotification('Aap successfully logout ho chuke hain.');
+      switchTab('storefront');
+      showToastNotification('Logout ho gaye hain. Customer Menu khul gaya hai.');
+    }
+
+    function shareMenuOnWhatsApp() {
+      const shareUrl = window.location.origin + window.location.pathname;
+      const message = `🍔 *Burger Cottage - Defence Cantt Lahore*\n\nAssalam-o-Alaikum! Burger Cottage ka online digital menu dekhnay aur direct online order karnay ke liye is link par click karein:\n👉 ${shareUrl}\n\n⚡ *Fast & Free Home Delivery (40 Mins)*\n📞 Helpline: 0305-4122075 / 0322-8423075`;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          showToastNotification('📋 Menu link copied! WhatsApp open ho raha hai...');
+        }).catch(() => {});
+      }
+
+      const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+      window.open(waUrl, '_blank');
     }
 
     // Cart logic
@@ -3046,9 +3087,16 @@
       if (!currentAuthUser) {
         if (tabsWrapper) tabsWrapper.classList.add('hidden');
         container.innerHTML = `
-          <button onclick="showLoginView()" class="px-3.5 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-black text-xs shadow-md transition flex items-center gap-1.5">
-            <i class="fa-solid fa-lock text-xs"></i> <span>Sign In to Role</span>
-          </button>
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <button onclick="shareMenuOnWhatsApp()" class="px-3 sm:px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5" title="Customer ko WhatsApp par menu link bhejein">
+              <i class="fa-brands fa-whatsapp text-sm"></i>
+              <span class="hidden sm:inline">Share Menu</span>
+            </button>
+            <button onclick="showLoginView()" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 font-bold text-xs transition flex items-center gap-1.5" title="Staff Workstations (Cashier, Kitchen, Rider, Admin)">
+              <i class="fa-solid fa-lock text-slate-500 text-xs"></i>
+              <span class="hidden sm:inline">Staff Login</span>
+            </button>
+          </div>
         `;
         return;
       }
@@ -3729,22 +3777,17 @@
       'login': 'login'
     };
 
-    if (!currentAuthUser) {
-      if (viewParam && initialViewMap[viewParam] && viewParam !== 'login') {
-        const matchedUser = users.find(u => u.defaultView === initialViewMap[viewParam] || u.role.toLowerCase() === viewParam.toLowerCase() || u.username === viewParam.toLowerCase());
-        if (matchedUser) {
-          currentAuthUser = matchedUser;
-          saveState();
-          switchTab(matchedUser.defaultView);
-        } else {
-          showLoginView();
-        }
-      } else {
-        showLoginView();
-      }
-    } else {
+    if (viewParam === 'login') {
+      showLoginView();
+    } else if (currentAuthUser) {
       const activeRoleView = currentAuthUser.defaultView || initialViewMap[viewParam] || 'storefront';
       switchTab(activeRoleView);
+    } else if (viewParam && initialViewMap[viewParam] && viewParam !== 'storefront' && viewParam !== 'menu' && viewParam !== 'customer') {
+      // Direct staff role link requested without auth -> Show staff login
+      showLoginView();
+    } else {
+      // DEFAULT: 100% PUBLIC CUSTOMER STOREFRONT CATALOGUE (NO LOGIN PROMPT AT ALL!)
+      switchTab('storefront');
     }
   </script>
 </body>
