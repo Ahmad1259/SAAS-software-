@@ -130,7 +130,7 @@ async function handleRequest(req, res) {
         categoriesCount: 14,
         productsCount: 97,
         rlsEnabled: true,
-        region: 'aws-0-ap-southeast-2',
+        region: 'aws-0-ap-northeast-1 (Tokyo Dedicated)',
         timestamp: new Date().toISOString()
       });
     }
