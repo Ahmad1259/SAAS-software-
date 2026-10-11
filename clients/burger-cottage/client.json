@@ -18,7 +18,13 @@
     "provider": "Supabase PostgreSQL",
     "region": "ap-southeast-2",
     "projectId": "utdpjnaorqpjsdyxiixs",
-    "poolerUrl": "postgresql://postgres.utdpjnaorqpjsdyxiixs:ilyIyB7dux9eM9wc@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres"
+    "poolerUrl": "postgresql://postgres.utdpjnaorqpjsdyxiixs:ilyIyB7dux9eM9wc@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres",
+    "status": "MIGRATED_AND_ACTIVE",
+    "organizationId": "772c7d54-6df9-4aca-9d24-62e2b076ae10",
+    "storeId": "0d21db52-9efd-4e40-875f-55fd7fdc354d",
+    "totalCategories": 14,
+    "totalProducts": 97,
+    "lastMigratedAt": "2026-10-11T14:14:34Z"
   },
   "paymentMethods": {
     "cod": true,
