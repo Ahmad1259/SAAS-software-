@@ -472,6 +472,90 @@
           </div>
         </div>
       </div>
+
+      <!-- SECTION: STAFF USER ACCOUNTS & ACCESS CONTROL MANAGER -->
+      <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-subtle space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <div>
+            <span class="text-[10px] uppercase font-black tracking-widest px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+              Access Control & Security
+            </span>
+            <h3 class="text-base font-black text-slate-950 mt-1 flex items-center gap-2">
+              <i class="fa-solid fa-users-gear text-blue-600"></i> Staff Accounts & User Manager
+            </h3>
+            <p class="text-xs text-slate-500">Apne restaurant ke liye Cashier, Kitchen Chef, Delivery Rider aur Admin staff accounts create karein.</p>
+          </div>
+          <span class="text-xs px-3 py-1 bg-slate-100 text-slate-700 rounded-full font-bold" id="staffUserCountBadge">0 Active Accounts</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- CREATE NEW USER FORM -->
+          <div class="lg:col-span-5 bg-slate-50/70 p-5 rounded-2xl border border-slate-200/80 space-y-4">
+            <div class="flex items-center gap-2 text-slate-900 font-bold text-xs">
+              <i class="fa-solid fa-user-plus text-orange-600"></i>
+              <span>Create New Staff Account</span>
+            </div>
+
+            <form onsubmit="handleCreateStaffUser(event)" class="space-y-3">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Staff Member Full Name</label>
+                <input type="text" id="newStaffName" required placeholder="e.g. Ali Raza (Night Shift)" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-700 mb-1">Username (Login ID)</label>
+                  <input type="text" id="newStaffUsername" required placeholder="e.g. cashier_ali" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-700 mb-1">Password</label>
+                  <input type="text" id="newStaffPassword" required placeholder="Set password" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Assign Workstation / Role</label>
+                <select id="newStaffRole" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-800 focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
+                  <option value="CASHIER">💳 Front Counter Cashier (POS Terminal)</option>
+                  <option value="CHEF">👨‍🍳 Kitchen Chef (KDS Screen)</option>
+                  <option value="RIDER">🛵 Delivery Rider (Rider Fleet Portal)</option>
+                  <option value="ADMIN">👑 Store Owner / Manager (Full Dashboard)</option>
+                </select>
+              </div>
+
+              <button type="submit" class="w-full py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-bold text-xs shadow-md shadow-orange-600/20 transition flex items-center justify-center gap-1.5 active:scale-95">
+                <i class="fa-solid fa-plus text-xs"></i>
+                <span>Create Staff User</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- LIST OF ACTIVE USERS -->
+          <div class="lg:col-span-7 space-y-3">
+            <div class="flex items-center justify-between text-xs text-slate-500 font-medium">
+              <span>Active Staff Credentials:</span>
+              <span class="text-[11px] text-slate-400">Total staff accounts in system</span>
+            </div>
+
+            <div class="overflow-x-auto rounded-2xl border border-slate-200/80 bg-white">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold border-b border-slate-200/80">
+                  <tr>
+                    <th class="p-3">Staff Name</th>
+                    <th class="p-3">Username</th>
+                    <th class="p-3">Password</th>
+                    <th class="p-3">Role / Station</th>
+                    <th class="p-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="staffUsersTableBody" class="divide-y divide-slate-100">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- ============================================================== -->
@@ -1378,164 +1462,62 @@
     <!-- ============================================================== -->
     <!-- SECTION 5: DEDICATED ROLE PORTAL & AUTHENTICATION SCREEN       -->
     <!-- ============================================================== -->
-    <div id="view-login" class="max-w-4xl w-full mx-auto view-section py-4 sm:py-8">
-      <div class="bg-white rounded-3xl border border-slate-200/90 shadow-elevated overflow-hidden">
+    <div id="view-login" class="max-w-md w-full mx-auto view-section py-8 sm:py-16">
+      <div class="bg-white rounded-3xl border border-slate-200/90 shadow-2xl overflow-hidden">
         
         <!-- Portal Header Banner -->
-        <div class="bg-slate-950 text-white p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800">
-          <div class="flex items-center gap-4">
-            <div class="w-14 h-14 rounded-2xl bg-orange-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-orange-600/30 shrink-0">
-              🍔
-            </div>
-            <div>
-              <span class="text-[10px] uppercase font-black tracking-widest px-2.5 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30">
-                Staff & Management Portal
-              </span>
-              <h2 class="text-xl sm:text-2xl font-black tracking-tight mt-1">Staff Workstation Authentication</h2>
-              <p class="text-xs text-slate-400 mt-0.5">Cashier, Kitchen, Rider & Owner login. Customers do not need login (Menu is open publicly).</p>
-            </div>
+        <div class="bg-slate-950 text-white p-6 sm:p-8 text-center space-y-3 border-b border-slate-800">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-orange-600 to-amber-500 text-white flex items-center justify-center text-3xl shadow-lg shadow-orange-600/30 mx-auto">
+            🍔
           </div>
-          <div class="flex items-center gap-2">
-            <button onclick="switchTab('storefront')" class="px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition flex items-center gap-2 shadow-xs">
-              <i class="fa-solid fa-arrow-left"></i> <span>Back to Customer Menu</span>
+          <div>
+            <h2 class="text-xl font-black tracking-tight text-white">Staff Workstation Login</h2>
+            <p class="text-xs text-slate-400 mt-1">Authorized access for Cashier, Kitchen, Rider & Admin staff.</p>
+          </div>
+          <button onclick="switchTab('storefront')" class="w-full py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-extrabold text-xs shadow-md transition flex items-center justify-center gap-2 active:scale-95">
+            <i class="fa-solid fa-store text-xs"></i> <span>Open Customer Menu</span>
+          </button>
+        </div>
+
+        <!-- Form Body -->
+        <div class="p-6 sm:p-8 space-y-5">
+          <!-- Error Banner -->
+          <div id="loginErrorBanner" class="hidden p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation text-red-500 text-sm"></i>
+            <span id="loginErrorMsg">Invalid username or password!</span>
+          </div>
+
+          <form onsubmit="handlePortalLogin(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Staff Username (ID)</label>
+              <div class="relative">
+                <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" id="loginUsername" required placeholder="Enter your username" autocomplete="username" class="w-full pl-9 pr-3 py-3 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition font-medium">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
+              <div class="relative">
+                <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="password" id="loginPassword" required placeholder="Enter your password" autocomplete="current-password" class="w-full pl-9 pr-3 py-3 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition font-medium">
+              </div>
+            </div>
+
+            <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white rounded-xl font-black text-xs shadow-lg shadow-orange-600/30 transition flex items-center justify-center gap-2 active:scale-98">
+              <i class="fa-solid fa-lock text-xs"></i>
+              <span>Sign In to Workstation</span>
             </button>
+          </form>
+
+          <div class="pt-3 border-t border-slate-100 text-center">
+            <p class="text-[11px] text-slate-400 leading-relaxed">
+              Staff accounts are created and managed securely by the store owner in the Owner Admin Dashboard.
+            </p>
           </div>
         </div>
 
-        <div class="p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
-          <!-- LEFT / FORM COLUMN: Manual Credentials Login -->
-          <div class="lg:col-span-5 space-y-5">
-            <div class="space-y-1">
-              <h3 class="text-base font-extrabold text-slate-950 flex items-center gap-2">
-                <i class="fa-solid fa-key text-orange-500"></i> Staff Sign In
-              </h3>
-              <p class="text-xs text-slate-500">Enter assigned staff credentials for your workstation.</p>
-            </div>
-
-            <!-- Error Banner -->
-            <div id="loginErrorBanner" class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-center gap-2">
-              <i class="fa-solid fa-triangle-exclamation text-red-500"></i>
-              <span id="loginErrorMsg">Invalid username or password!</span>
-            </div>
-
-            <form onsubmit="handlePortalLogin(event)" class="space-y-4">
-              <div>
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">Staff Username</label>
-                <div class="relative">
-                  <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                  <input type="text" id="loginUsername" required placeholder="cashier / chef / rider / admin" class="w-full pl-9 pr-3 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">Password</label>
-                <div class="relative">
-                  <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                  <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-9 pr-3 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
-                </div>
-              </div>
-
-              <button type="submit" class="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs shadow-lg shadow-orange-600/30 transition flex items-center justify-center gap-2">
-                <span>Unlock Workstation</span>
-                <i class="fa-solid fa-arrow-right text-xs"></i>
-              </button>
-            </form>
-
-            <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 text-[11px] text-slate-600 space-y-1">
-              <span class="font-bold text-slate-900 block">Default Staff Passwords:</span>
-              <p>All staff roles use password: <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200 font-mono font-bold text-slate-800">123456</code></p>
-            </div>
-          </div>
-
-          <!-- RIGHT / QUICK ACCESS COLUMN: 1-Click Staff Roles -->
-          <div class="lg:col-span-7 space-y-3.5 border-t lg:border-t-0 lg:border-l border-slate-100 lg:pl-8">
-            <div>
-              <h3 class="text-base font-extrabold text-slate-950 flex items-center gap-2">
-                <i class="fa-solid fa-fingerprint text-brand-500"></i> Quick Staff Role Access
-              </h3>
-              <p class="text-xs text-slate-500">Click any staff role below to sign in instantly:</p>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-              
-              <!-- 1. Cashier POS Role Card -->
-              <div onclick="quickRoleLogin('cashier', '123456')" class="p-3.5 rounded-2xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/30 transition cursor-pointer group shadow-xs">
-                <div class="flex items-center justify-between mb-1.5">
-                  <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm font-bold group-hover:scale-110 transition">💳</span>
-                  <span class="text-[9px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full">Cashier</span>
-                </div>
-                <h4 class="text-xs font-black text-slate-900 group-hover:text-emerald-600 transition">Front Counter POS</h4>
-                <p class="text-[10px] text-slate-500 mt-0.5">Touchscreen POS terminal, Dine-in/Takeaway & bill printing.</p>
-                <div class="mt-2 text-[10px] font-bold text-emerald-600 flex items-center gap-1 group-hover:translate-x-1 transition">
-                  Open POS Terminal <i class="fa-solid fa-chevron-right text-[8px]"></i>
-                </div>
-              </div>
-
-              <!-- 2. Kitchen KDS Role Card -->
-              <div onclick="quickRoleLogin('chef', '123456')" class="p-3.5 rounded-2xl border border-slate-200 hover:border-amber-500 hover:bg-amber-50/30 transition cursor-pointer group shadow-xs">
-                <div class="flex items-center justify-between mb-1.5">
-                  <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-sm font-bold group-hover:scale-110 transition">👨‍🍳</span>
-                  <span class="text-[9px] font-black uppercase tracking-wider text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-full">Kitchen</span>
-                </div>
-                <h4 class="text-xs font-black text-slate-900 group-hover:text-amber-600 transition">Kitchen KDS Station</h4>
-                <p class="text-[10px] text-slate-500 mt-0.5">Live orders queue, cooking timer & parcel handover.</p>
-                <div class="mt-2 text-[10px] font-bold text-amber-600 flex items-center gap-1 group-hover:translate-x-1 transition">
-                  Open Kitchen Screen <i class="fa-solid fa-chevron-right text-[8px]"></i>
-                </div>
-              </div>
-
-              <!-- 3. Rider Role Card -->
-              <div onclick="quickRoleLogin('rider', '123456')" class="p-3.5 rounded-2xl border border-slate-200 hover:border-cyan-500 hover:bg-cyan-50/30 transition cursor-pointer group shadow-xs">
-                <div class="flex items-center justify-between mb-1.5">
-                  <span class="w-8 h-8 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center text-sm font-bold group-hover:scale-110 transition">🛵</span>
-                  <span class="text-[9px] font-black uppercase tracking-wider text-cyan-700 bg-cyan-100/80 px-2 py-0.5 rounded-full">Rider</span>
-                </div>
-                <h4 class="text-xs font-black text-slate-900 group-hover:text-cyan-600 transition">Rider Delivery Fleet</h4>
-                <p class="text-[10px] text-slate-500 mt-0.5">Delivery routing, customer addresses & COD collection.</p>
-                <div class="mt-2 text-[10px] font-bold text-cyan-600 flex items-center gap-1 group-hover:translate-x-1 transition">
-                  Open Rider Portal <i class="fa-solid fa-chevron-right text-[8px]"></i>
-                </div>
-              </div>
-
-              <!-- 4. Public Menu Quick Jump -->
-              <div onclick="switchTab('storefront')" class="p-3.5 rounded-2xl border border-orange-200 bg-orange-50/30 hover:bg-orange-50 transition cursor-pointer group shadow-xs">
-                <div class="flex items-center justify-between mb-1.5">
-                  <span class="w-8 h-8 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-sm font-bold group-hover:scale-110 transition">🍔</span>
-                  <span class="text-[9px] font-black uppercase tracking-wider text-orange-700 bg-orange-100 px-2 py-0.5 rounded-full">Public</span>
-                </div>
-                <h4 class="text-xs font-black text-slate-900 group-hover:text-orange-600 transition">Customer Catalogue</h4>
-                <p class="text-[10px] text-slate-500 mt-0.5">Open public menu (no login required for customers).</p>
-                <div class="mt-2 text-[10px] font-bold text-orange-600 flex items-center gap-1 group-hover:translate-x-1 transition">
-                  Open Customer Menu <i class="fa-solid fa-chevron-right text-[8px]"></i>
-                </div>
-              </div>
-
-            </div>
-
-            <!-- 5. Owner Admin Role Banner Card -->
-            <div onclick="quickRoleLogin('admin', '123456')" class="p-4 rounded-2xl border border-purple-200 bg-purple-50/40 hover:bg-purple-50 hover:border-purple-500 transition cursor-pointer group shadow-xs flex items-center justify-between gap-4">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center text-base font-bold shadow shrink-0">
-                  👑
-                </div>
-                <div>
-                  <div class="flex items-center gap-2">
-                    <h4 class="text-xs font-black text-slate-900 group-hover:text-purple-700 transition">Burger Cottage Owner & Admin</h4>
-                    <span class="text-[9px] font-black uppercase tracking-wider text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full">Master Admin</span>
-                  </div>
-                  <p class="text-[11px] text-slate-500 mt-0.5">Full store telemetry, sales reconciliation, menu manager & multi-agent controls.</p>
-                </div>
-              </div>
-              <div class="text-xs font-bold text-purple-700 shrink-0 group-hover:translate-x-1 transition">
-                Open Dashboard <i class="fa-solid fa-arrow-right text-[10px]"></i>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-
+      </div>
     </div>
 
     <!-- GLOBAL WHATSAPP NOTIFICATION TOAST -->
@@ -3758,6 +3740,7 @@
       renderKitchenKDS();
       renderDispatch();
       renderCatalog();
+      renderStaffUsersTable();
     }
 
     function renderAuthControls() {
@@ -4608,38 +4591,150 @@
       });
     }
 
-    // Initialize View & Role Gating on Startup
-    const initialViewMap = {
-      'pos': 'pos',
-      'cashier': 'pos',
-      'kitchen': 'kitchen',
-      'kds': 'kitchen',
-      'rider': 'dispatch',
-      'dispatch': 'dispatch',
-      'admin': 'copilot',
-      'owner': 'copilot',
-      'customer': 'storefront',
-      'storefront': 'storefront',
-      'menu': 'storefront',
-      'login': 'login'
-    };
+    // -------------------------------------------------------------
+    // STAFF ACCOUNTS & ACCESS CONTROL MANAGER
+    // -------------------------------------------------------------
+    function renderStaffUsersTable() {
+      const tbody = document.getElementById('staffUsersTableBody');
+      const countBadge = document.getElementById('staffUserCountBadge');
+      if (!tbody) return;
 
+      const staffList = users.filter(u => u.role !== 'CUSTOMER');
+      if (countBadge) countBadge.innerText = `${staffList.length} Active Accounts`;
+
+      if (staffList.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="p-6 text-center text-slate-400 text-xs">
+              Koi staff account mojood nahi hai. Naya account add karein.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      const roleBadges = {
+        'CASHIER': { label: 'Cashier POS', color: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
+        'CHEF': { label: 'Kitchen Chef', color: 'bg-amber-50 text-amber-800 border-amber-200' },
+        'RIDER': { label: 'Delivery Rider', color: 'bg-cyan-50 text-cyan-800 border-cyan-200' },
+        'ADMIN': { label: 'Store Owner / Admin', color: 'bg-purple-50 text-purple-800 border-purple-200' }
+      };
+
+      tbody.innerHTML = staffList.map(u => {
+        const b = roleBadges[u.role] || { label: u.role, color: 'bg-slate-50 text-slate-800 border-slate-200' };
+        const isSuperAdmin = u.username.toLowerCase() === 'admin';
+        return `
+          <tr class="hover:bg-slate-50/60 transition">
+            <td class="p-3 font-bold text-slate-900">${u.name || u.username}</td>
+            <td class="p-3 font-mono font-semibold text-slate-700">${u.username}</td>
+            <td class="p-3 font-mono text-slate-500">${u.password}</td>
+            <td class="p-3">
+              <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full border ${b.color}">
+                ${b.label}
+              </span>
+            </td>
+            <td class="p-3 text-right">
+              ${isSuperAdmin ? `
+                <span class="text-[10px] text-slate-400 font-bold">Primary</span>
+              ` : `
+                <button onclick="deleteStaffUser('${u.username}')" class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition text-xs" title="Delete Account">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              `}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function handleCreateStaffUser(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      const name = document.getElementById('newStaffName').value.trim();
+      const username = document.getElementById('newStaffUsername').value.trim().toLowerCase();
+      const password = document.getElementById('newStaffPassword').value.trim();
+      const role = document.getElementById('newStaffRole').value;
+
+      if (!name || !username || !password) {
+        alert('Barah-e-karam tamam fields fill karein!');
+        return;
+      }
+
+      if (users.some(u => u.username.toLowerCase() === username)) {
+        alert(`Username "${username}" pehle se mojood hai! Mukhtalif username chunein.`);
+        return;
+      }
+
+      const defaultViews = {
+        'CASHIER': 'pos',
+        'CHEF': 'kitchen',
+        'RIDER': 'dispatch',
+        'ADMIN': 'copilot'
+      };
+
+      const newUser = {
+        username,
+        password,
+        role,
+        name,
+        defaultView: defaultViews[role] || 'pos'
+      };
+
+      users.push(newUser);
+      saveState();
+      renderStaffUsersTable();
+
+      // Reset form fields
+      document.getElementById('newStaffName').value = '';
+      document.getElementById('newStaffUsername').value = '';
+      document.getElementById('newStaffPassword').value = '';
+
+      showToastNotification(`✅ Staff user "${name}" (${username}) kamyabi se ban gaya!`);
+    }
+
+    function deleteStaffUser(username) {
+      if (username.toLowerCase() === 'admin') {
+        alert('Primary Admin account delete nahi kiya ja sakta!');
+        return;
+      }
+      if (!confirm(`Kya aap waqai staff user "${username}" ko delete karna chahte hain?`)) {
+        return;
+      }
+
+      users = users.filter(u => u.username.toLowerCase() !== username.toLowerCase());
+      saveState();
+      renderStaffUsersTable();
+      showToastNotification(`Staff user "${username}" delete kar diya gaya.`);
+    }
+
+    // Initialize View & Secure Role Gating on Startup
     const activeViewParam = (new URLSearchParams(window.location.search).get('view') || new URLSearchParams(window.location.search).get('role') || '').toLowerCase();
 
     if (activeViewParam === 'login') {
       showLoginView();
     } else if (activeViewParam === 'pos' || activeViewParam === 'cashier') {
-      if (!currentAuthUser) quickRoleLogin('cashier', '123456');
-      switchTab('pos');
+      if (currentAuthUser && (currentAuthUser.role === 'CASHIER' || currentAuthUser.role === 'ADMIN')) {
+        switchTab('pos');
+      } else {
+        showLoginView();
+      }
     } else if (activeViewParam === 'kitchen' || activeViewParam === 'kds' || activeViewParam === 'chef') {
-      if (!currentAuthUser) quickRoleLogin('chef', '123456');
-      switchTab('kitchen');
+      if (currentAuthUser && (currentAuthUser.role === 'CHEF' || currentAuthUser.role === 'ADMIN')) {
+        switchTab('kitchen');
+      } else {
+        showLoginView();
+      }
     } else if (activeViewParam === 'rider' || activeViewParam === 'dispatch') {
-      if (!currentAuthUser) quickRoleLogin('rider', '123456');
-      switchTab('dispatch');
+      if (currentAuthUser && (currentAuthUser.role === 'RIDER' || currentAuthUser.role === 'ADMIN')) {
+        switchTab('dispatch');
+      } else {
+        showLoginView();
+      }
     } else if (activeViewParam === 'admin' || activeViewParam === 'owner' || activeViewParam === 'copilot') {
-      if (!currentAuthUser) quickRoleLogin('admin', '123456');
-      switchTab('copilot');
+      if (currentAuthUser && currentAuthUser.role === 'ADMIN') {
+        switchTab('copilot');
+      } else {
+        showLoginView();
+      }
     } else {
       // DEFAULT: 100% PUBLIC CUSTOMER STOREFRONT CATALOGUE (ALWAYS OPENS DIRECTLY FOR CUSTOMERS)
       switchTab('storefront');
