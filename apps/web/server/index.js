@@ -11,7 +11,18 @@ const path = require('path');
 const crypto = require('crypto');
 const { PakistanPaymentsEngine } = require('../../../packages/payments-pk/index.js');
 const { ReliableOutboxWorker } = require('../../../packages/outbox-worker/index.js');
-const whatsappBot = require('./whatsapp-bot.js');
+let whatsappBot;
+try {
+  whatsappBot = require('./whatsapp-bot.js');
+} catch (waLoadErr) {
+  console.error('[WHATSAPP GATEWAY] Warning: whatsapp-bot.js failed to load:', waLoadErr.message);
+  whatsappBot = {
+    getGatewayStatus: () => ({ status: 'DISCONNECTED', isConnected: false, lastError: waLoadErr.message, qrDataUrl: null }),
+    initWhatsApp: async () => ({ status: 'ERROR', error: waLoadErr.message }),
+    logoutWhatsApp: async () => ({ success: true }),
+    sendWhatsAppMessage: async (phone, msg) => ({ success: false, error: waLoadErr.message })
+  };
+}
 
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'COMMERCE_CLOUD_ENTERPRISE_SECRET_KEY_SHA256_AT_LEAST_32_BYTES';
@@ -526,7 +537,7 @@ async function handleRequest(req, res) {
 
 const server = http.createServer(handleRequest);
 
-if (require.main === module || !process.env.VERCEL) {
+if (require.main === module) {
   server.listen(PORT, () => {
     console.log(`[COMMERCE CLOUD] Server running live at http://localhost:${PORT}`);
   });

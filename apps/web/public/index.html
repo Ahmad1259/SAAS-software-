@@ -4811,10 +4811,31 @@
       const box = document.getElementById('waQrCodeDisplayBox');
       if (!badgeContainer || !box) return;
 
+      if (forceConnect) {
+        badgeContainer.innerHTML = `
+          <span class="text-xs font-bold px-3 py-1.5 rounded-xl border bg-amber-50 text-amber-800 border-amber-200 flex items-center gap-1.5 shadow-xs">
+            <i class="fa-solid fa-spinner fa-spin text-amber-600"></i>
+            <span>QR Code Generate Ho Raha Hai...</span>
+          </span>
+        `;
+        box.innerHTML = `
+          <div class="text-center space-y-3 py-8 animate-in fade-in">
+            <div class="w-12 h-12 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <div>
+              <h4 class="text-xs font-bold text-slate-800">WhatsApp QR Code Taiyar Ho Raha Hai</h4>
+              <p class="text-[11px] text-slate-400 mt-0.5">Official WhatsApp secure session initialize ho raha hai...</p>
+            </div>
+          </div>
+        `;
+      }
+
       try {
         const url = forceConnect ? '/api/whatsapp/connect' : '/api/whatsapp/status';
         const method = forceConnect ? 'POST' : 'GET';
         const res = await fetch(url, { method });
+        if (!res.ok) {
+          throw new Error('HTTP ' + res.status + ' ' + res.statusText);
+        }
         const data = await res.json();
 
         if (data.isConnected || data.status === 'CONNECTED') {
@@ -4842,7 +4863,7 @@
               </button>
             </div>
           `;
-        } else if (data.status === 'SCAN_QR' && data.qrDataUrl) {
+        } else if ((data.status === 'SCAN_QR' || data.status === 'CONNECTING') && data.qrDataUrl) {
           badgeContainer.innerHTML = `
             <span class="text-xs font-bold px-3 py-1.5 rounded-xl border bg-amber-50 text-amber-800 border-amber-200 flex items-center gap-1.5 shadow-xs">
               <i class="fa-solid fa-qrcode text-amber-600"></i>
@@ -4851,15 +4872,22 @@
           `;
           box.innerHTML = `
             <div class="text-center space-y-3 py-2 animate-in fade-in duration-200">
-              <img src="${data.qrDataUrl}" alt="Scan QR Code" class="w-52 h-52 mx-auto rounded-2xl border-2 border-emerald-500 shadow-lg p-1 bg-white">
+              <img src="${data.qrDataUrl}" alt="Scan QR Code" class="w-56 h-56 mx-auto rounded-2xl border-2 border-emerald-500 shadow-xl p-1.5 bg-white">
               <p class="text-xs font-black text-slate-900 animate-pulse flex items-center justify-center gap-1.5">
                 <i class="fa-solid fa-mobile-screen text-emerald-600"></i> Apne Burger Cottage Mobile se Scan Karein
               </p>
-              <p class="text-[11px] text-slate-400">Scan hotay hi status automatically connected ho jayega.</p>
+              <p class="text-[11px] text-slate-500">Scan hotay hi status automatically connected ho jayega (No manual refresh needed).</p>
             </div>
           `;
           startWaStatusPolling();
+        } else if (data.status === 'CONNECTING' && !data.qrDataUrl) {
+          startWaStatusPolling();
         } else {
+          // If disconnected and this was a passive check, trigger connect to generate QR code automatically
+          if (!forceConnect) {
+            refreshWhatsAppGatewayStatus(true);
+            return;
+          }
           stopWaStatusPolling();
           badgeContainer.innerHTML = `
             <span class="text-xs font-bold px-3 py-1.5 rounded-xl border bg-slate-100 text-slate-700 border-slate-200 flex items-center gap-1.5">
@@ -4883,7 +4911,28 @@
           `;
         }
       } catch (err) {
-        console.log('Error refreshing WhatsApp status:', err);
+        console.error('Error refreshing WhatsApp status:', err);
+        stopWaStatusPolling();
+        badgeContainer.innerHTML = `
+          <span class="text-xs font-bold px-3 py-1.5 rounded-xl border bg-rose-50 text-rose-800 border-rose-200 flex items-center gap-1.5 shadow-xs">
+            <i class="fa-solid fa-triangle-exclamation text-rose-600"></i>
+            <span>Connection Masla</span>
+          </span>
+        `;
+        box.innerHTML = `
+          <div class="text-center space-y-3 py-5">
+            <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl mx-auto border border-rose-200">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+              <h4 class="text-xs font-bold text-slate-900">QR Code Load Karne Mein Masla Aaya</h4>
+              <p class="text-[11px] text-slate-500 mt-1">${err.message || 'Server se rabta nahi ho saka'}</p>
+            </div>
+            <button onclick="refreshWhatsAppGatewayStatus(true)" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow transition flex items-center justify-center gap-1.5 mx-auto active:scale-95">
+              <i class="fa-solid fa-arrows-rotate"></i> Dobara Koshish Karein (Retry)
+            </button>
+          </div>
+        `;
       }
     }
 

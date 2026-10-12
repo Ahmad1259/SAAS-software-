@@ -4,13 +4,46 @@
  * Zero Human Intervention - 100% Automated Background Dispatch
  */
 
-const { default: makeWASocket, DisconnectReason, useMultiFileAuthState } = require('@whiskeysockets/baileys');
-const pino = require('pino');
-const QRCode = require('qrcode');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
+const QRCode = require('qrcode');
 
-const AUTH_FOLDER = path.join(__dirname, '..', '..', '..', 'whatsapp_auth_session');
+const isServerless = !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+const AUTH_FOLDER = isServerless 
+  ? path.join(os.tmpdir(), 'whatsapp_auth_session') 
+  : path.join(__dirname, '..', '..', '..', 'whatsapp_auth_session');
+
+let makeWASocket, DisconnectReason, useMultiFileAuthState;
+let pino;
+
+async function loadDependencies() {
+  if (makeWASocket && pino) return;
+
+  // Load Pino safely
+  try {
+    pino = require('pino');
+  } catch (e) {
+    pino = () => ({ level: 'silent', info: () => {}, error: () => {}, warn: () => {} });
+  }
+
+  // Load Baileys safely with ESM fallback
+  try {
+    const baileys = require('@whiskeysockets/baileys');
+    makeWASocket = baileys.default || baileys.makeWASocket || baileys;
+    DisconnectReason = baileys.DisconnectReason;
+    useMultiFileAuthState = baileys.useMultiFileAuthState;
+  } catch (err) {
+    if (err.code === 'ERR_REQUIRE_ESM' || (err.message && err.message.includes('import()'))) {
+      const baileys = await import('@whiskeysockets/baileys');
+      makeWASocket = baileys.default || baileys.makeWASocket || baileys;
+      DisconnectReason = baileys.DisconnectReason;
+      useMultiFileAuthState = baileys.useMultiFileAuthState;
+    } else {
+      throw err;
+    }
+  }
+}
 
 let sock = null;
 let currentQrDataUrl = null;
@@ -34,10 +67,12 @@ function formatToWhatsAppJid(phone) {
 
 async function initWhatsApp(forceReconnect = false) {
   if (sock && connectionStatus === 'CONNECTED' && !forceReconnect) {
-    return { status: connectionStatus, connectedPhone };
+    return { status: connectionStatus, connectedPhone, isConnected: true };
   }
 
   try {
+    await loadDependencies();
+
     if (!fs.existsSync(AUTH_FOLDER)) {
       fs.mkdirSync(AUTH_FOLDER, { recursive: true });
     }
@@ -74,7 +109,7 @@ async function initWhatsApp(forceReconnect = false) {
 
       if (connection === 'close') {
         const statusCode = lastDisconnect?.error?.output?.statusCode;
-        const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
+        const shouldReconnect = statusCode !== DisconnectReason?.loggedOut;
         console.log(`[WHATSAPP GATEWAY] Connection closed. Status: ${statusCode}. Reconnecting: ${shouldReconnect}`);
         
         connectionStatus = 'DISCONNECTED';
@@ -84,7 +119,7 @@ async function initWhatsApp(forceReconnect = false) {
 
         if (shouldReconnect) {
           setTimeout(() => {
-            initWhatsApp(true);
+            initWhatsApp(true).catch(e => console.error('[WHATSAPP RECONNECT ERR]', e));
           }, 4000);
         } else {
           // Logged out - clean folder
@@ -104,12 +139,44 @@ async function initWhatsApp(forceReconnect = false) {
       }
     });
 
-    return { status: connectionStatus, connectedPhone };
+    // Wait up to 4.5 seconds for QR code generation or connection ready
+    await new Promise((resolve) => {
+      let finished = false;
+      const timer = setTimeout(() => {
+        if (!finished) {
+          finished = true;
+          resolve();
+        }
+      }, 4500);
+
+      const interval = setInterval(() => {
+        if (currentQrDataUrl || connectionStatus === 'CONNECTED' || connectionStatus === 'SCAN_QR' || lastError) {
+          if (!finished) {
+            finished = true;
+            clearInterval(interval);
+            clearTimeout(timer);
+            resolve();
+          }
+        }
+      }, 150);
+    });
+
+    return {
+      status: connectionStatus,
+      isConnected: connectionStatus === 'CONNECTED',
+      qrDataUrl: currentQrDataUrl,
+      connectedPhone
+    };
   } catch (err) {
     console.error('[WHATSAPP GATEWAY] Initialization error:', err);
     connectionStatus = 'DISCONNECTED';
     lastError = err.message;
-    return { status: 'ERROR', error: err.message };
+    return {
+      status: 'ERROR',
+      isConnected: false,
+      error: err.message,
+      qrDataUrl: null
+    };
   }
 }
 
