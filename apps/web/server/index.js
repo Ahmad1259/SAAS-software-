@@ -459,7 +459,12 @@ async function handleRequest(req, res) {
         '.html': 'text/html',
         '.css': 'text/css',
         '.js': 'application/javascript',
-        '.json': 'application/json'
+        '.json': 'application/json',
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.svg': 'image/svg+xml',
+        '.ico': 'image/x-icon'
       };
       res.writeHead(200, { 'Content-Type': mimeTypes[ext] || 'text/plain' });
       return fs.createReadStream(filePath).pipe(res);

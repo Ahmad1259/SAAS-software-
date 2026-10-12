@@ -3,7 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Commerce Cloud — Autonomous Food Commerce & Kitchen Operating System</title>
+  <title>Burger Cottage — Online Ordering & Kitchen Operating System</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0F172A">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Burger Cottage">
+  <link rel="icon" type="image/svg+xml" href="/icon.svg">
+  <link rel="apple-touch-icon" href="/icon-192.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -801,6 +809,9 @@
           <button onclick="openPaymentAccountsModal()" class="flex items-center gap-1.5 bg-black/25 hover:bg-black/40 px-3 py-1 rounded-xl text-amber-200 transition cursor-pointer shadow-xs" title="Click to view JazzCash, EasyPaisa & Bank Accounts">
             <i class="fa-solid fa-wallet text-amber-300"></i> JazzCash / EasyPaisa / Bank Accounts
           </button>
+          <button onclick="promptInstallApp()" class="flex items-center gap-1.5 bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-bold px-3.5 py-1 rounded-xl transition cursor-pointer shadow-md active:scale-95" title="Download & Install App on Android or Windows">
+            <i class="fa-solid fa-mobile-screen-button text-xs"></i> <span>Download App (Android & Windows)</span>
+          </button>
         </div>
       </div>
 
@@ -951,6 +962,101 @@
           </div>
 
           <button onclick="closePaymentAccountsModal()" class="w-full py-3 bg-slate-950 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition">
+            Close Window
+          </button>
+        </div>
+      </div>
+
+      <!-- CUSTOMER ORDER RECEIVED & AWAITING PAYMENT VERIFICATION MODAL -->
+      <div id="orderPlacedAwaitingModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl border border-slate-200/90 shadow-2xl max-w-md w-full p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150 text-center">
+          <div class="w-16 h-16 rounded-full bg-amber-50 border-2 border-amber-200 text-amber-600 flex items-center justify-center text-2xl mx-auto shadow-inner animate-pulse">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+          </div>
+          
+          <div class="space-y-1.5">
+            <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-700 bg-amber-100 px-3 py-1 rounded-full border border-amber-200">Payment Verification In Progress</span>
+            <h3 class="text-lg font-black text-slate-950 pt-1" id="awaitingModalOrderTitle">Order Received!</h3>
+            <p class="text-xs text-slate-600 font-medium leading-relaxed">
+              Aapka order receive ho gaya hai aur aapki payment verify ho rahi hai. <strong>Baraye meherbani thora sabr karein</strong> — jaise hi cashier verify karega, foran kitchen mein burger banna shuru ho jayega aur aapko WhatsApp par confirmation message mil jayega! 🍔🔥
+            </p>
+          </div>
+
+          <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 text-left text-xs space-y-1.5" id="awaitingModalOrderSummary">
+            <!-- Dynamic Order Summary -->
+          </div>
+
+          <div class="space-y-2 pt-1">
+            <button onclick="openHelplineChat()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm active:scale-95">
+              <i class="fa-brands fa-whatsapp text-sm"></i>
+              <span>Burger Cottage Helpline Chat</span>
+            </button>
+            <button onclick="closeOrderPlacedAwaitingModal()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
+              Back to Menu / View Status
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- INSTALL BURGER COTTAGE APP MODAL (ANDROID & WINDOWS) -->
+      <div id="installAppModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl border border-slate-200/90 shadow-2xl max-w-lg w-full p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-600 to-amber-500 text-white flex items-center justify-center text-xl shadow-lg shadow-rose-600/25">
+                🍔
+              </div>
+              <div>
+                <h3 class="text-base font-black text-slate-950">Install Burger Cottage App</h3>
+                <p class="text-xs text-slate-500">Android Mobile & Windows PC / Laptop</p>
+              </div>
+            </div>
+            <button onclick="closeInstallModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 flex items-center justify-center text-xs transition">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- 1-Click Native Install Button -->
+          <button onclick="triggerDirectInstall()" id="modalInstallActionBtn" class="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/25 transition active:scale-98">
+            <i class="fa-solid fa-circle-down text-base"></i>
+            <span>Click Here to Install / Add to Home Screen</span>
+          </button>
+
+          <!-- Operating System Specific Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <!-- Android Phone Card -->
+            <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-2">
+              <div class="flex items-center gap-2 text-slate-900 font-bold">
+                <i class="fa-brands fa-android text-emerald-600 text-base"></i>
+                <span>Android Mobile</span>
+              </div>
+              <ol class="space-y-1.5 text-[11px] text-slate-600 list-decimal list-inside leading-relaxed">
+                <li>Chrome mein upar <strong>3 Dots (⋮)</strong> tap karein.</li>
+                <li>Menu se <strong>"Install App"</strong> ya <strong>"Add to Home screen"</strong> select karein.</li>
+                <li>Aapke mobile home screen par <strong>Burger Cottage icon</strong> ban jayega!</li>
+              </ol>
+            </div>
+
+            <!-- Windows PC / Laptop Card -->
+            <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-2">
+              <div class="flex items-center gap-2 text-slate-900 font-bold">
+                <i class="fa-brands fa-windows text-blue-600 text-base"></i>
+                <span>Windows PC / Laptop</span>
+              </div>
+              <ol class="space-y-1.5 text-[11px] text-slate-600 list-decimal list-inside leading-relaxed">
+                <li>Browser address bar mein <strong>Install Icon (💻)</strong> click karein.</li>
+                <li>Ya 3-dots (⋮) -> <strong>"Apps"</strong> -> <strong>"Install Burger Cottage"</strong> dabayein.</li>
+                <li>Taskbar aur Desktop par direct app ban jayegi!</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="p-3 bg-amber-50 rounded-2xl border border-amber-200/70 text-[11px] text-amber-900 flex items-start gap-2">
+            <i class="fa-solid fa-bolt text-amber-600 mt-0.5"></i>
+            <span>App install karne ke baad link kholne ki zaroorat nahi rehti, direct 1-tap par menu aur deals open hoti hain!</span>
+          </div>
+
+          <button onclick="closeInstallModal()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
             Close Window
           </button>
         </div>
@@ -2749,6 +2855,8 @@
       if (rawPaymentMethod !== 'COD') {
         message += `\n⚠️ _Kindly attach payment transfer screenshot below._\n`;
       }
+      message += `\n*STATUS:* ⏳ Payment Verification In Progress\n`;
+      message += `_Assalam-o-Alaikum! Aapka order receive ho gaya hai aur aapki payment verify ho rahi hai. Baraye meherbani thora sabr karein, jaise hi Cashier verify karega foran aapko WhatsApp confirmation aayegi aur kitchen mein burger banna shuru ho jayega! 🍔❤️_\n`;
       message += `\n_Processed via Burger Cottage Restaurant OS_`;
 
       const encodedMsg = encodeURIComponent(message);
@@ -2770,10 +2878,13 @@
       closeCustomerCheckoutModal();
       renderAll();
 
+      // Show on-screen awaiting verification modal
+      showOrderPlacedAwaitingModal(newOrder);
+
       // Automatically launch WhatsApp without manual copy-pasting
       window.open(whatsappUrl, '_blank');
 
-      showToastNotification(`🚀 Order #${orderId} received! Sent to Cashier for Payment Verification before kitchen grills it!`);
+      showToastNotification(`🚀 Order #${orderId} received! Cashier payment verify kar raha hai.`);
     }
 
     // Cashier Online Order Verification Controller
@@ -2879,6 +2990,133 @@
       renderOnlineVerificationList();
 
       showToastNotification(`✅ Order ${orderId} verified! Kitchen KDS par send kar diya gaya hai (Chef grilling start kar raha hai).`);
+
+      // Send instant WhatsApp Confirmation to Customer!
+      sendCustomerOrderConfirmedWhatsApp(order);
+    }
+
+    function showOrderPlacedAwaitingModal(order) {
+      const modal = document.getElementById('orderPlacedAwaitingModal');
+      const title = document.getElementById('awaitingModalOrderTitle');
+      const summary = document.getElementById('awaitingModalOrderSummary');
+      if (title) title.innerText = `Order #${order.id} Received!`;
+      if (summary) {
+        summary.innerHTML = `
+          <div class="flex justify-between font-bold text-slate-800">
+            <span>Customer:</span>
+            <span>${order.customerName}</span>
+          </div>
+          <div class="flex justify-between text-slate-600">
+            <span>Bill Amount:</span>
+            <span class="font-mono font-bold text-emerald-700">PKR ${order.total.toLocaleString()}</span>
+          </div>
+          <div class="flex justify-between text-slate-600">
+            <span>Payment Method:</span>
+            <span class="font-medium text-slate-800">${order.paymentMethod}</span>
+          </div>
+          <div class="pt-1.5 border-t border-slate-200 text-slate-500 text-[11px]">
+            Delivery to: <strong class="text-slate-700">${order.address}</strong>
+          </div>
+        `;
+      }
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeOrderPlacedAwaitingModal() {
+      const modal = document.getElementById('orderPlacedAwaitingModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function openHelplineChat() {
+      const msg = `Assalam-o-Alaikum Burger Cottage! Maine website par order place kiya hai. Please status update farma dein.`;
+      window.open(`https://wa.me/${storeConfig.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function sendCustomerOrderConfirmedWhatsApp(order) {
+      if (!order) return;
+      let rawPhone = (order.customerPhone || order.phone || '').replace(/[^0-9]/g, '');
+      if (rawPhone.startsWith('0')) rawPhone = '92' + rawPhone.substring(1);
+      if (!rawPhone.startsWith('92') && rawPhone.length === 10) rawPhone = '92' + rawPhone;
+      if (!rawPhone) rawPhone = storeConfig.whatsapp;
+
+      const confirmMsg = `*BURGER COTTAGE - ORDER CONFIRMED!* 🎉\n\nAssalam-o-Alaikum *${order.customerName}*!\n\nAapke *Order #${order.id}* (Total Bill: PKR ${order.total.toLocaleString()}) ki payment successfully verify ho chuki hai! ✅\n\n👨‍🍳 *Kitchen Update:* Hamare Chef ne aapke fresh burgers grill karna shuru kar diye hain!\n🛵 *Delivery Update:* Tayyar hote hi rider aapke address (*${order.address}*) par deliver karne rawana hoga.\n\nShukriya for choosing Burger Cottage! ❤️\nHelpline: 0305-4122075`;
+
+      // 1. Background notification API
+      fetch('/api/notify/whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: order.id,
+          customerPhone: rawPhone,
+          message: confirmMsg,
+          total: order.total,
+          status: 'VERIFIED_CONFIRMED'
+        })
+      }).catch(e => console.log('Confirm WhatsApp dispatch error:', e));
+
+      // 2. Open WhatsApp confirmation tab for the cashier to directly shoot to customer
+      window.open(`https://wa.me/${rawPhone}?text=${encodeURIComponent(confirmMsg)}`, '_blank');
+    }
+
+    // PWA (Progressive Web App) Install Management (Android & Windows)
+    let deferredInstallPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      const installBtns = document.querySelectorAll('.pwa-install-btn');
+      installBtns.forEach(btn => btn.classList.remove('hidden'));
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredInstallPrompt = null;
+      console.log('Burger Cottage App installed successfully');
+      showToastNotification('🎉 Burger Cottage App installed successfully!');
+      closeInstallModal();
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((reg) => console.log('PWA ServiceWorker registered:', reg.scope))
+          .catch((err) => console.log('PWA ServiceWorker registration error:', err));
+      });
+    }
+
+    function promptInstallApp() {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted Burger Cottage PWA install');
+          }
+          deferredInstallPrompt = null;
+        });
+      } else {
+        openInstallModal();
+      }
+    }
+
+    function triggerDirectInstall() {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then((choiceResult) => {
+          deferredInstallPrompt = null;
+          closeInstallModal();
+        });
+      } else {
+        alert('Browser se direct prompt trigger nahi hua. Mobile par Chrome ke 3-dots (⋮) se "Install App" / "Add to Home screen" select karein, ya Windows par address bar mein Install icon (💻) click karein.');
+      }
+    }
+
+    function openInstallModal() {
+      const modal = document.getElementById('installAppModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeInstallModal() {
+      const modal = document.getElementById('installAppModal');
+      if (modal) modal.classList.add('hidden');
     }
 
     function chatCustomerForReceipt(orderId) {
@@ -3525,6 +3763,10 @@
         if (tabsWrapper) tabsWrapper.classList.add('hidden');
         container.innerHTML = `
           <div class="flex items-center gap-1.5 sm:gap-2">
+            <button onclick="promptInstallApp()" class="pwa-install-btn px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-bold text-xs shadow-xs transition flex items-center gap-1.5 active:scale-95" title="Download & Install Burger Cottage App">
+              <i class="fa-solid fa-download text-xs"></i>
+              <span class="hidden sm:inline">Install App</span>
+            </button>
             <button onclick="shareMenuOnWhatsApp()" class="px-3 sm:px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5" title="Customer ko WhatsApp par menu link bhejein">
               <i class="fa-brands fa-whatsapp text-sm"></i>
               <span class="hidden sm:inline">Share Menu</span>
@@ -3556,6 +3798,10 @@
 
       container.innerHTML = `
         <div class="flex items-center gap-2">
+          <button onclick="promptInstallApp()" class="pwa-install-btn px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold transition flex items-center gap-1.5" title="Install App on Desktop / Tablet">
+            <i class="fa-solid fa-download text-xs"></i>
+            <span class="hidden sm:inline">Install App</span>
+          </button>
           <span class="text-xs font-bold px-3 py-1.5 rounded-xl border ${b.color} flex items-center gap-1.5 shadow-xs">
             <span>${b.icon}</span> <span class="hidden sm:inline">${b.label}</span>
           </span>

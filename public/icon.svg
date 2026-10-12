@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="bunGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+    <linearGradient id="pattyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#78350F"/>
+      <stop offset="100%" stop-color="#451A03"/>
+    </linearGradient>
+    <linearGradient id="cheeseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FCD34D"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Rounded Circle -->
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)"/>
+  <circle cx="256" cy="256" r="230" stroke="#EA7C69" stroke-width="8" fill="none" opacity="0.3"/>
+  
+  <!-- Burger Top Bun -->
+  <path d="M 120 220 C 120 130, 392 130, 392 220 Z" fill="url(#bunGrad)"/>
+  <!-- Sesame Seeds -->
+  <ellipse cx="200" cy="170" rx="8" ry="4" fill="#FEF3C7" transform="rotate(-15 200 170)"/>
+  <ellipse cx="260" cy="155" rx="8" ry="4" fill="#FEF3C7"/>
+  <ellipse cx="320" cy="175" rx="8" ry="4" fill="#FEF3C7" transform="rotate(20 320 175)"/>
+  <ellipse cx="240" cy="190" rx="7" ry="3.5" fill="#FEF3C7" transform="rotate(5 240 190)"/>
+
+  <!-- Lettuce -->
+  <path d="M 105 235 Q 130 220 155 235 Q 180 250 205 235 Q 230 220 255 235 Q 280 250 305 235 Q 330 220 355 235 Q 380 250 407 235 L 407 250 Q 380 265 355 250 Q 330 235 305 250 Q 280 265 255 250 Q 230 235 205 250 Q 180 265 155 250 Q 130 235 105 250 Z" fill="#10B981"/>
+
+  <!-- Melted Cheese -->
+  <polygon points="120,260 392,260 370,300 320,265 270,315 220,265 170,295 140,260" fill="url(#cheeseGrad)"/>
+
+  <!-- Meat Patty -->
+  <rect x="110" y="275" width="292" height="45" rx="22.5" fill="url(#pattyGrad)"/>
+
+  <!-- Tomato Slices -->
+  <rect x="135" y="325" width="115" height="18" rx="9" fill="#EF4444"/>
+  <rect x="265" y="325" width="115" height="18" rx="9" fill="#EF4444"/>
+
+  <!-- Burger Bottom Bun -->
+  <path d="M 125 350 L 387 350 C 387 395, 125 395, 125 350 Z" fill="url(#bunGrad)"/>
+
+  <!-- Badge Text -->
+  <text x="256" y="445" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="34" fill="#EA7C69" text-anchor="middle" letter-spacing="4">BURGER COTTAGE</text>
+</svg>

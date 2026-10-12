@@ -1,9 +1,12 @@
-// Service Worker for Commerce Cloud PWA (Offline Resiliency & Cache)
-const CACHE_NAME = 'commerce-cloud-v1';
+// Service Worker for Burger Cottage PWA (Offline Resiliency & Cache)
+const CACHE_NAME = 'burger-cottage-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/manifest.json'
+  '/manifest.json',
+  '/icon.svg',
+  '/icon-192.png',
+  '/icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -31,7 +34,6 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Network first, falling back to cache
   if (event.request.method === 'GET') {
     event.respondWith(
       fetch(event.request).catch(() => {
