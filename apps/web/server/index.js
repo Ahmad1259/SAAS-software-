@@ -11,6 +11,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { PakistanPaymentsEngine } = require('../../../packages/payments-pk/index.js');
 const { ReliableOutboxWorker } = require('../../../packages/outbox-worker/index.js');
+const whatsappBot = require('./whatsapp-bot.js');
 
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'COMMERCE_CLOUD_ENTERPRISE_SECRET_KEY_SHA256_AT_LEAST_32_BYTES';
@@ -172,6 +173,48 @@ async function handleRequest(req, res) {
     }
 
     // ----------------------------------------------------
+    // API ROUTE: GET /api/whatsapp/status (Get live WhatsApp Pairing Status)
+    // ----------------------------------------------------
+    if (pathname === '/api/whatsapp/status' && method === 'GET') {
+      return sendJSON(res, 200, whatsappBot.getGatewayStatus());
+    }
+
+    // ----------------------------------------------------
+    // API ROUTE: POST /api/whatsapp/connect (Start WhatsApp Pairing / Get QR Code)
+    // ----------------------------------------------------
+    if (pathname === '/api/whatsapp/connect' && method === 'POST') {
+      const initResult = await whatsappBot.initWhatsApp();
+      return sendJSON(res, 200, {
+        ...whatsappBot.getGatewayStatus(),
+        ...initResult
+      });
+    }
+
+    // ----------------------------------------------------
+    // API ROUTE: POST /api/whatsapp/disconnect (Logout / Disconnect Official WhatsApp)
+    // ----------------------------------------------------
+    if (pathname === '/api/whatsapp/disconnect' && method === 'POST') {
+      await whatsappBot.logoutWhatsApp();
+      return sendJSON(res, 200, { success: true, ...whatsappBot.getGatewayStatus() });
+    }
+
+    // ----------------------------------------------------
+    // API ROUTE: POST /api/whatsapp/send-test (Send test message from official line)
+    // ----------------------------------------------------
+    if (pathname === '/api/whatsapp/send-test' && method === 'POST') {
+      const body = await parseBody(req);
+      const recipient = body.phone || body.recipient;
+      const text = body.message || 'Assalam-o-Alaikum! Burger Cottage test automation message.';
+
+      if (!recipient) {
+        return sendJSON(res, 400, { success: false, error: 'Recipient phone number is required' });
+      }
+
+      const result = await whatsappBot.sendWhatsAppMessage(recipient, text);
+      return sendJSON(res, result.success ? 200 : 400, result);
+    }
+
+    // ----------------------------------------------------
     // API ROUTE: POST /api/notify/whatsapp (Automatic WhatsApp Notification Dispatch)
     // ----------------------------------------------------
     if (pathname === '/api/notify/whatsapp' && method === 'POST') {
@@ -180,17 +223,19 @@ async function handleRequest(req, res) {
       const orderId = body.orderId || 'ORD-LIVE';
       const text = body.message || `Assalam-o-Alaikum! Burger Cottage order ${orderId} update.`;
 
-      // Log automated dispatch
       console.log(`[WHATSAPP AUTOMATED DISPATCH] Order: ${orderId} -> Recipient: ${recipient}`);
 
+      // Automated background dispatch through connected official line
+      const sendResult = await whatsappBot.sendWhatsAppMessage(recipient, text);
+
       return sendJSON(res, 200, {
-        success: true,
-        dispatchedAutomatically: true,
+        success: sendResult.success,
+        dispatchedAutomatically: sendResult.success,
         orderId,
         recipient,
         timestamp: new Date().toISOString(),
-        gateway: 'BURGER_COTTAGE_AUTONOMOUS_WHATSAPP_BOT',
-        status: 'DELIVERED_TO_QUEUE'
+        gateway: 'BURGER_COTTAGE_OFFICIAL_LINE',
+        details: sendResult
       });
     }
 

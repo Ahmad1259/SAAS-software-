@@ -550,6 +550,107 @@
           </div>
         </div>
       </div>
+
+      <!-- SECTION: OFFICIAL WHATSAPP AUTONOMOUS GATEWAY (ZERO HUMAN INTERVENTION) -->
+      <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-subtle space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <div>
+            <span class="text-[10px] uppercase font-black tracking-widest px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+              100% Autonomous • Zero Human Intervention
+            </span>
+            <h3 class="text-base font-black text-slate-950 mt-1 flex items-center gap-2">
+              <i class="fa-brands fa-whatsapp text-emerald-500 text-lg"></i> Official WhatsApp Autonomous Dispatcher
+            </h3>
+            <p class="text-xs text-slate-500">Burger Cottage ke official mobile number se customer ko baghair kisi click ke automatically background messages bhejta hai.</p>
+          </div>
+          <div id="waStatusBadgeContainer" class="flex items-center gap-2">
+            <span class="text-xs font-bold px-3 py-1.5 rounded-xl border bg-slate-100 text-slate-600 border-slate-200 flex items-center gap-1.5">
+              <i class="fa-solid fa-spinner fa-spin text-xs"></i> <span>Checking Status...</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- PAIRING / QR CODE PANEL -->
+          <div class="lg:col-span-6 bg-slate-50/70 p-5 rounded-2xl border border-slate-200/80 flex flex-col justify-between space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2 text-slate-900 font-bold text-xs">
+                <i class="fa-solid fa-qrcode text-emerald-600"></i>
+                <span>Official Line Connection (QR Code)</span>
+              </div>
+              <button onclick="refreshWhatsAppGatewayStatus(true)" class="px-2.5 py-1 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 text-slate-700 hover:text-emerald-600 text-[11px] font-bold shadow-xs transition flex items-center gap-1 active:scale-95">
+                <i class="fa-solid fa-arrows-rotate"></i> <span>Refresh Status</span>
+              </button>
+            </div>
+
+            <!-- QR Code Display Box -->
+            <div id="waQrCodeDisplayBox" class="min-h-64 flex flex-col items-center justify-center p-4 bg-white rounded-2xl border border-dashed border-slate-300 text-center space-y-3">
+              <i class="fa-solid fa-spinner fa-spin text-2xl text-slate-400"></i>
+              <p class="text-xs text-slate-500 font-medium">WhatsApp Gateway status check ho raha hai...</p>
+            </div>
+
+            <!-- Step by Step instructions -->
+            <div class="p-3 bg-emerald-50/70 rounded-xl border border-emerald-200 text-emerald-900 text-xs space-y-1">
+              <p class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-circle-info text-emerald-600"></i> Official Mobile se connect karne ka tareeqa:</p>
+              <ol class="list-decimal list-inside text-[11px] text-emerald-800 space-y-0.5 leading-relaxed pl-1">
+                <li>Apne official mobile mein WhatsApp open karein.</li>
+                <li>Top-right 3 dots ya Settings mein <strong>"Linked Devices"</strong> par jayein.</li>
+                <li><strong>"Link a Device"</strong> button daba kar is QR code ko scan karein.</li>
+                <li>Scan hotay hi aap ka official number connect ho kar 24/7 auto-active ho jayega!</li>
+              </ol>
+            </div>
+          </div>
+
+          <!-- TEST MESSAGE SENDER & AUTOMATION TRIGGERS -->
+          <div class="lg:col-span-6 space-y-4">
+            <!-- TEST DISPATCHER -->
+            <div class="bg-slate-50/70 p-5 rounded-2xl border border-slate-200/80 space-y-3">
+              <div class="flex items-center gap-2 text-slate-900 font-bold text-xs">
+                <i class="fa-solid fa-paper-plane text-orange-600"></i>
+                <span>Instant Test Dispatcher</span>
+              </div>
+              <p class="text-[11px] text-slate-500">Kisi bhi mobile number par test message bhej kar auto-delivery check karein.</p>
+
+              <div class="space-y-2.5">
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-700 mb-1">Recipient Mobile Number</label>
+                  <input type="text" id="waTestPhoneInput" placeholder="e.g. 03054122075" value="03054122075" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none transition">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-700 mb-1">Message Content</label>
+                  <textarea id="waTestMessageInput" rows="2" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition">🍔 Assalam-o-Alaikum! Burger Cottage official automated messaging test verified.</textarea>
+                </div>
+                <button type="button" onclick="sendWhatsAppTestMessage()" id="waTestSendBtn" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-1.5 active:scale-95">
+                  <i class="fa-solid fa-paper-plane text-xs"></i>
+                  <span>Send Test Message from Official Line</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- AUTOMATION TRIGGERS STATUS -->
+            <div class="p-4 rounded-2xl border border-slate-200/80 bg-white space-y-2.5">
+              <h4 class="text-xs font-bold text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-bolt text-amber-500"></i> Active Automated Triggers
+              </h4>
+              <div class="space-y-2 text-xs">
+                <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-100">
+                  <span class="font-medium text-slate-700">1. Order Placed Verification Alert</span>
+                  <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Auto Active</span>
+                </div>
+                <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-100">
+                  <span class="font-medium text-slate-700">2. Cashier Payment Confirmed Notification</span>
+                  <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Auto Active</span>
+                </div>
+                <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-100">
+                  <span class="font-medium text-slate-700">3. Kitchen Ready & Rider Picked Up</span>
+                  <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Auto Active</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- ============================================================== -->
@@ -3734,6 +3835,7 @@
       renderDispatch();
       renderCatalog();
       renderStaffUsersTable();
+      refreshWhatsAppGatewayStatus(false);
     }
 
     function renderAuthControls() {
@@ -4697,6 +4799,156 @@
       saveState();
       renderStaffUsersTable();
       showToastNotification(`Staff user "${username}" delete kar diya gaya.`);
+    }
+
+    // -------------------------------------------------------------
+    // WHATSAPP OFFICIAL LINE AUTONOMOUS GATEWAY CONTROLLER
+    // -------------------------------------------------------------
+    let waPollTimer = null;
+
+    async function refreshWhatsAppGatewayStatus(forceConnect = false) {
+      const badgeContainer = document.getElementById('waStatusBadgeContainer');
+      const box = document.getElementById('waQrCodeDisplayBox');
+      if (!badgeContainer || !box) return;
+
+      try {
+        const url = forceConnect ? '/api/whatsapp/connect' : '/api/whatsapp/status';
+        const method = forceConnect ? 'POST' : 'GET';
+        const res = await fetch(url, { method });
+        const data = await res.json();
+
+        if (data.isConnected || data.status === 'CONNECTED') {
+          stopWaStatusPolling();
+          badgeContainer.innerHTML = `
+            <span class="text-xs font-bold px-3 py-1.5 rounded-xl border bg-emerald-50 text-emerald-800 border-emerald-200 flex items-center gap-1.5 shadow-xs">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>Official Line Active: +${data.connectedPhone || '923054122075'}</span>
+            </span>
+          `;
+          box.innerHTML = `
+            <div class="text-center space-y-3 py-6 animate-in fade-in duration-200">
+              <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto shadow-sm">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-black text-slate-900">Official Line 100% Connected!</h4>
+                <p class="text-xs text-slate-500 font-mono mt-0.5 font-bold">+${data.connectedPhone || '923054122075'}</p>
+              </div>
+              <p class="text-xs text-emerald-800 bg-emerald-50/80 p-3 rounded-xl border border-emerald-200 leading-relaxed font-medium">
+                ⚡ <strong>Zero Human Intervention Active:</strong> Har customer order, verification status aur delivery update is official number se khud-ba-khud deliver ho raha hai.
+              </p>
+              <button onclick="disconnectWhatsAppGateway()" class="px-3.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-bold transition">
+                Disconnect Official Line
+              </button>
+            </div>
+          `;
+        } else if (data.status === 'SCAN_QR' && data.qrDataUrl) {
+          badgeContainer.innerHTML = `
+            <span class="text-xs font-bold px-3 py-1.5 rounded-xl border bg-amber-50 text-amber-800 border-amber-200 flex items-center gap-1.5 shadow-xs">
+              <i class="fa-solid fa-qrcode text-amber-600"></i>
+              <span>Awaiting QR Code Scan</span>
+            </span>
+          `;
+          box.innerHTML = `
+            <div class="text-center space-y-3 py-2 animate-in fade-in duration-200">
+              <img src="${data.qrDataUrl}" alt="Scan QR Code" class="w-52 h-52 mx-auto rounded-2xl border-2 border-emerald-500 shadow-lg p-1 bg-white">
+              <p class="text-xs font-black text-slate-900 animate-pulse flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-mobile-screen text-emerald-600"></i> Apne Burger Cottage Mobile se Scan Karein
+              </p>
+              <p class="text-[11px] text-slate-400">Scan hotay hi status automatically connected ho jayega.</p>
+            </div>
+          `;
+          startWaStatusPolling();
+        } else {
+          stopWaStatusPolling();
+          badgeContainer.innerHTML = `
+            <span class="text-xs font-bold px-3 py-1.5 rounded-xl border bg-slate-100 text-slate-700 border-slate-200 flex items-center gap-1.5">
+              <i class="fa-solid fa-circle-xmark text-slate-400"></i>
+              <span>Official Line Disconnected</span>
+            </span>
+          `;
+          box.innerHTML = `
+            <div class="text-center space-y-3 py-6">
+              <div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto">
+                <i class="fa-brands fa-whatsapp"></i>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-slate-800">Official Line Not Connected</h4>
+                <p class="text-[11px] text-slate-400">Neechay button par click kar ke QR Code generate karein.</p>
+              </div>
+              <button onclick="refreshWhatsAppGatewayStatus(true)" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-1.5 mx-auto active:scale-95">
+                <i class="fa-solid fa-qrcode"></i> Generate QR Code & Connect
+              </button>
+            </div>
+          `;
+        }
+      } catch (err) {
+        console.log('Error refreshing WhatsApp status:', err);
+      }
+    }
+
+    function startWaStatusPolling() {
+      if (waPollTimer) return;
+      waPollTimer = setInterval(() => {
+        refreshWhatsAppGatewayStatus(false);
+      }, 3500);
+    }
+
+    function stopWaStatusPolling() {
+      if (waPollTimer) {
+        clearInterval(waPollTimer);
+        waPollTimer = null;
+      }
+    }
+
+    async function disconnectWhatsAppGateway() {
+      if (!confirm('Kya aap waqai Burger Cottage official line ko disconnect karna chahte hain?')) return;
+      try {
+        await fetch('/api/whatsapp/disconnect', { method: 'POST' });
+        showToastNotification('Official WhatsApp line disconnect kar di gayi.');
+        refreshWhatsAppGatewayStatus(false);
+      } catch (e) {
+        alert('Disconnect failed: ' + e.message);
+      }
+    }
+
+    async function sendWhatsAppTestMessage() {
+      const phoneInput = document.getElementById('waTestPhoneInput');
+      const msgInput = document.getElementById('waTestMessageInput');
+      const btn = document.getElementById('waTestSendBtn');
+      if (!phoneInput || !msgInput || !btn) return;
+
+      const phone = phoneInput.value.trim();
+      const message = msgInput.value.trim();
+
+      if (!phone || !message) {
+        alert('Baraye meherbani mobile number aur message darj karein!');
+        return;
+      }
+
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-xs"></i> <span>Sending Test Message...</span>`;
+
+      try {
+        const res = await fetch('/api/whatsapp/send-test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, message })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showToastNotification(`✅ Message delivered automatically to ${phone} from official line!`);
+        } else {
+          alert('Message nahi ja saka: ' + (data.error || 'Official Line is not connected yet. Pehle QR code scan karein!'));
+        }
+      } catch (err) {
+        alert('API error: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      }
     }
 
     // Initialize View & Secure Role Gating on Startup
