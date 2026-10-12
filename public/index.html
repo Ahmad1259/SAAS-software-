@@ -486,6 +486,11 @@
               <i class="fa-solid fa-house text-sm"></i>
               <span class="text-[8px] font-bold mt-0.5">Home</span>
             </button>
+            <button onclick="openOnlineVerificationModal()" id="posSidebarOnlineBtn" class="relative w-11 h-11 rounded-2xl text-[#889898] hover:text-white hover:bg-[#252836] flex flex-col items-center justify-center text-xs transition" title="Online Customer Orders Awaiting Payment Verification">
+              <i class="fa-solid fa-bell text-sm text-amber-400"></i>
+              <span id="posPendingVerificationBadge" class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-rose-600 text-white font-black text-[10px] flex items-center justify-center shadow-md hidden animate-pulse">0</span>
+              <span class="text-[8px] font-bold text-amber-400 mt-0.5">Verify</span>
+            </button>
             <button onclick="filterPosCategory('ALL')" class="w-11 h-11 rounded-2xl text-[#889898] hover:text-white hover:bg-[#252836] flex flex-col items-center justify-center text-xs transition" title="All Menu">
               <i class="fa-solid fa-utensils text-sm"></i>
               <span class="text-[8px] font-medium mt-0.5">Menu</span>
@@ -526,6 +531,24 @@
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                 <input type="text" id="posSearchInput" oninput="handlePosSearch(event)" placeholder="Search menu items..." class="w-full pl-9 pr-4 py-2 sm:py-2.5 rounded-2xl bg-[#2D303E] text-white text-xs border border-transparent focus:border-[#EA7C69] focus:outline-none placeholder-slate-400 transition">
               </div>
+            </div>
+
+            <!-- PENDING VERIFICATION ALERT BANNER IN POS -->
+            <div id="posOnlineVerificationBanner" class="mt-3 p-3.5 rounded-2xl bg-gradient-to-r from-orange-500/20 via-amber-500/20 to-yellow-500/10 border border-orange-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hidden animate-in fade-in duration-200">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-orange-600 text-white flex items-center justify-center text-sm shadow-md shrink-0">
+                  <i class="fa-solid fa-bell animate-bounce"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-black text-white flex items-center gap-2">
+                    <span id="posPendingCountText" class="text-orange-400">1 New Online Order</span> Awaiting Cashier Payment Verification
+                  </h4>
+                  <p class="text-[11px] text-slate-300">Customer placed order online. Verify payment proof (JazzCash / EasyPaisa / Bank / COD) before kitchen starts cooking.</p>
+                </div>
+              </div>
+              <button onclick="openOnlineVerificationModal()" class="px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white text-xs font-black rounded-xl shadow-lg transition flex items-center gap-1.5 shrink-0 active:scale-95">
+                <i class="fa-solid fa-shield-check"></i> <span>Verify & Send to Kitchen</span>
+              </button>
             </div>
 
             <!-- Category Pills Row (Horizontal Scroll) -->
@@ -690,6 +713,38 @@
           </button>
           <button onclick="closeSplitPaymentModal()" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
             Cancel
+          </button>
+        </div>
+      </div>
+    <!-- ONLINE ORDERS PAYMENT VERIFICATION MODAL -->
+    <div id="onlineVerificationModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 hidden">
+      <div class="bg-white rounded-3xl border border-slate-200/90 shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col justify-between overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <!-- Header -->
+        <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-2xl bg-orange-600 text-white flex items-center justify-center text-lg shadow-md shadow-orange-600/20">
+              <i class="fa-solid fa-shield-check"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-black text-slate-950">Cashier Payment Verification Desk</h3>
+              <p class="text-[11px] text-slate-500">Orders will ONLY be sent to Kitchen KDS after you verify payment.</p>
+            </div>
+          </div>
+          <button onclick="closeOnlineVerificationModal()" class="w-8 h-8 rounded-full bg-white text-slate-500 hover:text-slate-900 border border-slate-200 flex items-center justify-center text-xs transition">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Body: Scrollable list of orders awaiting verification -->
+        <div class="p-4 sm:p-6 space-y-4 overflow-y-auto custom-scroll flex-1" id="onlineVerificationOrdersList">
+          <!-- Dynamically populated -->
+        </div>
+
+        <!-- Footer -->
+        <div class="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+          <span class="text-xs text-slate-500 font-medium" id="onlineVerificationFooterSummary">0 orders pending</span>
+          <button onclick="closeOnlineVerificationModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-bold transition">
+            Close Window
           </button>
         </div>
       </div>
@@ -2668,8 +2723,8 @@
         total: total,
         paymentMethod: paymentLabel,
         paymentTid: paymentTid,
-        paymentStatus: rawPaymentMethod === 'COD' ? 'AWAITING_PAYMENT' : 'PAYMENT_SUBMITTED',
-        status: 'PLACED',
+        paymentStatus: rawPaymentMethod === 'COD' ? 'AWAITING_CASH' : 'AWAITING_VERIFICATION',
+        status: 'PENDING_VERIFICATION', // Cashier MUST verify payment proof before kitchen sees it
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
@@ -2718,7 +2773,139 @@
       // Automatically launch WhatsApp without manual copy-pasting
       window.open(whatsappUrl, '_blank');
 
-      showToastNotification(`🚀 Order #${orderId} confirmed! WhatsApp message automatically dispatched to Burger Cottage Hotline (+92 305 4122075)!`);
+      showToastNotification(`🚀 Order #${orderId} received! Sent to Cashier for Payment Verification before kitchen grills it!`);
+    }
+
+    // Cashier Online Order Verification Controller
+    function openOnlineVerificationModal() {
+      const modal = document.getElementById('onlineVerificationModal');
+      if (modal) modal.classList.remove('hidden');
+      renderOnlineVerificationList();
+    }
+
+    function closeOnlineVerificationModal() {
+      const modal = document.getElementById('onlineVerificationModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function renderOnlineVerificationList() {
+      const list = document.getElementById('onlineVerificationOrdersList');
+      const summary = document.getElementById('onlineVerificationFooterSummary');
+      if (!list) return;
+
+      const pendingOrders = orders.filter(o => o.status === 'PENDING_VERIFICATION');
+      if (summary) {
+        summary.innerText = `${pendingOrders.length} online orders awaiting payment verification`;
+      }
+
+      if (pendingOrders.length === 0) {
+        list.innerHTML = `
+          <div class="py-12 text-center space-y-2">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mx-auto shadow-xs">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h4 class="text-sm font-black text-slate-800">All Payments Verified!</h4>
+            <p class="text-xs text-slate-400">There are no pending customer upfront orders waiting for verification.</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      pendingOrders.forEach(o => {
+        const isDigital = o.paymentMethod && !o.paymentMethod.includes('COD');
+        const badgeColor = isDigital ? 'bg-orange-50 text-orange-800 border-orange-200' : 'bg-emerald-50 text-emerald-800 border-emerald-200';
+
+        html += `
+          <div class="p-4 bg-slate-50/80 rounded-2xl border border-slate-200/90 space-y-3 shadow-xs">
+            <div class="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
+              <div class="flex items-center gap-2">
+                <span class="font-mono font-black text-slate-950 text-xs">${o.id}</span>
+                <span class="text-[10px] text-slate-400 font-sans">${o.time}</span>
+              </div>
+              <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${badgeColor}">
+                ${o.paymentMethod}
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <div>
+                <p class="font-bold text-slate-900">${o.customerName}</p>
+                <p class="text-slate-500 text-[11px]">${o.phone || o.customerPhone || 'No Phone'}</p>
+                <p class="text-slate-500 text-[11px] mt-0.5">${o.address}</p>
+              </div>
+              <div class="p-2.5 bg-white rounded-xl border border-slate-200/80 space-y-1">
+                <div class="flex justify-between items-center">
+                  <span class="text-[10px] text-slate-400 uppercase font-bold">Total Bill:</span>
+                  <span class="font-mono font-extrabold text-sm text-emerald-700">PKR ${o.total.toLocaleString()}</span>
+                </div>
+                ${o.paymentTid ? `<p class="text-[11px] text-slate-600 font-medium">TID/Ref: <strong class="font-mono text-slate-900">${o.paymentTid}</strong></p>` : `<p class="text-[10px] text-amber-700 font-medium"><i class="fa-solid fa-clock"></i> Proof: Check WhatsApp chat</p>`}
+              </div>
+            </div>
+
+            <div class="p-2.5 bg-white rounded-xl border border-slate-100 text-xs text-slate-700">
+              <span class="text-[10px] text-slate-400 font-bold uppercase block mb-1">Items in Order:</span>
+              <p class="leading-relaxed font-medium">${o.items.map(i => `${i.qty}x ${i.name}`).join(', ')}</p>
+            </div>
+
+            <div class="pt-1 flex flex-wrap items-center gap-2">
+              <button onclick="verifyOrderPayment('${o.id}')" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Verify Payment & Send to Kitchen</span>
+              </button>
+              <button onclick="chatCustomerForReceipt('${o.id}')" class="px-3.5 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 active:scale-95" title="WhatsApp Customer for Proof">
+                <i class="fa-brands fa-whatsapp text-sm text-emerald-600"></i>
+                <span>Ask Screenshot</span>
+              </button>
+              <button onclick="rejectOnlineOrder('${o.id}')" class="px-3 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-xs font-bold transition flex items-center gap-1 active:scale-95" title="Reject Order">
+                <i class="fa-solid fa-xmark"></i>
+                <span>Reject</span>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+      list.innerHTML = html;
+    }
+
+    function verifyOrderPayment(orderId) {
+      const order = orders.find(o => o.id === orderId);
+      if (!order) return;
+
+      order.status = 'COOKING';
+      order.paymentStatus = 'VERIFIED_PAID';
+      saveState();
+      renderAll();
+      renderOnlineVerificationList();
+
+      showToastNotification(`✅ Order ${orderId} verified! Kitchen KDS par send kar diya gaya hai (Chef grilling start kar raha hai).`);
+    }
+
+    function chatCustomerForReceipt(orderId) {
+      const order = orders.find(o => o.id === orderId);
+      if (!order) return;
+
+      let rawPhone = (order.customerPhone || order.phone || '').replace(/[^0-9]/g, '');
+      if (rawPhone.startsWith('0')) rawPhone = '92' + rawPhone.substring(1);
+      if (!rawPhone.startsWith('92') && rawPhone.length === 10) rawPhone = '92' + rawPhone;
+      if (!rawPhone) rawPhone = storeConfig.whatsapp;
+
+      const msg = `Assalam-o-Alaikum ${order.customerName}!\n\n*Burger Cottage* se call/message hai. Aapke *Order #${order.id}* (Total Bill: PKR ${order.total.toLocaleString()}) ka payment transfer screenshot / transaction slip share farma dein taake hum kitchen ko send karein.\n\nShukriya! ❤️`;
+      window.open(`https://wa.me/${rawPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function rejectOnlineOrder(orderId) {
+      if (!confirm(`Kya aap waqai Order #${orderId} ko reject / cancel karna chahte hain?`)) return;
+
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = 'CANCELLED';
+        order.paymentStatus = 'CANCELLED';
+        saveState();
+        renderAll();
+        renderOnlineVerificationList();
+        showToastNotification(`Order #${orderId} cancel kar diya gaya hai.`);
+      }
     }
 
     // Create Product
@@ -2938,6 +3125,27 @@
       if (activeStoreLabel) {
         activeStoreLabel.innerHTML = `${storeConfig.storeName} <span class="text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full bg-[#EA7C69]/20 text-[#EA7C69] border border-[#EA7C69]/30">Open 2 PM - 4 AM</span>`;
       }
+
+      // Check online orders awaiting cashier payment verification
+      const pendingOrders = orders.filter(o => o.status === 'PENDING_VERIFICATION');
+      const banner = document.getElementById('posOnlineVerificationBanner');
+      const badge = document.getElementById('posPendingVerificationBadge');
+      const countText = document.getElementById('posPendingCountText');
+
+      if (pendingOrders.length > 0) {
+        if (banner) banner.classList.remove('hidden');
+        if (badge) {
+          badge.innerText = pendingOrders.length;
+          badge.classList.remove('hidden');
+        }
+        if (countText) {
+          countText.innerText = `${pendingOrders.length} New Online Order${pendingOrders.length === 1 ? '' : 's'}`;
+        }
+      } else {
+        if (banner) banner.classList.add('hidden');
+        if (badge) badge.classList.add('hidden');
+      }
+
       renderPosGrid();
       renderPosTicket();
     }
@@ -3396,6 +3604,7 @@
 
       orders.forEach((o, index) => {
         let statusBadge = 'bg-amber-50 text-amber-800 border-amber-200';
+        if (o.status === 'PENDING_VERIFICATION') statusBadge = 'bg-rose-50 text-rose-700 border-rose-200 animate-pulse';
         if (o.status === 'COOKING') statusBadge = 'bg-orange-50 text-orange-800 border-orange-200';
         if (o.status === 'READY_FOR_PICKUP') statusBadge = 'bg-brand-50 text-brand-800 border-brand-200';
         if (o.status === 'SHIPPED') statusBadge = 'bg-cyan-50 text-cyan-800 border-cyan-200';
@@ -3420,11 +3629,16 @@
             </td>
             <td class="p-4">
               <span class="text-[10px] font-bold px-2.5 py-1 rounded-full border ${statusBadge}">
-                ${o.status}
+                ${o.status === 'PENDING_VERIFICATION' ? '⚠️ VERIFY PAYMENT' : o.status}
               </span>
             </td>
             <td class="p-4 text-right">
               <div class="flex items-center justify-end gap-1.5">
+                ${o.status === 'PENDING_VERIFICATION' ? `
+                  <button onclick="verifyOrderPayment('${o.id}')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold shadow-xs flex items-center gap-1 transition" title="Verify Payment & Send to Kitchen">
+                    <i class="fa-solid fa-circle-check"></i> Verify
+                  </button>
+                ` : ''}
                 <button onclick="updateOrderStatus('${o.id}', 'COOKING')" class="p-1.5 text-slate-400 hover:text-amber-600 rounded-lg" title="Cook">
                   <i class="fa-solid fa-fire-burner"></i>
                 </button>
@@ -3783,7 +3997,7 @@
 
       if (activeStoreName) activeStoreName.innerText = storeConfig.storeName;
       if (kdsMetric) {
-        const liveCooking = orders.filter(o => o.status === 'PLACED' || o.status === 'COOKING').length;
+        const liveCooking = orders.filter(o => o.status === 'COOKING').length;
         kdsMetric.innerText = `${liveCooking} ${liveCooking === 1 ? 'Ticket' : 'Tickets'}`;
       }
 
@@ -3951,7 +4165,7 @@
       const container = document.getElementById('kitchenGrid');
       container.innerHTML = '';
 
-      const kitchenOrders = orders.filter(o => o.status === 'PLACED' || o.status === 'COOKING');
+      const kitchenOrders = orders.filter(o => o.status === 'COOKING');
 
       if (kitchenOrders.length === 0) {
         container.innerHTML = `
