@@ -665,9 +665,10 @@
             <label class="block font-bold text-slate-700 mb-1">2. Digital Tender (JazzCash / EasyPaisa / Bank)</label>
             <div class="grid grid-cols-2 gap-2 mb-1.5">
               <select id="splitDigitalMethod" class="text-xs p-2.5 rounded-xl border border-slate-200 bg-white font-medium">
-                <option value="JAZZCASH">JazzCash</option>
-                <option value="EASYPAISA">EasyPaisa</option>
-                <option value="BANK_TRANSFER">Bank / Raast</option>
+                <option value="JAZZCASH">JazzCash (0305-4122075)</option>
+                <option value="EASYPAISA">EasyPaisa (0301-4314918)</option>
+                <option value="ALLIED_BANK">Allied Bank - ABL (13030010098091510016)</option>
+                <option value="FAYSAL_BANK">Faysal Bank (3384301000003758)</option>
               </select>
               <div class="relative">
                 <span class="absolute left-3 top-2.5 font-bold text-slate-400 text-xs">PKR</span>
@@ -742,6 +743,9 @@
           <span class="flex items-center gap-1.5 bg-black/15 px-3 py-1 rounded-xl">
             <i class="fa-solid fa-utensils text-yellow-300"></i> 97 Fresh Menu Items
           </span>
+          <button onclick="openPaymentAccountsModal()" class="flex items-center gap-1.5 bg-black/25 hover:bg-black/40 px-3 py-1 rounded-xl text-amber-200 transition cursor-pointer shadow-xs" title="Click to view JazzCash, EasyPaisa & Bank Accounts">
+            <i class="fa-solid fa-wallet text-amber-300"></i> JazzCash / EasyPaisa / Bank Accounts
+          </button>
         </div>
       </div>
 
@@ -789,6 +793,112 @@
         <button onclick="openCustomerCheckoutModal()" class="px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-2xl font-black text-xs flex items-center gap-2 shadow-lg shadow-orange-600/30 transition">
           View Cart & Order <i class="fa-solid fa-arrow-right text-[10px]"></i>
         </button>
+      </div>
+
+      <!-- DIGITAL PAYMENT ACCOUNTS POPUP MODAL -->
+      <div id="paymentAccountsModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl border border-slate-200/90 shadow-2xl max-w-md w-full p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2.5">
+              <div class="w-10 h-10 rounded-2xl bg-orange-600 text-white flex items-center justify-center text-lg shadow-md shadow-orange-600/20">
+                💳
+              </div>
+              <div>
+                <h3 class="text-sm font-black text-slate-950">Official Payment Accounts</h3>
+                <p class="text-[11px] text-slate-500">Burger Cottage · Defence Cantt Lahore</p>
+              </div>
+            </div>
+            <button onclick="closePaymentAccountsModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 flex items-center justify-center text-xs transition">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="space-y-2.5 text-xs">
+            <!-- 1. JazzCash -->
+            <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 flex items-center justify-between gap-2 hover:border-red-300 transition">
+              <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-red-100 text-red-600 flex items-center justify-center font-bold text-sm">📱</span>
+                <div>
+                  <span class="font-black text-slate-900 block">JazzCash</span>
+                  <span class="text-[10px] text-slate-500">Title: Burger Cottage</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="font-mono font-black text-slate-950 text-xs">0305-4122075</span>
+                <button onclick="copySpecificAccount('03054122075', 'JazzCash')" class="px-2.5 py-1 bg-white border border-slate-200 hover:border-red-500 text-slate-700 hover:text-red-600 rounded-lg text-[10px] font-bold shadow-xs transition active:scale-95">
+                  Copy
+                </button>
+              </div>
+            </div>
+
+            <!-- 2. EasyPaisa -->
+            <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 flex items-center justify-between gap-2 hover:border-emerald-300 transition">
+              <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-sm">📱</span>
+                <div>
+                  <span class="font-black text-slate-900 block">EasyPaisa</span>
+                  <span class="text-[10px] text-slate-500">Title: Burger Cottage</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="font-mono font-black text-slate-950 text-xs">0301-4314918</span>
+                <button onclick="copySpecificAccount('03014314918', 'EasyPaisa')" class="px-2.5 py-1 bg-white border border-slate-200 hover:border-emerald-500 text-slate-700 hover:text-emerald-600 rounded-lg text-[10px] font-bold shadow-xs transition active:scale-95">
+                  Copy
+                </button>
+              </div>
+            </div>
+
+            <!-- 3. Allied Bank (ABL) -->
+            <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 flex items-center justify-between gap-2 hover:border-blue-300 transition">
+              <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">🏦</span>
+                <div>
+                  <span class="font-black text-slate-900 block">Allied Bank (ABL)</span>
+                  <span class="text-[10px] text-slate-500">Title: Burger Cottage</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="font-mono font-black text-slate-950 text-[11px]">13030010098091510016</span>
+                <button onclick="copySpecificAccount('13030010098091510016', 'Allied Bank')" class="px-2.5 py-1 bg-white border border-slate-200 hover:border-blue-500 text-slate-700 hover:text-blue-600 rounded-lg text-[10px] font-bold shadow-xs transition active:scale-95">
+                  Copy
+                </button>
+              </div>
+            </div>
+
+            <!-- 4. Faysal Bank -->
+            <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 flex items-center justify-between gap-2 hover:border-amber-300 transition">
+              <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-sm">🏦</span>
+                <div>
+                  <span class="font-black text-slate-900 block">Faysal Bank</span>
+                  <span class="text-[10px] text-slate-500">Title: Burger Cottage</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="font-mono font-black text-slate-950 text-xs">3384301000003758</span>
+                <button onclick="copySpecificAccount('3384301000003758', 'Faysal Bank')" class="px-2.5 py-1 bg-white border border-slate-200 hover:border-amber-500 text-slate-700 hover:text-amber-600 rounded-lg text-[10px] font-bold shadow-xs transition active:scale-95">
+                  Copy
+                </button>
+              </div>
+            </div>
+
+            <!-- 5. COD -->
+            <div class="p-3 bg-emerald-50/50 rounded-2xl border border-emerald-200/60 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">💵</span>
+                <div>
+                  <span class="font-black text-slate-900 block">Cash on Delivery (COD)</span>
+                  <span class="text-[10px] text-slate-500">Pay cash to rider at doorstep</span>
+                </div>
+              </div>
+              <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Available</span>
+            </div>
+          </div>
+
+          <button onclick="closePaymentAccountsModal()" class="w-full py-3 bg-slate-950 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition">
+            Close Window
+          </button>
+        </div>
       </div>
 
       <!-- 5. ON-PAGE SUB-AGENT CUSTOMIZATION ACTION PANEL / DRAWER -->
@@ -997,12 +1107,47 @@
               <input type="text" id="custAddressInput" placeholder="House 12, Street 4, Phase 5 DHA, Lahore" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Payment Method</label>
-              <select id="custPaymentInput" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white font-medium focus:ring-2 focus:ring-orange-500 focus:outline-none">
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Select Payment Method</label>
+              <select id="custPaymentInput" onchange="handleCustomerPaymentChange()" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white font-bold text-slate-900 focus:ring-2 focus:ring-orange-500 focus:outline-none transition">
                 <option value="COD">💵 Cash on Delivery (COD)</option>
-                <option value="JAZZCASH">📱 JazzCash / Easypaisa</option>
-                <option value="BANK_TRANSFER">🏦 Bank Transfer / Raast</option>
+                <option value="JAZZCASH">📱 JazzCash (0305-4122075)</option>
+                <option value="EASYPAISA">📱 EasyPaisa (0301-4314918)</option>
+                <option value="ALLIED_BANK">🏦 Allied Bank - ABL (13030010098091510016)</option>
+                <option value="FAYSAL_BANK">🏦 Faysal Bank (3384301000003758)</option>
               </select>
+            </div>
+
+            <!-- Dynamic Digital Payment Account Card (Appears when digital option selected) -->
+            <div id="digitalPaymentInfoBox" class="hidden p-3.5 rounded-2xl border border-orange-200 bg-orange-50/60 space-y-2.5 transition animate-in fade-in duration-150">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <div id="digitalPayIcon" class="w-7 h-7 rounded-xl bg-orange-600 text-white flex items-center justify-center text-xs font-bold shadow-xs">
+                    📱
+                  </div>
+                  <div>
+                    <h4 id="digitalPayTitle" class="text-xs font-black text-slate-950 leading-tight">JazzCash Account</h4>
+                    <p class="text-[10px] text-slate-500">Title: <span class="font-bold text-slate-800">Burger Cottage</span></p>
+                  </div>
+                </div>
+                <button type="button" onclick="copyDigitalAccountNumber()" class="px-2.5 py-1 rounded-xl bg-white border border-slate-200 hover:border-orange-500 text-slate-700 hover:text-orange-600 text-[10px] font-bold shadow-xs transition flex items-center gap-1 active:scale-95">
+                  <i class="fa-regular fa-copy"></i> <span>Copy No</span>
+                </button>
+              </div>
+
+              <div class="p-2.5 bg-white rounded-xl border border-orange-100 flex items-center justify-between">
+                <span class="text-[10px] text-slate-400 font-medium">Account / IBAN:</span>
+                <span id="digitalPayAccountNum" class="font-mono text-xs font-black text-slate-950 tracking-wider select-all">03054122075</span>
+              </div>
+
+              <div>
+                <label class="block text-[10px] font-bold text-slate-600 mb-0.5">Transaction ID / Reference (Optional)</label>
+                <input type="text" id="custPaymentTidInput" placeholder="TID ya Transaction Reference enter karein..." class="w-full text-xs p-2 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-1 focus:ring-orange-500">
+              </div>
+
+              <p class="text-[10px] text-slate-500 flex items-center gap-1.5 leading-snug">
+                <i class="fa-solid fa-circle-info text-orange-500 shrink-0"></i>
+                <span>Payment transfer kar ke screenshot WhatsApp order ke sath attach karein.</span>
+              </p>
             </div>
           </div>
 
@@ -2373,12 +2518,103 @@
       renderStorefront();
     }
 
+    const PAYMENT_ACCOUNTS = {
+      JAZZCASH: {
+        name: 'JazzCash',
+        title: 'Burger Cottage',
+        number: '03054122075',
+        displayNum: '0305-4122075',
+        icon: '📱'
+      },
+      EASYPAISA: {
+        name: 'EasyPaisa',
+        title: 'Burger Cottage',
+        number: '03014314918',
+        displayNum: '0301-4314918',
+        icon: '📱'
+      },
+      ALLIED_BANK: {
+        name: 'Allied Bank Limited (ABL)',
+        title: 'Burger Cottage',
+        number: '13030010098091510016',
+        displayNum: '13030010098091510016',
+        icon: '🏦'
+      },
+      FAYSAL_BANK: {
+        name: 'Faysal Bank',
+        title: 'Burger Cottage',
+        number: '3384301000003758',
+        displayNum: '3384301000003758',
+        icon: '🏦'
+      }
+    };
+
+    function handleCustomerPaymentChange() {
+      const selectEl = document.getElementById('custPaymentInput');
+      const box = document.getElementById('digitalPaymentInfoBox');
+      if (!selectEl || !box) return;
+
+      const method = selectEl.value;
+      if (method === 'COD') {
+        box.classList.add('hidden');
+        return;
+      }
+
+      const acc = PAYMENT_ACCOUNTS[method];
+      if (acc) {
+        box.classList.remove('hidden');
+        const titleEl = document.getElementById('digitalPayTitle');
+        const numEl = document.getElementById('digitalPayAccountNum');
+        const iconEl = document.getElementById('digitalPayIcon');
+        if (titleEl) titleEl.innerText = `${acc.name} Account`;
+        if (numEl) numEl.innerText = acc.number;
+        if (iconEl) iconEl.innerText = acc.icon;
+      }
+    }
+
+    function copyDigitalAccountNumber() {
+      const num = document.getElementById('digitalPayAccountNum')?.innerText;
+      if (!num) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(num).then(() => {
+          showToastNotification(`📋 Account number (${num}) copied!`);
+        }).catch(() => {
+          showToastNotification(`📋 Account number: ${num}`);
+        });
+      } else {
+        showToastNotification(`📋 Account number: ${num}`);
+      }
+    }
+
+    function openPaymentAccountsModal() {
+      const modal = document.getElementById('paymentAccountsModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closePaymentAccountsModal() {
+      const modal = document.getElementById('paymentAccountsModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function copySpecificAccount(num, name) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(num).then(() => {
+          showToastNotification(`📋 ${name} number (${num}) copied to clipboard!`);
+        }).catch(() => {
+          showToastNotification(`📋 ${name}: ${num}`);
+        });
+      } else {
+        showToastNotification(`📋 ${name}: ${num}`);
+      }
+    }
+
     // WhatsApp Order Placement (Automated Dispatch)
     function placeCustomerOrder() {
       const name = document.getElementById('custNameInput').value.trim();
       const phone = document.getElementById('custPhoneInput').value.trim();
       const address = document.getElementById('custAddressInput').value.trim();
-      const paymentMethod = document.getElementById('custPaymentInput').value;
+      const rawPaymentMethod = document.getElementById('custPaymentInput').value;
+      const paymentTid = document.getElementById('custPaymentTidInput')?.value.trim() || '';
 
       const itemIds = Object.keys(currentCart);
       if (itemIds.length === 0) {
@@ -2401,6 +2637,23 @@
         }
       });
 
+      let paymentLabel = 'Cash on Delivery (COD)';
+      let paymentAccountDetails = '';
+
+      if (rawPaymentMethod === 'JAZZCASH') {
+        paymentLabel = 'JazzCash (0305-4122075)';
+        paymentAccountDetails = `• Method: JazzCash (03054122075)\n` + (paymentTid ? `• Transaction Ref / TID: ${paymentTid}\n` : `• Proof: Screenshot attached below\n`);
+      } else if (rawPaymentMethod === 'EASYPAISA') {
+        paymentLabel = 'EasyPaisa (0301-4314918)';
+        paymentAccountDetails = `• Method: EasyPaisa (03014314918)\n` + (paymentTid ? `• Transaction Ref / TID: ${paymentTid}\n` : `• Proof: Screenshot attached below\n`);
+      } else if (rawPaymentMethod === 'ALLIED_BANK') {
+        paymentLabel = 'Allied Bank - ABL (13030010098091510016)';
+        paymentAccountDetails = `• Method: Allied Bank ABL (13030010098091510016)\n` + (paymentTid ? `• Transaction Ref / TID: ${paymentTid}\n` : `• Proof: Screenshot attached below\n`);
+      } else if (rawPaymentMethod === 'FAYSAL_BANK') {
+        paymentLabel = 'Faysal Bank (3384301000003758)';
+        paymentAccountDetails = `• Method: Faysal Bank (3384301000003758)\n` + (paymentTid ? `• Transaction Ref / TID: ${paymentTid}\n` : `• Proof: Screenshot attached below\n`);
+      }
+
       const total = subtotal + storeConfig.deliveryFee;
       const orderId = 'ORD-' + Math.floor(1000 + Math.random() * 9000);
 
@@ -2413,8 +2666,9 @@
         items: orderItems,
         deliveryFee: storeConfig.deliveryFee,
         total: total,
-        paymentMethod: paymentMethod,
-        paymentStatus: paymentMethod === 'COD' ? 'AWAITING_PAYMENT' : 'PAYMENT_SUBMITTED',
+        paymentMethod: paymentLabel,
+        paymentTid: paymentTid,
+        paymentStatus: rawPaymentMethod === 'COD' ? 'AWAITING_PAYMENT' : 'PAYMENT_SUBMITTED',
         status: 'PLACED',
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
@@ -2427,14 +2681,20 @@
       message += `*Customer:* ${name}\n`;
       message += `*Phone:* ${phone}\n`;
       message += `*Address:* ${address}\n`;
-      message += `*Payment:* ${paymentMethod}\n\n`;
-      message += `*ITEMS:*\n`;
+      message += `*Payment:* ${paymentLabel}\n`;
+      if (paymentAccountDetails) {
+        message += `${paymentAccountDetails}`;
+      }
+      message += `\n*ITEMS:*\n`;
       orderItems.forEach(item => {
         message += `• ${item.qty}x ${item.name} = PKR ${item.qty * item.price}\n`;
       });
       message += `\n*Delivery Fee:* FREE (PKR 0)\n`;
-      message += `*TOTAL AMOUNT:* PKR ${total}\n\n`;
-      message += `_Processed via Burger Cottage Restaurant OS_`;
+      message += `*TOTAL AMOUNT:* PKR ${total}\n`;
+      if (rawPaymentMethod !== 'COD') {
+        message += `\n⚠️ _Kindly attach payment transfer screenshot below._\n`;
+      }
+      message += `\n_Processed via Burger Cottage Restaurant OS_`;
 
       const encodedMsg = encodeURIComponent(message);
       const whatsappUrl = `https://wa.me/${storeConfig.whatsapp}?text=${encodedMsg}`;
