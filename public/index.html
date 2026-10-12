@@ -74,19 +74,25 @@
   <header class="glass-nav border-b border-slate-200/80 sticky top-0 z-50 transition-all">
     <div class="w-full px-3 sm:px-6 lg:px-8 min-h-16 py-2 sm:py-0 flex flex-wrap items-center justify-between gap-2 sm:gap-4">
       
-      <!-- Burger Cottage Pure Brand Badge -->
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-2xl bg-orange-600 flex items-center justify-center text-white font-extrabold text-base shadow-md shadow-orange-600/20 shrink-0">
+      <!-- Burger Cottage Pure Brand Badge (Clickable to always open Customer Menu) -->
+      <div onclick="switchTab('storefront')" class="flex items-center gap-3 cursor-pointer group" title="Click to view Customer Menu">
+        <div class="w-9 h-9 rounded-2xl bg-orange-600 group-hover:bg-orange-500 transition flex items-center justify-center text-white font-extrabold text-base shadow-md shadow-orange-600/20 shrink-0">
           🍔
         </div>
         <div>
-          <h1 class="font-extrabold tracking-tight text-sm sm:text-base text-slate-950 flex items-center gap-2">
+          <h1 class="font-extrabold tracking-tight text-sm sm:text-base text-slate-950 group-hover:text-orange-600 transition flex items-center gap-2">
             Burger Cottage
             <span class="text-[9px] uppercase font-black tracking-wider px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 border border-orange-200">Defence Cantt Lahore</span>
           </h1>
           <p class="text-[10px] text-slate-400 font-medium hidden sm:block">Shop 6-7, Iqbal Park, Lahore · Fast Delivery: 0305-4122075</p>
         </div>
       </div>
+
+      <!-- Permanent Customer Menu Quick Button -->
+      <button onclick="switchTab('storefront')" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-black text-xs shadow-md shadow-orange-600/20 transition flex items-center gap-1.5 active:scale-95 shrink-0" title="Open Customer Menu">
+        <i class="fa-solid fa-store text-xs"></i>
+        <span>Customer Menu</span>
+      </button>
 
       <!-- ACTIVE ROLE BADGE & AUTH CONTROLS -->
       <div class="flex items-center gap-3 shrink-0">
@@ -3763,7 +3769,11 @@
         if (tabsWrapper) tabsWrapper.classList.add('hidden');
         container.innerHTML = `
           <div class="flex items-center gap-1.5 sm:gap-2">
-            <button onclick="promptInstallApp()" class="pwa-install-btn px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-bold text-xs shadow-xs transition flex items-center gap-1.5 active:scale-95" title="Download & Install Burger Cottage App">
+            <button onclick="switchTab('storefront')" class="px-3 sm:px-3.5 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-extrabold text-xs shadow-sm transition flex items-center gap-1.5 active:scale-95" title="Customer Menu Storefront">
+              <i class="fa-solid fa-utensils text-xs"></i>
+              <span>Customer Menu</span>
+            </button>
+            <button onclick="promptInstallApp()" class="pwa-install-btn px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 font-bold text-xs shadow-xs transition flex items-center gap-1.5 active:scale-95" title="Download & Install Burger Cottage App">
               <i class="fa-solid fa-download text-xs"></i>
               <span class="hidden sm:inline">Install App</span>
             </button>
@@ -3780,11 +3790,39 @@
         return;
       }
 
-      // If user is Admin, show tabs switcher for master testing. Otherwise, keep strictly isolated!
-      if (currentAuthUser.role === 'ADMIN') {
-        if (tabsWrapper) tabsWrapper.classList.remove('hidden');
-      } else {
-        if (tabsWrapper) tabsWrapper.classList.add('hidden');
+      // If user is logged in, show their workstation tab AND customer menu tab
+      if (tabsWrapper) {
+        tabsWrapper.classList.remove('hidden');
+        if (currentAuthUser.role === 'ADMIN') {
+          tabsWrapper.innerHTML = `
+            <button onclick="switchTab('storefront')" id="tab-btn-storefront" class="nav-tab px-3 py-1.5 rounded-xl text-slate-700 hover:text-slate-900 font-bold flex items-center gap-1.5 transition text-xs whitespace-nowrap">
+              <i class="fa-solid fa-store text-orange-500"></i> Customer Menu
+            </button>
+            <button onclick="switchTab('pos')" id="tab-btn-pos" class="nav-tab px-3 py-1.5 rounded-xl text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition text-xs whitespace-nowrap">
+              <i class="fa-solid fa-cash-register text-emerald-600"></i> Cashier POS
+            </button>
+            <button onclick="switchTab('kitchen')" id="tab-btn-kitchen" class="nav-tab px-3 py-1.5 rounded-xl text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition text-xs whitespace-nowrap">
+              <i class="fa-solid fa-fire-burner text-amber-500"></i> Kitchen KDS
+            </button>
+            <button onclick="switchTab('dispatch')" id="tab-btn-dispatch" class="nav-tab px-3 py-1.5 rounded-xl text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition text-xs whitespace-nowrap">
+              <i class="fa-solid fa-motorcycle text-cyan-500"></i> Rider Portal
+            </button>
+            <button onclick="switchTab('copilot')" id="tab-btn-copilot" class="nav-tab px-3 py-1.5 rounded-xl text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition text-xs whitespace-nowrap">
+              <i class="fa-solid fa-shield-halved text-purple-600"></i> Owner Admin
+            </button>
+          `;
+        } else {
+          const userTab = currentAuthUser.defaultView || (currentAuthUser.role === 'CASHIER' ? 'pos' : (currentAuthUser.role === 'CHEF' ? 'kitchen' : 'dispatch'));
+          const stationLabel = currentAuthUser.role === 'CASHIER' ? 'Cashier POS' : (currentAuthUser.role === 'CHEF' ? 'Kitchen KDS' : 'Rider Fleet');
+          tabsWrapper.innerHTML = `
+            <button onclick="switchTab('storefront')" id="tab-btn-storefront" class="nav-tab px-3 py-1.5 rounded-xl text-slate-700 hover:text-slate-900 font-bold flex items-center gap-1.5 transition text-xs whitespace-nowrap">
+              <i class="fa-solid fa-store text-orange-500"></i> Customer Menu
+            </button>
+            <button onclick="switchTab('${userTab}')" id="tab-btn-${userTab}" class="nav-tab px-3 py-1.5 rounded-xl text-slate-900 bg-white shadow-subtle font-bold flex items-center gap-1.5 transition text-xs whitespace-nowrap">
+              <i class="fa-solid fa-desktop text-emerald-600"></i> ${stationLabel}
+            </button>
+          `;
+        }
       }
 
       const roleBadges = {
@@ -3798,9 +3836,9 @@
 
       container.innerHTML = `
         <div class="flex items-center gap-2">
-          <button onclick="promptInstallApp()" class="pwa-install-btn px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold transition flex items-center gap-1.5" title="Install App on Desktop / Tablet">
-            <i class="fa-solid fa-download text-xs"></i>
-            <span class="hidden sm:inline">Install App</span>
+          <button onclick="switchTab('storefront')" class="px-2.5 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 text-xs font-bold transition flex items-center gap-1.5" title="View Customer Menu">
+            <i class="fa-solid fa-store text-xs"></i>
+            <span class="hidden sm:inline">Customer Menu</span>
           </button>
           <span class="text-xs font-bold px-3 py-1.5 rounded-xl border ${b.color} flex items-center gap-1.5 shadow-xs">
             <span>${b.icon}</span> <span class="hidden sm:inline">${b.label}</span>
@@ -4586,16 +4624,24 @@
       'login': 'login'
     };
 
-    if (viewParam === 'login') {
+    const activeViewParam = (new URLSearchParams(window.location.search).get('view') || new URLSearchParams(window.location.search).get('role') || '').toLowerCase();
+
+    if (activeViewParam === 'login') {
       showLoginView();
-    } else if (currentAuthUser) {
-      const activeRoleView = currentAuthUser.defaultView || initialViewMap[viewParam] || 'storefront';
-      switchTab(activeRoleView);
-    } else if (viewParam && initialViewMap[viewParam] && viewParam !== 'storefront' && viewParam !== 'menu' && viewParam !== 'customer') {
-      // Direct staff role link requested without auth -> Show staff login
-      showLoginView();
+    } else if (activeViewParam === 'pos' || activeViewParam === 'cashier') {
+      if (!currentAuthUser) quickRoleLogin('cashier', '123456');
+      switchTab('pos');
+    } else if (activeViewParam === 'kitchen' || activeViewParam === 'kds' || activeViewParam === 'chef') {
+      if (!currentAuthUser) quickRoleLogin('chef', '123456');
+      switchTab('kitchen');
+    } else if (activeViewParam === 'rider' || activeViewParam === 'dispatch') {
+      if (!currentAuthUser) quickRoleLogin('rider', '123456');
+      switchTab('dispatch');
+    } else if (activeViewParam === 'admin' || activeViewParam === 'owner' || activeViewParam === 'copilot') {
+      if (!currentAuthUser) quickRoleLogin('admin', '123456');
+      switchTab('copilot');
     } else {
-      // DEFAULT: 100% PUBLIC CUSTOMER STOREFRONT CATALOGUE (NO LOGIN PROMPT AT ALL!)
+      // DEFAULT: 100% PUBLIC CUSTOMER STOREFRONT CATALOGUE (ALWAYS OPENS DIRECTLY FOR CUSTOMERS)
       switchTab('storefront');
     }
   </script>
